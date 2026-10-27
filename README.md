@@ -5,11 +5,12 @@ Relatório do Power BI salvo como projeto PBIP: o relatório está em PBIR e o m
 ## Como abrir
 
 1. Abra `Dashboard - Aquapolo.pbip` no Power BI Desktop.
-2. O repositório não traz dados. A base real fica na pasta `Aquapolo/Base_PowerBI`, compartilhada no OneDrive da FGV. Peça acesso a ela e sincronize a pasta na sua máquina (no OneDrive, **Adicionar atalho a Meus arquivos**).
-3. No Power BI Desktop, vá em **Transformar dados → Editar parâmetros** e coloque em `PastaBase` o caminho da pasta na sua máquina, terminando com `\`. Exemplo: `C:\Users\<seu usuário>\OneDrive - Fundacao Getulio Vargas - FGV\Aquapolo\Base_PowerBI\`.
-4. Para não enviar o seu caminho no próximo commit, rode uma vez:
-   `git update-index --skip-worktree "Dashboard - Aquapolo.SemanticModel/definition/expressions.tmdl"`
-5. Clique em **Atualizar**. Se os visuais HTML da página **Visão Geral** aparecerem vazios, clique com o botão direito na tabela **Medidas HTML**, no painel Dados, e escolha **Atualizar dados**.
+2. O repositório não traz dados. O parâmetro `PastaBase` lê a base de `C:\Aquapolo\Base_PowerBI\`, um caminho igual em todos os computadores. Essa pasta precisa ter `fato_indicadores.parquet` e `dim_indicadores.parquet`. Há duas formas de montá-la:
+   - **Recomendado:** sincronize a pasta compartilhada `Base_PowerBI` do OneDrive e crie um atalho para ela no Prompt de Comando, uma vez só:
+     `mkdir C:\Aquapolo` e depois `mklink /J C:\Aquapolo\Base_PowerBI "<caminho da Base_PowerBI no seu OneDrive>"`. Assim a base se atualiza sozinha.
+   - **Manual:** crie a pasta e copie os arquivos para ela sempre que houver uma extração nova.
+3. Clique em **Atualizar**.
+4. Se os visuais HTML da página **Visão Geral** aparecerem vazios, clique com o botão direito na tabela **Medidas HTML**, no painel Dados, e escolha **Atualizar dados**.
 
 ## Painel operacional
 
@@ -55,7 +56,7 @@ Cinco pessoas trabalham neste repositório, cada uma com a própria conta do Git
 - Pular hooks ou verificações (`--no-verify`).
 - Alterar as regras de proteção da branch ou a visibilidade do repositório.
 - Commitar dados. O repositório é **público**: a pasta `Base_PowerBI/`, os arquivos `.parquet` e `.csv`, `.pbi/cache.abf` e `.pbi/localSettings.json` nunca entram no git (já estão no `.gitignore`). A base é distribuída pela pasta compartilhada do OneDrive. Credenciais e senhas também não.
-- Commitar o seu caminho local no parâmetro `PastaBase` (`expressions.tmdl`). Veja o passo 4 de **Como abrir**.
+- Mudar o parâmetro `PastaBase` (`expressions.tmdl`). Ele é `C:\Aquapolo\Base_PowerBI\` para todos; se a sua base estiver em outro lugar, use o atalho do passo 2 de **Como abrir**.
 
 ### Evitar conflitos no PBIP
 

@@ -69,6 +69,59 @@ table dim_indicadores
 
 		annotation SummarizationSetBy = Automatic
 
+	column Card
+		dataType: string
+		lineageTag: 65803471-9238-477a-9207-5db62ca5c46d
+		summarizeBy: none
+		sourceColumn: Card
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Visão Geral'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 7dbac3cf-a132-4c25-8dae-b4c0ff9498b8
+		summarizeBy: none
+		sourceColumn: Visão Geral
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Entrega e Qualidade'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: ce14885a-73bf-42f2-ba02-99d529bd7f48
+		summarizeBy: none
+		sourceColumn: Entrega e Qualidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Tratamento Biológico'
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 5b253709-1118-4dae-abfe-49d0c48158b5
+		summarizeBy: none
+		sourceColumn: Tratamento Biológico
+
+		annotation SummarizationSetBy = Automatic
+
+	column Membranas
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: c729bcae-1f58-49cb-aae2-c45142cfac43
+		summarizeBy: none
+		sourceColumn: Membranas
+
+		annotation SummarizationSetBy = Automatic
+
+	column Recursos
+		dataType: boolean
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 25729115-b3b7-41ce-b07f-dfc02b0d8c75
+		summarizeBy: none
+		sourceColumn: Recursos
+
+		annotation SummarizationSetBy = Automatic
+
 	partition dim_indicadores = m
 		mode: import
 		source =

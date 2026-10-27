@@ -565,8 +565,7 @@ table fato_indicadores
 		lineageTag: a6f9645b-5907-4cb2-ba86-a5c3ce77d8d8
 
 	/// Razão das somas (Numerador / Denominador). Em leitura direta o Denominador é 1, então vira a média.
-	measure 'Valor Indicador' =
-			DIVIDE ( SUM ( fato_indicadores[Numerador] ), SUM ( fato_indicadores[Denominador] ) )
+	measure 'Valor Indicador' = DIVIDE ( SUM ( fato_indicadores[Numerador] ), SUM ( fato_indicadores[Denominador] ) )
 		displayFolder: Base
 		lineageTag: f9ebea2d-2d47-4cce-bf48-15e9b0d1411f
 
