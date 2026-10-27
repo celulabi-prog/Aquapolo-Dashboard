@@ -1,0 +1,74 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "b32da199d9ca86cdeafb",
+  "position": {
+    "x": 280,
+    "y": 300,
+    "z": 7,
+    "height": 280,
+    "width": 300,
+    "tabOrder": 7
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fato_indicadores"
+                    }
+                  },
+                  "Property": "Volume Hydro Extrusion"
+                }
+              },
+              "queryRef": "fato_indicadores.Volume Hydro Extrusion",
+              "nativeQueryRef": "Volume Hydro Extrusion"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "fato_indicadores"
+                  }
+                },
+                "Property": "Volume Hydro Extrusion"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "18bccbf68d7975c90278",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fato_indicadores"
+              }
+            },
+            "Property": "Volume Hydro Extrusion"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

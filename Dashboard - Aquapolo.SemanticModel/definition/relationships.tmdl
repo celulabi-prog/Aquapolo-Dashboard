@@ -1,0 +1,9 @@
+relationship 1e1e5944-8fe5-4a42-965d-6d43ef782011
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fato_indicadores.Data
+	toColumn: LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a.Date
+
+relationship AutoDetected_4ac666b1-7648-4927-af05-900e8d310ad9
+	fromColumn: fato_indicadores.ID_Indicador
+	toColumn: dim_indicadores.ID_Indicador
+

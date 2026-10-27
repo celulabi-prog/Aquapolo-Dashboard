@@ -1,0 +1,130 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "736dcb1e0ef9892aa570",
+  "position": {
+    "x": 998.28807852727846,
+    "y": 0,
+    "z": 3,
+    "height": 300.51558652573743,
+    "width": 671.01425484513982,
+    "tabOrder": 3
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fato_indicadores"
+                    }
+                  },
+                  "Property": "Volume PP4 BRK"
+                }
+              },
+              "queryRef": "fato_indicadores.Volume PP4 BRK",
+              "nativeQueryRef": "Volume PP4 BRK"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fato_indicadores"
+                    }
+                  },
+                  "Property": "Volume Oxicap"
+                }
+              },
+              "queryRef": "fato_indicadores.Volume Oxicap",
+              "nativeQueryRef": "Volume Oxicap"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fato_indicadores"
+                    }
+                  },
+                  "Property": "Volume Cabot"
+                }
+              },
+              "queryRef": "fato_indicadores.Volume Cabot",
+              "nativeQueryRef": "Volume Cabot"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "fato_indicadores"
+                  }
+                },
+                "Property": "Volume PP4 BRK"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "1f2175ecd9d789ae3cc5",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fato_indicadores"
+              }
+            },
+            "Property": "Volume PP4 BRK"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "7565e0a17e341777c34d",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fato_indicadores"
+              }
+            },
+            "Property": "Volume Oxicap"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "702fba009c506b15767d",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fato_indicadores"
+              }
+            },
+            "Property": "Volume Cabot"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

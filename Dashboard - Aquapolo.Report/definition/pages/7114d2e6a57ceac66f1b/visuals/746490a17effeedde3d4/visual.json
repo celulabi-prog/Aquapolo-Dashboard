@@ -1,0 +1,74 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "746490a17effeedde3d4",
+  "position": {
+    "x": 279.93232717465952,
+    "y": 0,
+    "z": 1,
+    "height": 300,
+    "width": 300,
+    "tabOrder": 1
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fato_indicadores"
+                    }
+                  },
+                  "Property": "Volume PE7 ABC"
+                }
+              },
+              "queryRef": "fato_indicadores.Volume PE7 ABC",
+              "nativeQueryRef": "Volume PE7 ABC"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "fato_indicadores"
+                  }
+                },
+                "Property": "Volume PE7 ABC"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "2b62131bbb3bf73189e8",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fato_indicadores"
+              }
+            },
+            "Property": "Volume PE7 ABC"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

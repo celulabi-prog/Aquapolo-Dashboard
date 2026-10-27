@@ -1,0 +1,74 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
+  "name": "b3ecf11a49edd88c8625",
+  "position": {
+    "x": 294.34060872041408,
+    "y": 590.73954337593591,
+    "z": 8,
+    "height": 280,
+    "width": 300,
+    "tabOrder": 8
+  },
+  "visual": {
+    "visualType": "cardVisual",
+    "query": {
+      "queryState": {
+        "Data": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "fato_indicadores"
+                    }
+                  },
+                  "Property": "Volume Vitopel"
+                }
+              },
+              "queryRef": "fato_indicadores.Volume Vitopel",
+              "nativeQueryRef": "Volume Vitopel"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "fato_indicadores"
+                  }
+                },
+                "Property": "Volume Vitopel"
+              }
+            },
+            "direction": "Descending"
+          }
+        ],
+        "isDefaultSort": true
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "937b9b87a7a5b0faf1e4",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "fato_indicadores"
+              }
+            },
+            "Property": "Volume Vitopel"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+model Model
+	culture: pt-BR
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	sourceQueryCulture: pt-BR
+	valueFilterBehavior: independent
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation __PBI_TimeIntelligenceEnabled = 1
+
+annotation PBI_QueryOrder = ["fato_indicadores","dim_indicadores"]
+
+annotation PBI_ProTooling = ["TMDLView_Desktop","DevMode"]
+
+ref table fato_indicadores
+ref table DateTableTemplate_68c437b8-3156-47a7-8f1c-0f032b1b81b5
+ref table LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a
+ref table dim_indicadores
+ref table 'Medidas HTML'
+
+ref cultureInfo pt-BR
+

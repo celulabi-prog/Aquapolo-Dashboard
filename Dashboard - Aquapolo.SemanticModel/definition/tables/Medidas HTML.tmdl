@@ -1,0 +1,903 @@
+table 'Medidas HTML'
+	lineageTag: af935ac6-adea-4710-8879-f9f7682c9e9d
+
+	measure 'HTML Volume Clientes' = ```
+			    -- ===== EDITAR AQUI (Volume Clientes) =====
+			    VAR Valor = 237450            -- trocar pela medida real, ex.: [Volume Clientes]
+			    VAR Ref = 230000
+			    VAR VarPeriodo = 0.068     -- variação vs período anterior (0.068 = +6,8%)
+			    VAR TipoVar = "%"            -- "%" ou "p.p."
+			    VAR MenorMelhor = FALSE ()
+			    VAR FmtValor = "#,##0"
+			    VAR UnidadeRef = " m³/d"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			    VAR VariacaoBoa = IF ( MenorMelhor, VarPeriodo < 0, VarPeriodo > 0 )
+			    VAR CorVar = IF ( VariacaoBoa, "#2e7d32", "#c62828" )
+			    VAR Seta = IF ( VarPeriodo >= 0, "▲", "▼" )
+			    VAR TxtVar =
+			        IF ( TipoVar = "%", FORMAT ( VarPeriodo, "+0.0%;-0.0%" ), FORMAT ( VarPeriodo, "+0.0;-0.0" ) & " p.p." )
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;padding:2px 6px'>"
+			        & "<div style='font-size:40px;font-weight:700;line-height:1'>" & FORMAT ( Valor, FmtValor ) & "</div>"
+			        & "<div style='margin-top:10px;font-size:15px;font-weight:600;color:" & CorVar & "'>" & Seta & " " & TxtVar & " <span style='font-size:11px;font-weight:400;color:#4a5b70'>Δ Per.</span>"
+			        & "</div>"
+			        & "<div style='margin-top:14px'>"
+			        & "<div style='position:relative;height:10px;background:#e6edf5;border-radius:5px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:5px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:18px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<div style='display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:#4a5b70'>"
+			        & "<span>Ref. " & FORMAT ( Ref, FmtValor ) & UnidadeRef & "</span>"
+			        & "<b style='font-size:13px;color:#0b2a5b'>" & FORMAT ( Atingimento, "0%" ) & "</b>"
+			        & "</div>"
+			        & "</div>"
+			```
+		lineageTag: 353ac2df-47d1-4359-b098-6ce2c50d7dc0
+
+	measure 'HTML Blend' = ```
+			    -- ===== EDITAR AQUI (Blend) =====
+			    VAR Valor = 34.2            -- trocar pela medida real, ex.: [Blend]
+			    VAR Ref = 30
+			    VAR VarPeriodo = 2.1     -- variação vs período anterior em pontos percentuais
+			    VAR TipoVar = "p.p."            -- "%" ou "p.p."
+			    VAR MenorMelhor = FALSE ()
+			    VAR FmtValor = "0.0"
+			    VAR UnidadeRef = " %"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			    VAR VariacaoBoa = IF ( MenorMelhor, VarPeriodo < 0, VarPeriodo > 0 )
+			    VAR CorVar = IF ( VariacaoBoa, "#2e7d32", "#c62828" )
+			    VAR Seta = IF ( VarPeriodo >= 0, "▲", "▼" )
+			    VAR TxtVar =
+			        IF ( TipoVar = "%", FORMAT ( VarPeriodo, "+0.0%;-0.0%" ), FORMAT ( VarPeriodo, "+0.0;-0.0" ) & " p.p." )
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;padding:2px 6px'>"
+			        & "<div style='font-size:40px;font-weight:700;line-height:1'>" & FORMAT ( Valor, FmtValor ) & "</div>"
+			        & "<div style='margin-top:10px;font-size:15px;font-weight:600;color:" & CorVar & "'>" & Seta & " " & TxtVar & " <span style='font-size:11px;font-weight:400;color:#4a5b70'>Δ Per.</span>"
+			        & "</div>"
+			        & "<div style='margin-top:14px'>"
+			        & "<div style='position:relative;height:10px;background:#e6edf5;border-radius:5px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:5px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:18px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<div style='display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:#4a5b70'>"
+			        & "<span>Ref. " & FORMAT ( Ref, FmtValor ) & UnidadeRef & "</span>"
+			        & "<b style='font-size:13px;color:#0b2a5b'>" & FORMAT ( Atingimento, "0%" ) & "</b>"
+			        & "</div>"
+			        & "</div>"
+			```
+		lineageTag: cd64ac2e-ad8a-4834-8dc3-3ea030101eb5
+
+	measure 'HTML Perdas' = ```
+			    -- ===== EDITAR AQUI (Perdas) =====
+			    VAR Valor = 12.6            -- trocar pela medida real, ex.: [Perdas]
+			    VAR Ref = 30
+			    VAR VarPeriodo = -1.4     -- variação vs período anterior em pontos percentuais
+			    VAR TipoVar = "p.p."            -- "%" ou "p.p."
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0.0"
+			    VAR UnidadeRef = " %"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			    VAR VariacaoBoa = IF ( MenorMelhor, VarPeriodo < 0, VarPeriodo > 0 )
+			    VAR CorVar = IF ( VariacaoBoa, "#2e7d32", "#c62828" )
+			    VAR Seta = IF ( VarPeriodo >= 0, "▲", "▼" )
+			    VAR TxtVar =
+			        IF ( TipoVar = "%", FORMAT ( VarPeriodo, "+0.0%;-0.0%" ), FORMAT ( VarPeriodo, "+0.0;-0.0" ) & " p.p." )
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;padding:2px 6px'>"
+			        & "<div style='font-size:40px;font-weight:700;line-height:1'>" & FORMAT ( Valor, FmtValor ) & "</div>"
+			        & "<div style='margin-top:10px;font-size:15px;font-weight:600;color:" & CorVar & "'>" & Seta & " " & TxtVar & " <span style='font-size:11px;font-weight:400;color:#4a5b70'>Δ Per.</span>"
+			        & "</div>"
+			        & "<div style='margin-top:14px'>"
+			        & "<div style='position:relative;height:10px;background:#e6edf5;border-radius:5px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:5px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:18px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<div style='display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:#4a5b70'>"
+			        & "<span>Ref. " & FORMAT ( Ref, FmtValor ) & UnidadeRef & "</span>"
+			        & "<b style='font-size:13px;color:#0b2a5b'>" & FORMAT ( Atingimento, "0%" ) & "</b>"
+			        & "</div>"
+			        & "</div>"
+			```
+		lineageTag: fd077992-ab74-4a79-8903-bc8770b7f96a
+
+	measure 'HTML Consumo Quimicos' = ```
+			    -- ===== EDITAR AQUI (Consumo Químicos) =====
+			    VAR Valor = 0.28            -- trocar pela medida real, ex.: [Consumo Químicos]
+			    VAR Ref = 0.35
+			    VAR VarPeriodo = -0.125     -- variação vs período anterior (0.068 = +6,8%)
+			    VAR TipoVar = "%"            -- "%" ou "p.p."
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0.00"
+			    VAR UnidadeRef = " kg/m³"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			    VAR VariacaoBoa = IF ( MenorMelhor, VarPeriodo < 0, VarPeriodo > 0 )
+			    VAR CorVar = IF ( VariacaoBoa, "#2e7d32", "#c62828" )
+			    VAR Seta = IF ( VarPeriodo >= 0, "▲", "▼" )
+			    VAR TxtVar =
+			        IF ( TipoVar = "%", FORMAT ( VarPeriodo, "+0.0%;-0.0%" ), FORMAT ( VarPeriodo, "+0.0;-0.0" ) & " p.p." )
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;padding:2px 6px'>"
+			        & "<div style='font-size:28px;font-weight:700;line-height:1'>" & FORMAT ( Valor, FmtValor ) & "</div>"
+			        & "<div style='margin-top:2px;font-size:12px;font-weight:600;color:" & CorVar & "'>" & Seta & " " & TxtVar & " <span style='font-size:11px;font-weight:400;color:#4a5b70'>Δ Per.</span>"
+			        & "</div>"
+			        & "<div style='margin-top:6px'>"
+			        & "<div style='position:relative;height:10px;background:#e6edf5;border-radius:5px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:5px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:18px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<div style='display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:#4a5b70'>"
+			        & "<span>Ref. " & FORMAT ( Ref, FmtValor ) & UnidadeRef & "</span>"
+			        & "<b style='font-size:13px;color:#0b2a5b'>" & FORMAT ( Atingimento, "0%" ) & "</b>"
+			        & "</div>"
+			        & "</div>"
+			```
+		lineageTag: e44c2f6d-f042-481e-86c0-04e72c7ea9d8
+
+	measure 'HTML Consumo Energia' = ```
+			    -- ===== EDITAR AQUI (Consumo Energia) =====
+			    VAR Valor = 0.81            -- trocar pela medida real, ex.: [Consumo Energia]
+			    VAR Ref = 0.9
+			    VAR VarPeriodo = -0.058     -- variação vs período anterior (0.068 = +6,8%)
+			    VAR TipoVar = "%"            -- "%" ou "p.p."
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0.00"
+			    VAR UnidadeRef = " kWh/m³"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			    VAR VariacaoBoa = IF ( MenorMelhor, VarPeriodo < 0, VarPeriodo > 0 )
+			    VAR CorVar = IF ( VariacaoBoa, "#2e7d32", "#c62828" )
+			    VAR Seta = IF ( VarPeriodo >= 0, "▲", "▼" )
+			    VAR TxtVar =
+			        IF ( TipoVar = "%", FORMAT ( VarPeriodo, "+0.0%;-0.0%" ), FORMAT ( VarPeriodo, "+0.0;-0.0" ) & " p.p." )
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;padding:2px 6px'>"
+			        & "<div style='font-size:28px;font-weight:700;line-height:1'>" & FORMAT ( Valor, FmtValor ) & "</div>"
+			        & "<div style='margin-top:2px;font-size:12px;font-weight:600;color:" & CorVar & "'>" & Seta & " " & TxtVar & " <span style='font-size:11px;font-weight:400;color:#4a5b70'>Δ Per.</span>"
+			        & "</div>"
+			        & "<div style='margin-top:6px'>"
+			        & "<div style='position:relative;height:10px;background:#e6edf5;border-radius:5px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:5px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:18px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<div style='display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:#4a5b70'>"
+			        & "<span>Ref. " & FORMAT ( Ref, FmtValor ) & UnidadeRef & "</span>"
+			        & "<b style='font-size:13px;color:#0b2a5b'>" & FORMAT ( Atingimento, "0%" ) & "</b>"
+			        & "</div>"
+			        & "</div>"
+			```
+		lineageTag: b582bfc9-12bd-449f-8ea2-e79eaf9d0dd0
+
+	measure 'HTML Consumo OR' = ```
+			    -- ===== EDITAR AQUI (Consumo OR) =====
+			    VAR Valor = 0.32            -- trocar pela medida real, ex.: [Consumo OR]
+			    VAR Ref = 0.4
+			    VAR VarPeriodo = -0.086     -- variação vs período anterior (0.068 = +6,8%)
+			    VAR TipoVar = "%"            -- "%" ou "p.p."
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0.00"
+			    VAR UnidadeRef = ""
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			    VAR VariacaoBoa = IF ( MenorMelhor, VarPeriodo < 0, VarPeriodo > 0 )
+			    VAR CorVar = IF ( VariacaoBoa, "#2e7d32", "#c62828" )
+			    VAR Seta = IF ( VarPeriodo >= 0, "▲", "▼" )
+			    VAR TxtVar =
+			        IF ( TipoVar = "%", FORMAT ( VarPeriodo, "+0.0%;-0.0%" ), FORMAT ( VarPeriodo, "+0.0;-0.0" ) & " p.p." )
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;padding:0 4px'>"
+			        & "<div style='display:flex;align-items:baseline;justify-content:space-between'>"
+			        & "<b style='font-size:18px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<span style='font-size:11px;font-weight:600;color:" & CorVar & "'>" & Seta & " " & TxtVar & "</span>"
+			        & "</div>"
+			        & "<div style='display:flex;align-items:center;gap:8px;margin-top:6px'>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:7px;background:#e6edf5;border-radius:3px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:3px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:15px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='font-size:10px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			        & "</div>"
+			```
+		lineageTag: 82fe0299-1ef3-433a-b33e-5c79bca68f7f
+
+	measure 'HTML Consumo Soprador' = ```
+			    -- ===== EDITAR AQUI (Consumo Soprador TMBR) =====
+			    VAR Valor = 1.85            -- trocar pela medida real, ex.: [Consumo Soprador TMBR]
+			    VAR Ref = 2.0
+			    VAR VarPeriodo = -0.075     -- variação vs período anterior (0.068 = +6,8%)
+			    VAR TipoVar = "%"            -- "%" ou "p.p."
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0.00"
+			    VAR UnidadeRef = ""
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			    VAR VariacaoBoa = IF ( MenorMelhor, VarPeriodo < 0, VarPeriodo > 0 )
+			    VAR CorVar = IF ( VariacaoBoa, "#2e7d32", "#c62828" )
+			    VAR Seta = IF ( VarPeriodo >= 0, "▲", "▼" )
+			    VAR TxtVar =
+			        IF ( TipoVar = "%", FORMAT ( VarPeriodo, "+0.0%;-0.0%" ), FORMAT ( VarPeriodo, "+0.0;-0.0" ) & " p.p." )
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;padding:0 4px'>"
+			        & "<div style='display:flex;align-items:baseline;justify-content:space-between'>"
+			        & "<b style='font-size:18px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<span style='font-size:11px;font-weight:600;color:" & CorVar & "'>" & Seta & " " & TxtVar & "</span>"
+			        & "</div>"
+			        & "<div style='display:flex;align-items:center;gap:8px;margin-top:6px'>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:7px;background:#e6edf5;border-radius:3px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:3px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:15px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='font-size:10px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			        & "</div>"
+			```
+		lineageTag: eb51ac46-e0cc-431c-9d7f-320ebdb021a1
+
+	measure 'HTML Consumo Coagulante' = ```
+			    -- ===== EDITAR AQUI (Consumo Coagulante) =====
+			    VAR Valor = 7.2            -- trocar pela medida real, ex.: [Consumo Coagulante]
+			    VAR Ref = 8.0
+			    VAR VarPeriodo = -0.1     -- variação vs período anterior (0.068 = +6,8%)
+			    VAR TipoVar = "%"            -- "%" ou "p.p."
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0.0"
+			    VAR UnidadeRef = ""
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			    VAR VariacaoBoa = IF ( MenorMelhor, VarPeriodo < 0, VarPeriodo > 0 )
+			    VAR CorVar = IF ( VariacaoBoa, "#2e7d32", "#c62828" )
+			    VAR Seta = IF ( VarPeriodo >= 0, "▲", "▼" )
+			    VAR TxtVar =
+			        IF ( TipoVar = "%", FORMAT ( VarPeriodo, "+0.0%;-0.0%" ), FORMAT ( VarPeriodo, "+0.0;-0.0" ) & " p.p." )
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;padding:0 4px'>"
+			        & "<div style='display:flex;align-items:baseline;justify-content:space-between'>"
+			        & "<b style='font-size:18px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<span style='font-size:11px;font-weight:600;color:" & CorVar & "'>" & Seta & " " & TxtVar & "</span>"
+			        & "</div>"
+			        & "<div style='display:flex;align-items:center;gap:8px;margin-top:6px'>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:7px;background:#e6edf5;border-radius:3px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:3px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:15px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='font-size:10px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			        & "</div>"
+			```
+		lineageTag: ae6a0032-ac15-4e38-bee6-e5909f4f274d
+
+	measure 'HTML Retrolavagem' = ```
+			    -- ===== EDITAR AQUI (Nº Retrolavagem Disco) =====
+			    VAR Valor = 3            -- trocar pela medida real, ex.: [Nº Retrolavagem Disco]
+			    VAR Ref = 5
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
+			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			```
+		lineageTag: 826d702a-9218-403d-a7e9-589858469f3c
+
+	measure 'HTML DQO' = ```
+			    -- ===== EDITAR AQUI (DQO) =====
+			    VAR Valor = 18            -- trocar pela medida real, ex.: [DQO]
+			    VAR Ref = 30
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
+			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			```
+		lineageTag: 3fc4dfe9-c3e2-4d6a-bd63-6943e893d8fc
+
+	measure 'HTML NH3' = ```
+			    -- ===== EDITAR AQUI (NH3) =====
+			    VAR Valor = 0.5            -- trocar pela medida real, ex.: [NH3]
+			    VAR Ref = 1.0
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0.0"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
+			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			```
+		lineageTag: 9be623ee-3add-48e7-9fef-4e83c0127040
+
+	measure 'HTML Condutividade' = ```
+			    -- ===== EDITAR AQUI (Condutividade) =====
+			    VAR Valor = 520            -- trocar pela medida real, ex.: [Condutividade]
+			    VAR Ref = 800
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
+			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			```
+		lineageTag: f5747b77-83d7-417b-bee0-72661524552f
+
+	measure 'HTML Dureza' = ```
+			    -- ===== EDITAR AQUI (Dureza) =====
+			    VAR Valor = 65            -- trocar pela medida real, ex.: [Dureza]
+			    VAR Ref = 100
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
+			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			```
+		lineageTag: 5e531646-4816-47b4-bdb4-5974dda74b98
+
+	measure 'HTML Idade Lodo' = ```
+			    -- ===== EDITAR AQUI (Idade do Lodo) =====
+			    VAR Valor = 18            -- trocar pela medida real, ex.: [Idade do Lodo]
+			    VAR Ref = 20
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
+			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			```
+		lineageTag: 9be2a327-f6f1-4fd9-8ebe-5abef8c38c8f
+
+	measure 'HTML FM' = ```
+			    -- ===== EDITAR AQUI (Alimento/Microorganismo) =====
+			    VAR Valor = 0.08            -- trocar pela medida real, ex.: [Alimento/Microorganismo]
+			    VAR Ref = 0.12
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0.00"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
+			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			```
+		lineageTag: ea91af1e-399f-48b9-a31f-cab78f48b9e1
+
+	measure 'HTML PTM' = ```
+			    -- ===== EDITAR AQUI (Pressão Transmembrana) =====
+			    VAR Valor = 18            -- trocar pela medida real, ex.: [Pressão Transmembrana]
+			    VAR Ref = 25
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
+			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			```
+		lineageTag: 40867451-1876-4057-912f-9017520884f4
+
+	measure 'HTML Permeabilidade' = ```
+			    -- ===== EDITAR AQUI (Permeabilidade) =====
+			    VAR Valor = 420            -- trocar pela medida real, ex.: [Permeabilidade]
+			    VAR Ref = 400
+			    VAR MenorMelhor = FALSE ()
+			    VAR FmtValor = "0"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
+			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			```
+		lineageTag: 67c1d952-004f-46e6-b2bc-522a9386b2f6
+
+	measure 'HTML Turbidez' = ```
+			    -- ===== EDITAR AQUI (Turbidez) =====
+			    VAR Valor = 0.4            -- trocar pela medida real, ex.: [Turbidez]
+			    VAR Ref = 1.0
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0.0"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
+			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			```
+		lineageTag: c06f81dc-233f-44ce-88b9-c0989a83ffa5
+
+	measure 'HTML Fluxo' = ```
+			    -- ===== EDITAR AQUI (Fluxo) =====
+			    VAR Valor = 520            -- trocar pela medida real, ex.: [Fluxo]
+			    VAR Ref = 500
+			    VAR MenorMelhor = FALSE ()
+			    VAR FmtValor = "0"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
+			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			```
+		lineageTag: 4f42fc6d-830c-4336-ba02-462705186a4b
+
+	measure 'HTML SDI' = ```
+			    -- ===== EDITAR AQUI (SDI) =====
+			    VAR Valor = 2.1            -- trocar pela medida real, ex.: [SDI]
+			    VAR Ref = 3.0
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0.0"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
+			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			```
+		lineageTag: e7e33d40-f9d4-4bdc-984a-3c5071c25235
+
+	measure 'HTML DP Skid 1' = ```
+			    -- ===== EDITAR AQUI (Diferencial de Pressão Skid 1) =====
+			    VAR Valor = 1.8            -- trocar pela medida real, ex.: [Diferencial de Pressão Skid 1]
+			    VAR Ref = 2.5
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0.0"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
+			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			```
+		lineageTag: b68ceaf5-b7a4-4c07-bef2-35236505506a
+
+	measure 'HTML DP Skid 2' = ```
+			    -- ===== EDITAR AQUI (Diferencial de Pressão Skid 2) =====
+			    VAR Valor = 2.0            -- trocar pela medida real, ex.: [Diferencial de Pressão Skid 2]
+			    VAR Ref = 2.5
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0.0"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
+			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			```
+		lineageTag: ad94b2ae-555f-4fc4-b7ff-4627d796e5c2
+
+	measure 'HTML DP Skid 3' = ```
+			    -- ===== EDITAR AQUI (Diferencial de Pressão Skid 3) =====
+			    VAR Valor = 2.2            -- trocar pela medida real, ex.: [Diferencial de Pressão Skid 3]
+			    VAR Ref = 2.5
+			    VAR MenorMelhor = TRUE ()
+			    VAR FmtValor = "0.0"
+			    -- ===== daqui pra baixo não precisa mexer =====
+			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
+			    VAR Atingimento = DIVIDE ( Valor, Ref )
+			    VAR Cor =
+			        IF (
+			            MenorMelhor,
+			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
+			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        )
+			    VAR Escala = 1.3           -- barra cheia = 130% da referência
+			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Marcador = 100 / Escala
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
+			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
+			        & "<div style='flex:1'>"
+			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
+			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
+			        & "</div>"
+			        & "</div>"
+			        & "</div>"
+			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
+			        & "</div>"
+			```
+		lineageTag: 39e32d72-b575-4b51-a02c-96c145951b6d
+
+	column Aux
+		dataType: string
+		isHidden
+		lineageTag: 674cf386-1713-4851-b817-217b7cf73e83
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Aux]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Medidas HTML' = calculated
+		mode: import
+		source = ROW("Aux", BLANK())
+

@@ -1,0 +1,548 @@
+createOrReplace
+
+	ref table fato_indicadores
+
+		measure 'Todos Clientes' =
+				CALCULATE (
+				    AVERAGE ( fato_indicadores[Valor] ),
+				    REMOVEFILTERS ( dim_indicadores ),
+				    fato_indicadores[ID_Indicador] = "Volumes | Todos Clientes"
+				)
+			formatString: #,0
+			displayFolder: Visão Geral
+
+		measure 'Cor Todos Clientes' =
+				VAR _v = [Todos Clientes]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Todos Clientes" )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Todos Clientes" )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Visão Geral\Cores
+
+		measure 'Perda Total' =
+				VAR _base =
+				    CALCULATETABLE (
+				        ADDCOLUMNS (
+				            VALUES ( fato_indicadores[Data] ),
+				            "@n", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | BH Volumes Y" ),
+				            "@d", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | BH Volumes B" )
+				        ),
+				        REMOVEFILTERS ( dim_indicadores )
+				    )
+				VAR _dias = FILTER ( _base, NOT ISBLANK ( [@n] ) && NOT ISBLANK ( [@d] ) )
+				VAR _r = DIVIDE ( SUMX ( _dias, [@n] ), SUMX ( _dias, [@d] ) )
+				RETURN
+				    IF ( NOT ISBLANK ( _r ), 1 - _r )
+			formatString: 0.0%
+			displayFolder: Visão Geral
+
+		measure 'Cor Perda Total' =
+				VAR _v = [Perda Total]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Perdas | Perda Total" )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Perdas | Perda Total" )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Visão Geral\Cores
+
+		measure 'Índice Qualidade Água Industrial' =
+				VAR _leituras =
+				    CALCULATETABLE (
+				        fato_indicadores,
+				        REMOVEFILTERS ( dim_indicadores ),
+				        dim_indicadores[Etapa] = "Água Industrial",
+				        dim_indicadores[Tipo] = "Leitura direta"
+				    )
+				VAR _conformes =
+				    COUNTROWS (
+				        FILTER (
+				            _leituras,
+				            VAR _min = RELATED ( dim_indicadores[Target_Min] )
+				            VAR _max = RELATED ( dim_indicadores[Target_Max] )
+				            RETURN
+				                ( ISBLANK ( _min ) || fato_indicadores[Valor] >= _min )
+				                    && ( ISBLANK ( _max ) || fato_indicadores[Valor] <= _max )
+				        )
+				    )
+				RETURN
+				    DIVIDE ( _conformes, COUNTROWS ( _leituras ) )
+			formatString: 0.00%
+			displayFolder: Visão Geral
+
+		measure 'Cor Índice Qualidade Água Industrial' =
+				VAR _v = [Índice Qualidade Água Industrial]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Água Industrial | Índice de Qualidade da Água Industrial" )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Água Industrial | Índice de Qualidade da Água Industrial" )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Visão Geral\Cores
+
+		measure 'Consumo Unitário Energia' =
+				VAR _base =
+				    CALCULATETABLE (
+				        ADDCOLUMNS (
+				            VALUES ( fato_indicadores[Data] ),
+				            "@n", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | Energia Total (AT)" ),
+				            "@d", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | BH Volumes Y" )
+				        ),
+				        REMOVEFILTERS ( dim_indicadores )
+				    )
+				VAR _dias = FILTER ( _base, NOT ISBLANK ( [@n] ) && NOT ISBLANK ( [@d] ) )
+				VAR _r = DIVIDE ( SUMX ( _dias, [@n] ), SUMX ( _dias, [@d] ) )
+				RETURN
+				    _r
+			formatString: 0.000
+			displayFolder: Visão Geral
+
+		measure 'Cor Consumo Unitário Energia' =
+				VAR _v = [Consumo Unitário Energia]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Energia | Consumo Unitário - Energia" )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Energia | Consumo Unitário - Energia" )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Visão Geral\Cores
+
+		measure 'Consumo Unitário Químicos' =
+				VAR _base =
+				    CALCULATETABLE (
+				        ADDCOLUMNS (
+				            VALUES ( fato_indicadores[Data] ),
+				            "@n", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | Químicos Consumo (C)" ),
+				            "@d", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | Químicos Volume (E)" )
+				        ),
+				        REMOVEFILTERS ( dim_indicadores )
+				    )
+				VAR _dias = FILTER ( _base, NOT ISBLANK ( [@n] ) && NOT ISBLANK ( [@d] ) )
+				VAR _r = DIVIDE ( SUMX ( _dias, [@n] ), SUMX ( _dias, [@d] ) )
+				RETURN
+				    _r
+			formatString: 0.0000
+			displayFolder: Visão Geral
+
+		measure 'Cor Consumo Unitário Químicos' =
+				VAR _v = [Consumo Unitário Químicos]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Químicos | Consumo Unitário - Químicos" )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Químicos | Consumo Unitário - Químicos" )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Visão Geral\Cores
+
+		measure 'Autonomia PAC' =
+				VAR _ult =
+				    CALCULATE ( MAX ( fato_indicadores[Data] ), REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = "Químicos - Autonomia | PAC" )
+				RETURN
+				    CALCULATE (
+				        AVERAGE ( fato_indicadores[Valor] ),
+				        REMOVEFILTERS ( dim_indicadores ),
+				        fato_indicadores[ID_Indicador] = "Químicos - Autonomia | PAC",
+				        fato_indicadores[Data] = _ult
+				    )
+			formatString: 0.0
+			displayFolder: Visão Geral\Autonomia
+
+		measure 'Autonomia Hipoclorito' =
+				VAR _ult =
+				    CALCULATE ( MAX ( fato_indicadores[Data] ), REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = "Químicos - Autonomia | Hipoclorito" )
+				RETURN
+				    CALCULATE (
+				        AVERAGE ( fato_indicadores[Valor] ),
+				        REMOVEFILTERS ( dim_indicadores ),
+				        fato_indicadores[ID_Indicador] = "Químicos - Autonomia | Hipoclorito",
+				        fato_indicadores[Data] = _ult
+				    )
+			formatString: 0.0
+			displayFolder: Visão Geral\Autonomia
+
+		measure 'Autonomia Purate' =
+				VAR _ult =
+				    CALCULATE ( MAX ( fato_indicadores[Data] ), REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = "Químicos - Autonomia | Purate" )
+				RETURN
+				    CALCULATE (
+				        AVERAGE ( fato_indicadores[Valor] ),
+				        REMOVEFILTERS ( dim_indicadores ),
+				        fato_indicadores[ID_Indicador] = "Químicos - Autonomia | Purate",
+				        fato_indicadores[Data] = _ult
+				    )
+			formatString: 0.0
+			displayFolder: Visão Geral\Autonomia
+
+		measure 'Autonomia Químicos (menor)' =
+				MINX (
+				    {
+				        [Autonomia PAC],
+				        [Autonomia Hipoclorito],
+				        [Autonomia Purate]
+				    },
+				    [Value]
+				)
+			formatString: 0.0
+			displayFolder: Visão Geral
+
+		measure 'Autonomia Químico Crítico' =
+				VAR _t =
+				    FILTER (
+				        {
+				            ( "PAC", [Autonomia PAC] ),
+				            ( "Hipoclorito", [Autonomia Hipoclorito] ),
+				            ( "Purate", [Autonomia Purate] )
+				        },
+				        NOT ISBLANK ( [Value2] )
+				    )
+				RETURN
+				    MAXX ( TOPN ( 1, _t, [Value2], ASC ), [Value1] )
+			displayFolder: Visão Geral
+
+		measure 'Cor Autonomia Químicos' =
+				VAR _abaixo =
+				    ( [Autonomia PAC] < CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Químicos - Autonomia | PAC" ) )
+				        || ( [Autonomia Hipoclorito] < CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Químicos - Autonomia | Hipoclorito" ) )
+				        || ( [Autonomia Purate] < CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Químicos - Autonomia | Purate" ) )
+				RETURN
+				    IF ( NOT ISBLANK ( [Autonomia Químicos (menor)] ), IF ( _abaixo, "#C62828", "#2E7D32" ) )
+			displayFolder: Visão Geral\Cores
+
+		measure 'Volume Q3 ABC' =
+				CALCULATE (
+				    AVERAGE ( fato_indicadores[Valor] ),
+				    REMOVEFILTERS ( dim_indicadores ),
+				    fato_indicadores[ID_Indicador] = "Volumes | Q3 ABC"
+				)
+			formatString: #,0
+			displayFolder: Entrega e Qualidade\Clientes
+
+		measure 'Cor Volume Q3 ABC' =
+				VAR _v = [Volume Q3 ABC]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Q3 ABC" )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Q3 ABC" )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Entrega e Qualidade\Cores
+
+		measure 'Volume PE7 ABC' =
+				CALCULATE (
+				    AVERAGE ( fato_indicadores[Valor] ),
+				    REMOVEFILTERS ( dim_indicadores ),
+				    fato_indicadores[ID_Indicador] = "Volumes | PE7 ABC"
+				)
+			formatString: #,0
+			displayFolder: Entrega e Qualidade\Clientes
+
+		measure 'Cor Volume PE7 ABC' =
+				VAR _v = [Volume PE7 ABC]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | PE7 ABC" )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | PE7 ABC" )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Entrega e Qualidade\Cores
+
+		measure 'Volume UNIB3 ABC' =
+				CALCULATE (
+				    AVERAGE ( fato_indicadores[Valor] ),
+				    REMOVEFILTERS ( dim_indicadores ),
+				    fato_indicadores[ID_Indicador] = "Volumes | UNIB3 ABC"
+				)
+			formatString: #,0
+			displayFolder: Entrega e Qualidade\Clientes
+
+		measure 'Cor Volume UNIB3 ABC' =
+				VAR _v = [Volume UNIB3 ABC]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | UNIB3 ABC" )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | UNIB3 ABC" )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Entrega e Qualidade\Cores
+
+		measure 'Volume PP4 BRK' =
+				CALCULATE (
+				    AVERAGE ( fato_indicadores[Valor] ),
+				    REMOVEFILTERS ( dim_indicadores ),
+				    fato_indicadores[ID_Indicador] = "Volumes | PP4 BRK"
+				)
+			formatString: #,0
+			displayFolder: Entrega e Qualidade\Clientes
+
+		measure 'Cor Volume PP4 BRK' =
+				VAR _v = [Volume PP4 BRK]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | PP4 BRK" )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | PP4 BRK" )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Entrega e Qualidade\Cores
+
+		measure 'Volume Oxicap' =
+				CALCULATE (
+				    AVERAGE ( fato_indicadores[Valor] ),
+				    REMOVEFILTERS ( dim_indicadores ),
+				    fato_indicadores[ID_Indicador] = "Volumes | Oxicap"
+				)
+			formatString: #,0
+			displayFolder: Entrega e Qualidade\Clientes
+
+		measure 'Cor Volume Oxicap' =
+				VAR _v = [Volume Oxicap]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Oxicap" )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Oxicap" )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Entrega e Qualidade\Cores
+
+		measure 'Volume Cabot' =
+				CALCULATE (
+				    AVERAGE ( fato_indicadores[Valor] ),
+				    REMOVEFILTERS ( dim_indicadores ),
+				    fato_indicadores[ID_Indicador] = "Volumes | Cabot"
+				)
+			formatString: #,0
+			displayFolder: Entrega e Qualidade\Clientes
+
+		measure 'Cor Volume Cabot' =
+				VAR _v = [Volume Cabot]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Cabot" )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Cabot" )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Entrega e Qualidade\Cores
+
+		measure 'Volume Oxiteno P.' =
+				CALCULATE (
+				    AVERAGE ( fato_indicadores[Valor] ),
+				    REMOVEFILTERS ( dim_indicadores ),
+				    fato_indicadores[ID_Indicador] = "Volumes | Oxiteno P."
+				)
+			formatString: #,0
+			displayFolder: Entrega e Qualidade\Clientes
+
+		measure 'Cor Volume Oxiteno P.' =
+				VAR _v = [Volume Oxiteno P.]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Oxiteno P." )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Oxiteno P." )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Entrega e Qualidade\Cores
+
+		measure 'Volume Paranapanema' =
+				CALCULATE (
+				    AVERAGE ( fato_indicadores[Valor] ),
+				    REMOVEFILTERS ( dim_indicadores ),
+				    fato_indicadores[ID_Indicador] = "Volumes | Paranapanema"
+				)
+			formatString: #,0
+			displayFolder: Entrega e Qualidade\Clientes
+
+		measure 'Cor Volume Paranapanema' =
+				VAR _v = [Volume Paranapanema]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Paranapanema" )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Paranapanema" )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Entrega e Qualidade\Cores
+
+		measure 'Volume Bridgestone' =
+				CALCULATE (
+				    AVERAGE ( fato_indicadores[Valor] ),
+				    REMOVEFILTERS ( dim_indicadores ),
+				    fato_indicadores[ID_Indicador] = "Volumes | Bridgestone"
+				)
+			formatString: #,0
+			displayFolder: Entrega e Qualidade\Clientes
+
+		measure 'Cor Volume Bridgestone' =
+				VAR _v = [Volume Bridgestone]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Bridgestone" )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Bridgestone" )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Entrega e Qualidade\Cores
+
+		measure 'Volume Hydro Extrusion' =
+				CALCULATE (
+				    AVERAGE ( fato_indicadores[Valor] ),
+				    REMOVEFILTERS ( dim_indicadores ),
+				    fato_indicadores[ID_Indicador] = "Volumes | Hydro Extrusion"
+				)
+			formatString: #,0
+			displayFolder: Entrega e Qualidade\Clientes
+
+		measure 'Cor Volume Hydro Extrusion' =
+				VAR _v = [Volume Hydro Extrusion]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Hydro Extrusion" )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Hydro Extrusion" )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Entrega e Qualidade\Cores
+
+		measure 'Volume Vitopel' =
+				CALCULATE (
+				    AVERAGE ( fato_indicadores[Valor] ),
+				    REMOVEFILTERS ( dim_indicadores ),
+				    fato_indicadores[ID_Indicador] = "Volumes | Vitopel"
+				)
+			formatString: #,0
+			displayFolder: Entrega e Qualidade\Clientes
+
+		measure 'Cor Volume Vitopel' =
+				VAR _v = [Volume Vitopel]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Vitopel" )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Vitopel" )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Entrega e Qualidade\Cores
+
+		measure 'Condutividade Água Industrial' =
+				CALCULATE (
+				    AVERAGE ( fato_indicadores[Valor] ),
+				    REMOVEFILTERS ( dim_indicadores ),
+				    fato_indicadores[ID_Indicador] = "Água Industrial | Condutividade online"
+				)
+			formatString: #,0.0
+			displayFolder: Entrega e Qualidade
+
+		measure 'Cor Condutividade Água Industrial' =
+				VAR _v = [Condutividade Água Industrial]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Água Industrial | Condutividade online" )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Água Industrial | Condutividade online" )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Entrega e Qualidade\Cores
+
+		measure 'Dióxido de Cloro Água Industrial' =
+				CALCULATE (
+				    AVERAGE ( fato_indicadores[Valor] ),
+				    REMOVEFILTERS ( dim_indicadores ),
+				    fato_indicadores[ID_Indicador] = "Água Industrial | Dióxido de cloro online"
+				)
+			formatString: 0.000
+			displayFolder: Entrega e Qualidade
+
+		measure 'Cor Dióxido de Cloro Água Industrial' =
+				VAR _v = [Dióxido de Cloro Água Industrial]
+				VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Água Industrial | Dióxido de cloro online" )
+				VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Água Industrial | Dióxido de cloro online" )
+				RETURN
+				    IF (
+				        NOT ISBLANK ( _v ),
+				        IF (
+				            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+				            "#2E7D32",
+				            "#C62828"
+				        )
+				    )
+			displayFolder: Entrega e Qualidade\Cores

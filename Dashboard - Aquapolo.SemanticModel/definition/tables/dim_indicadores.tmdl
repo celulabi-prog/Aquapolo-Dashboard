@@ -1,0 +1,93 @@
+table dim_indicadores
+	lineageTag: b207cc99-c866-46d2-a655-d1a9142f2261
+
+	column ID_Indicador
+		dataType: string
+		lineageTag: d2e8d3a2-339d-4fc9-b1a8-f5f777789749
+		summarizeBy: none
+		sourceColumn: ID_Indicador
+
+		annotation SummarizationSetBy = Automatic
+
+	column Etapa
+		dataType: string
+		lineageTag: 6fe844cf-e196-4d6c-b1c0-d4dd7dce703d
+		summarizeBy: none
+		sourceColumn: Etapa
+
+		annotation SummarizationSetBy = Automatic
+
+	column Indicador
+		dataType: string
+		lineageTag: a1c9de8e-8034-46f6-a488-d3d22abf8452
+		summarizeBy: none
+		sourceColumn: Indicador
+
+		annotation SummarizationSetBy = Automatic
+
+	column Unidade
+		dataType: string
+		lineageTag: 8fe2603f-47d4-41cb-8fee-1469832e30da
+		summarizeBy: none
+		sourceColumn: Unidade
+
+		annotation SummarizationSetBy = Automatic
+
+	column Target
+		dataType: string
+		lineageTag: b2de1df7-7bb7-4207-985e-7350988cafba
+		summarizeBy: none
+		sourceColumn: Target
+
+		annotation SummarizationSetBy = Automatic
+
+	column Target_Min
+		dataType: double
+		lineageTag: 52684417-0f0d-4202-b2fc-24f651c5c01d
+		summarizeBy: none
+		sourceColumn: Target_Min
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Target_Max
+		dataType: double
+		lineageTag: df9fc7e3-be32-4bd5-878b-2316a2fe21f8
+		summarizeBy: none
+		sourceColumn: Target_Max
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Tipo
+		dataType: string
+		lineageTag: 5c4af95b-d142-4602-a41e-0e9d30e433cf
+		summarizeBy: none
+		sourceColumn: Tipo
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dim_indicadores = m
+		mode: import
+		source =
+				let
+				    Fonte = Parquet.Document(File.Contents("C:\Users\Bruno\OneDrive - Fundacao Getulio Vargas - FGV\Documentos\Aquapolo\Base_PowerBI\dim_indicadores.parquet")),
+				    Tipos = Table.TransformColumnTypes(Fonte, {
+				        {"ID_Indicador", type text},
+				        {"Etapa", type text},
+				        {"Indicador", type text},
+				        {"Unidade", type text},
+				        {"Target", type text},
+				        {"Target_Min", type number},
+				        {"Target_Max", type number},
+				        {"Tipo", type text}
+				    })
+				in
+				    Tipos
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+

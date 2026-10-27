@@ -1,0 +1,674 @@
+table fato_indicadores
+	lineageTag: 904aee07-ce9f-475e-a05b-9aae993c46aa
+
+	measure 'Todos Clientes' =
+			CALCULATE (
+			    AVERAGE ( fato_indicadores[Valor] ),
+			    REMOVEFILTERS ( dim_indicadores ),
+			    fato_indicadores[ID_Indicador] = "Volumes | Todos Clientes"
+			)
+		formatString: #,0
+		displayFolder: Visão Geral
+		lineageTag: 0c79500a-bfa2-44e6-80f3-b54831900ac0
+
+	measure 'Cor Todos Clientes' =
+			VAR _v = [Todos Clientes]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Todos Clientes" )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Todos Clientes" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Visão Geral\Cores
+		lineageTag: 95c74f26-39ef-4db3-994d-db20bfce3ec4
+
+	measure 'Perda Total' =
+			VAR _base =
+			    CALCULATETABLE (
+			        ADDCOLUMNS (
+			            VALUES ( fato_indicadores[Data] ),
+			            "@n", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | BH Volumes Y" ),
+			            "@d", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | BH Volumes B" )
+			        ),
+			        REMOVEFILTERS ( dim_indicadores )
+			    )
+			VAR _dias = FILTER ( _base, NOT ISBLANK ( [@n] ) && NOT ISBLANK ( [@d] ) )
+			VAR _r = DIVIDE ( SUMX ( _dias, [@n] ), SUMX ( _dias, [@d] ) )
+			RETURN
+			    IF ( NOT ISBLANK ( _r ), 1 - _r )
+		formatString: 0.0%
+		displayFolder: Visão Geral
+		lineageTag: d47d83db-eea0-4873-9934-09e8cc7b8c79
+
+	measure 'Cor Perda Total' =
+			VAR _v = [Perda Total]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Perdas | Perda Total" )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Perdas | Perda Total" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Visão Geral\Cores
+		lineageTag: ec7ef974-695b-4489-93c3-265b52458784
+
+	measure 'Índice Qualidade Água Industrial' =
+			VAR _leituras =
+			    CALCULATETABLE (
+			        fato_indicadores,
+			        REMOVEFILTERS ( dim_indicadores ),
+			        dim_indicadores[Etapa] = "Água Industrial",
+			        dim_indicadores[Tipo] = "Leitura direta"
+			    )
+			VAR _conformes =
+			    COUNTROWS (
+			        FILTER (
+			            _leituras,
+			            VAR _min = RELATED ( dim_indicadores[Target_Min] )
+			            VAR _max = RELATED ( dim_indicadores[Target_Max] )
+			            RETURN
+			                ( ISBLANK ( _min ) || fato_indicadores[Valor] >= _min )
+			                    && ( ISBLANK ( _max ) || fato_indicadores[Valor] <= _max )
+			        )
+			    )
+			RETURN
+			    DIVIDE ( _conformes, COUNTROWS ( _leituras ) )
+		formatString: 0.00%
+		displayFolder: Visão Geral
+		lineageTag: ecb65dd7-867b-482c-a017-250f4fb1310e
+
+	measure 'Cor Índice Qualidade Água Industrial' =
+			VAR _v = [Índice Qualidade Água Industrial]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Água Industrial | Índice de Qualidade da Água Industrial" )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Água Industrial | Índice de Qualidade da Água Industrial" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Visão Geral\Cores
+		lineageTag: 08206331-583e-4e0c-a4b4-35baf74ad0ac
+
+	measure 'Consumo Unitário Energia' =
+			VAR _base =
+			    CALCULATETABLE (
+			        ADDCOLUMNS (
+			            VALUES ( fato_indicadores[Data] ),
+			            "@n", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | Energia Total (AT)" ),
+			            "@d", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | BH Volumes Y" )
+			        ),
+			        REMOVEFILTERS ( dim_indicadores )
+			    )
+			VAR _dias = FILTER ( _base, NOT ISBLANK ( [@n] ) && NOT ISBLANK ( [@d] ) )
+			VAR _r = DIVIDE ( SUMX ( _dias, [@n] ), SUMX ( _dias, [@d] ) )
+			RETURN
+			    _r
+		formatString: 0.000
+		displayFolder: Visão Geral
+		lineageTag: a22b6e7b-0328-4b6e-9d59-f4be89ec10b8
+
+	measure 'Cor Consumo Unitário Energia' =
+			VAR _v = [Consumo Unitário Energia]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Energia | Consumo Unitário - Energia" )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Energia | Consumo Unitário - Energia" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Visão Geral\Cores
+		lineageTag: bf66febe-5000-4aeb-a76b-0977738c9472
+
+	measure 'Consumo Unitário Químicos' =
+			VAR _base =
+			    CALCULATETABLE (
+			        ADDCOLUMNS (
+			            VALUES ( fato_indicadores[Data] ),
+			            "@n", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | Químicos Consumo (C)" ),
+			            "@d", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | Químicos Volume (E)" )
+			        ),
+			        REMOVEFILTERS ( dim_indicadores )
+			    )
+			VAR _dias = FILTER ( _base, NOT ISBLANK ( [@n] ) && NOT ISBLANK ( [@d] ) )
+			VAR _r = DIVIDE ( SUMX ( _dias, [@n] ), SUMX ( _dias, [@d] ) )
+			RETURN
+			    _r
+		formatString: 0.0000
+		displayFolder: Visão Geral
+		lineageTag: defe52f2-2cf4-4c82-bf43-db0424892e42
+
+	measure 'Cor Consumo Unitário Químicos' =
+			VAR _v = [Consumo Unitário Químicos]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Químicos | Consumo Unitário - Químicos" )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Químicos | Consumo Unitário - Químicos" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Visão Geral\Cores
+		lineageTag: 658a6b32-a53c-4adb-9d04-1742b6fcd151
+
+	measure 'Autonomia PAC' =
+			VAR _ult =
+			    CALCULATE ( MAX ( fato_indicadores[Data] ), REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = "Químicos - Autonomia | PAC" )
+			RETURN
+			    CALCULATE (
+			        AVERAGE ( fato_indicadores[Valor] ),
+			        REMOVEFILTERS ( dim_indicadores ),
+			        fato_indicadores[ID_Indicador] = "Químicos - Autonomia | PAC",
+			        fato_indicadores[Data] = _ult
+			    )
+		formatString: 0.0
+		displayFolder: Visão Geral\Autonomia
+		lineageTag: cc7fecde-cdf9-41e5-8cb6-23887837cb6e
+
+	measure 'Autonomia Hipoclorito' =
+			VAR _ult =
+			    CALCULATE ( MAX ( fato_indicadores[Data] ), REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = "Químicos - Autonomia | Hipoclorito" )
+			RETURN
+			    CALCULATE (
+			        AVERAGE ( fato_indicadores[Valor] ),
+			        REMOVEFILTERS ( dim_indicadores ),
+			        fato_indicadores[ID_Indicador] = "Químicos - Autonomia | Hipoclorito",
+			        fato_indicadores[Data] = _ult
+			    )
+		formatString: 0.0
+		displayFolder: Visão Geral\Autonomia
+		lineageTag: 0f5990b0-a184-4cfc-9ff8-8efb51ee273a
+
+	measure 'Autonomia Purate' =
+			VAR _ult =
+			    CALCULATE ( MAX ( fato_indicadores[Data] ), REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = "Químicos - Autonomia | Purate" )
+			RETURN
+			    CALCULATE (
+			        AVERAGE ( fato_indicadores[Valor] ),
+			        REMOVEFILTERS ( dim_indicadores ),
+			        fato_indicadores[ID_Indicador] = "Químicos - Autonomia | Purate",
+			        fato_indicadores[Data] = _ult
+			    )
+		formatString: 0.0
+		displayFolder: Visão Geral\Autonomia
+		lineageTag: fa272598-4c4b-4437-b72a-1f268f15cdb9
+
+	measure 'Autonomia Químicos (menor)' =
+			MINX (
+			    {
+			        [Autonomia PAC],
+			        [Autonomia Hipoclorito],
+			        [Autonomia Purate]
+			    },
+			    [Value]
+			)
+		formatString: 0.0
+		displayFolder: Visão Geral
+		lineageTag: 90462d75-b92a-4c5a-85c8-6e1305625b04
+
+	measure 'Autonomia Químico Crítico' =
+			VAR _t =
+			    FILTER (
+			        {
+			            ( "PAC", [Autonomia PAC] ),
+			            ( "Hipoclorito", [Autonomia Hipoclorito] ),
+			            ( "Purate", [Autonomia Purate] )
+			        },
+			        NOT ISBLANK ( [Value2] )
+			    )
+			RETURN
+			    MAXX ( TOPN ( 1, _t, [Value2], ASC ), [Value1] )
+		displayFolder: Visão Geral
+		lineageTag: 4544ac41-cb18-4bc4-b49a-fc384fc921c0
+
+	measure 'Cor Autonomia Químicos' =
+			VAR _abaixo =
+			    ( [Autonomia PAC] < CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Químicos - Autonomia | PAC" ) )
+			        || ( [Autonomia Hipoclorito] < CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Químicos - Autonomia | Hipoclorito" ) )
+			        || ( [Autonomia Purate] < CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Químicos - Autonomia | Purate" ) )
+			RETURN
+			    IF ( NOT ISBLANK ( [Autonomia Químicos (menor)] ), IF ( _abaixo, "#C62828", "#2E7D32" ) )
+		displayFolder: Visão Geral\Cores
+		lineageTag: 17685345-82bd-4644-8d88-3b6f42ca9acc
+
+	measure 'Volume Q3 ABC' =
+			CALCULATE (
+			    AVERAGE ( fato_indicadores[Valor] ),
+			    REMOVEFILTERS ( dim_indicadores ),
+			    fato_indicadores[ID_Indicador] = "Volumes | Q3 ABC"
+			)
+		formatString: #,0
+		displayFolder: Entrega e Qualidade\Clientes
+		lineageTag: 7f417a6d-bcf1-4644-bfe2-de83e67f4bb7
+
+	measure 'Cor Volume Q3 ABC' =
+			VAR _v = [Volume Q3 ABC]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Q3 ABC" )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Q3 ABC" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Entrega e Qualidade\Cores
+		lineageTag: 81f2d43b-e20a-4367-b697-8e68f13d4c56
+
+	measure 'Volume PE7 ABC' =
+			CALCULATE (
+			    AVERAGE ( fato_indicadores[Valor] ),
+			    REMOVEFILTERS ( dim_indicadores ),
+			    fato_indicadores[ID_Indicador] = "Volumes | PE7 ABC"
+			)
+		formatString: #,0
+		displayFolder: Entrega e Qualidade\Clientes
+		lineageTag: 41f0d4bf-b64e-4603-8f8a-7b8050eaffd0
+
+	measure 'Cor Volume PE7 ABC' =
+			VAR _v = [Volume PE7 ABC]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | PE7 ABC" )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | PE7 ABC" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Entrega e Qualidade\Cores
+		lineageTag: 1a547a03-fa64-4132-8105-7551d376c9b3
+
+	measure 'Volume UNIB3 ABC' =
+			CALCULATE (
+			    AVERAGE ( fato_indicadores[Valor] ),
+			    REMOVEFILTERS ( dim_indicadores ),
+			    fato_indicadores[ID_Indicador] = "Volumes | UNIB3 ABC"
+			)
+		formatString: #,0
+		displayFolder: Entrega e Qualidade\Clientes
+		lineageTag: 095b947d-071b-4d59-930d-f2658a65ccad
+
+	measure 'Cor Volume UNIB3 ABC' =
+			VAR _v = [Volume UNIB3 ABC]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | UNIB3 ABC" )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | UNIB3 ABC" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Entrega e Qualidade\Cores
+		lineageTag: e7b28568-b514-44cb-9879-bac47a51cd2d
+
+	measure 'Volume PP4 BRK' =
+			CALCULATE (
+			    AVERAGE ( fato_indicadores[Valor] ),
+			    REMOVEFILTERS ( dim_indicadores ),
+			    fato_indicadores[ID_Indicador] = "Volumes | PP4 BRK"
+			)
+		formatString: #,0
+		displayFolder: Entrega e Qualidade\Clientes
+		lineageTag: fcb548d2-c126-4cfe-820a-94b18a3b73fa
+
+	measure 'Cor Volume PP4 BRK' =
+			VAR _v = [Volume PP4 BRK]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | PP4 BRK" )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | PP4 BRK" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Entrega e Qualidade\Cores
+		lineageTag: 70660950-acdb-4ac0-b155-4a267fdfd05c
+
+	measure 'Volume Oxicap' =
+			CALCULATE (
+			    AVERAGE ( fato_indicadores[Valor] ),
+			    REMOVEFILTERS ( dim_indicadores ),
+			    fato_indicadores[ID_Indicador] = "Volumes | Oxicap"
+			)
+		formatString: #,0
+		displayFolder: Entrega e Qualidade\Clientes
+		lineageTag: 2de61514-7d04-4c56-8ecb-20e89bd00a80
+
+	measure 'Cor Volume Oxicap' =
+			VAR _v = [Volume Oxicap]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Oxicap" )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Oxicap" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Entrega e Qualidade\Cores
+		lineageTag: 7e2c29a4-8e52-442a-b540-ec845b13f5a2
+
+	measure 'Volume Cabot' =
+			CALCULATE (
+			    AVERAGE ( fato_indicadores[Valor] ),
+			    REMOVEFILTERS ( dim_indicadores ),
+			    fato_indicadores[ID_Indicador] = "Volumes | Cabot"
+			)
+		formatString: #,0
+		displayFolder: Entrega e Qualidade\Clientes
+		lineageTag: 3fb0c96d-b96a-432c-949e-669faeca2968
+
+	measure 'Cor Volume Cabot' =
+			VAR _v = [Volume Cabot]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Cabot" )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Cabot" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Entrega e Qualidade\Cores
+		lineageTag: 690636ad-dc05-42da-b012-1d09fdafe0c1
+
+	measure 'Volume Oxiteno P.' =
+			CALCULATE (
+			    AVERAGE ( fato_indicadores[Valor] ),
+			    REMOVEFILTERS ( dim_indicadores ),
+			    fato_indicadores[ID_Indicador] = "Volumes | Oxiteno P."
+			)
+		formatString: #,0
+		displayFolder: Entrega e Qualidade\Clientes
+		lineageTag: 24ddfba0-7a2e-4538-9cb3-37afa0d0f1a6
+
+	measure 'Cor Volume Oxiteno P.' =
+			VAR _v = [Volume Oxiteno P.]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Oxiteno P." )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Oxiteno P." )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Entrega e Qualidade\Cores
+		lineageTag: 7b0653eb-a6bb-42af-913e-7a895ca84a14
+
+	measure 'Volume Paranapanema' =
+			CALCULATE (
+			    AVERAGE ( fato_indicadores[Valor] ),
+			    REMOVEFILTERS ( dim_indicadores ),
+			    fato_indicadores[ID_Indicador] = "Volumes | Paranapanema"
+			)
+		formatString: #,0
+		displayFolder: Entrega e Qualidade\Clientes
+		lineageTag: 58b45a1c-d5d8-49de-bad2-5e113a381498
+
+	measure 'Cor Volume Paranapanema' =
+			VAR _v = [Volume Paranapanema]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Paranapanema" )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Paranapanema" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Entrega e Qualidade\Cores
+		lineageTag: 18ddd105-fd4e-4414-b972-40b36185be0d
+
+	measure 'Volume Bridgestone' =
+			CALCULATE (
+			    AVERAGE ( fato_indicadores[Valor] ),
+			    REMOVEFILTERS ( dim_indicadores ),
+			    fato_indicadores[ID_Indicador] = "Volumes | Bridgestone"
+			)
+		formatString: #,0
+		displayFolder: Entrega e Qualidade\Clientes
+		lineageTag: 59621ce1-ff16-4c09-af09-4462283babf4
+
+	measure 'Cor Volume Bridgestone' =
+			VAR _v = [Volume Bridgestone]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Bridgestone" )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Bridgestone" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Entrega e Qualidade\Cores
+		lineageTag: adcf51fe-3c31-4f05-b72f-249491cc7c68
+
+	measure 'Volume Hydro Extrusion' =
+			CALCULATE (
+			    AVERAGE ( fato_indicadores[Valor] ),
+			    REMOVEFILTERS ( dim_indicadores ),
+			    fato_indicadores[ID_Indicador] = "Volumes | Hydro Extrusion"
+			)
+		formatString: #,0
+		displayFolder: Entrega e Qualidade\Clientes
+		lineageTag: 0aaf6d65-ddbd-4576-89e0-e60f338d4033
+
+	measure 'Cor Volume Hydro Extrusion' =
+			VAR _v = [Volume Hydro Extrusion]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Hydro Extrusion" )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Hydro Extrusion" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Entrega e Qualidade\Cores
+		lineageTag: 0711b43b-334a-4411-b552-e09688248882
+
+	measure 'Volume Vitopel' =
+			CALCULATE (
+			    AVERAGE ( fato_indicadores[Valor] ),
+			    REMOVEFILTERS ( dim_indicadores ),
+			    fato_indicadores[ID_Indicador] = "Volumes | Vitopel"
+			)
+		formatString: #,0
+		displayFolder: Entrega e Qualidade\Clientes
+		lineageTag: 991180da-0c1b-4ce3-ae58-522a920397dd
+
+	measure 'Cor Volume Vitopel' =
+			VAR _v = [Volume Vitopel]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Vitopel" )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Volumes | Vitopel" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Entrega e Qualidade\Cores
+		lineageTag: f87b9ca2-23ee-424b-a171-a343200fbce6
+
+	measure 'Condutividade Água Industrial' =
+			CALCULATE (
+			    AVERAGE ( fato_indicadores[Valor] ),
+			    REMOVEFILTERS ( dim_indicadores ),
+			    fato_indicadores[ID_Indicador] = "Água Industrial | Condutividade online"
+			)
+		formatString: #,0.0
+		displayFolder: Entrega e Qualidade
+		lineageTag: 82e8662e-75e5-465f-b3f8-1ecd0bce0969
+
+	measure 'Cor Condutividade Água Industrial' =
+			VAR _v = [Condutividade Água Industrial]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Água Industrial | Condutividade online" )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Água Industrial | Condutividade online" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Entrega e Qualidade\Cores
+		lineageTag: 063e9c21-e578-4733-92b4-997461a9fa72
+
+	measure 'Dióxido de Cloro Água Industrial' =
+			CALCULATE (
+			    AVERAGE ( fato_indicadores[Valor] ),
+			    REMOVEFILTERS ( dim_indicadores ),
+			    fato_indicadores[ID_Indicador] = "Água Industrial | Dióxido de cloro online"
+			)
+		formatString: 0.000
+		displayFolder: Entrega e Qualidade
+		lineageTag: 1908429c-1a9c-4d3e-8aa6-8bded809d5f7
+
+	measure 'Cor Dióxido de Cloro Água Industrial' =
+			VAR _v = [Dióxido de Cloro Água Industrial]
+			VAR _min = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Água Industrial | Dióxido de cloro online" )
+			VAR _max = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = "Água Industrial | Dióxido de cloro online" )
+			RETURN
+			    IF (
+			        NOT ISBLANK ( _v ),
+			        IF (
+			            ( ISBLANK ( _min ) || _v >= _min ) && ( ISBLANK ( _max ) || _v <= _max ),
+			            "#2E7D32",
+			            "#C62828"
+			        )
+			    )
+		displayFolder: Entrega e Qualidade\Cores
+		lineageTag: a6f9645b-5907-4cb2-ba86-a5c3ce77d8d8
+
+	column ID_Indicador
+		dataType: string
+		lineageTag: 44f702d6-851b-4ea5-9073-51074ce3f438
+		summarizeBy: none
+		sourceColumn: ID_Indicador
+
+		annotation SummarizationSetBy = Automatic
+
+	column Data
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 5592cd64-2772-496f-a4e8-fa491c3fc5e9
+		summarizeBy: none
+		sourceColumn: Data
+
+		variation Variação
+			isDefault
+			relationship: 1e1e5944-8fe5-4a42-965d-6d43ef782011
+			defaultHierarchy: LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a.'Hierarquia de datas'
+
+		annotation SummarizationSetBy = Automatic
+
+	column Etapa
+		dataType: string
+		lineageTag: 9dfda56d-f1e1-48f7-8942-12641c67417c
+		summarizeBy: none
+		sourceColumn: Etapa
+
+		annotation SummarizationSetBy = Automatic
+
+	column Indicador
+		dataType: string
+		lineageTag: 10ee8415-4af4-4ec0-ae2e-9bb261673024
+		summarizeBy: none
+		sourceColumn: Indicador
+
+		annotation SummarizationSetBy = Automatic
+
+	column Valor
+		dataType: double
+		lineageTag: fd9b1032-84f3-4657-92d8-281bbd6201c8
+		summarizeBy: sum
+		sourceColumn: Valor
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Arquivo
+		dataType: string
+		lineageTag: 7926f217-23d1-4ca9-85ad-d289c55ede5b
+		summarizeBy: none
+		sourceColumn: Arquivo
+
+		annotation SummarizationSetBy = Automatic
+
+	column Aba
+		dataType: string
+		lineageTag: 3ea82acf-53a4-4413-be96-2695e04843db
+		summarizeBy: none
+		sourceColumn: Aba
+
+		annotation SummarizationSetBy = Automatic
+
+	column Coluna
+		dataType: string
+		lineageTag: 01069836-e9d7-479a-a707-27c7ecc6ef56
+		summarizeBy: none
+		sourceColumn: Coluna
+
+		annotation SummarizationSetBy = Automatic
+
+	partition fato_indicadores = m
+		mode: import
+		source =
+				let
+				    Fonte = Parquet.Document(File.Contents("C:\Users\Bruno\OneDrive - Fundacao Getulio Vargas - FGV\Documentos\Aquapolo\Base_PowerBI\fato_indicadores.parquet"))
+				in
+				    Fonte
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
