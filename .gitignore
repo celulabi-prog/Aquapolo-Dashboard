@@ -2,5 +2,10 @@
 **/.pbi/localSettings.json
 **/.pbi/cache.abf
 
+# Base de dados real do Aquapolo: fica na pasta compartilhada do OneDrive, nunca no repositório (ele é público)
+Base_PowerBI/
+*.parquet
+*.csv
+
 # Arquivo de exemplo do visual HTML Content (de terceiros, não faz parte do projeto)
 HTML-Content-Data-Model-Walkthrough-*.pbix

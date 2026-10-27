@@ -9,7 +9,7 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 1
 
-annotation PBI_QueryOrder = ["fato_indicadores","dim_indicadores"]
+annotation PBI_QueryOrder = ["PastaBase","fato_indicadores","dim_indicadores"]
 
 annotation PBI_ProTooling = ["TMDLView_Desktop","DevMode"]
 

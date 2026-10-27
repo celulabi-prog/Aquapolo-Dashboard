@@ -1,0 +1,5 @@
+expression PastaBase = "C:\Users\Bruno\OneDrive - Fundacao Getulio Vargas - FGV\Documentos\Aquapolo\Base_PowerBI\" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: eb71bf14-bdb8-4033-83f1-4dceca6c9ad1
+
+	annotation PBI_ResultType = Text
+
