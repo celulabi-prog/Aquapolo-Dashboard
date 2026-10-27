@@ -73,7 +73,7 @@ table dim_indicadores
 		mode: import
 		source =
 				let
-				    Fonte = Parquet.Document(File.Contents("C:\Users\Bruno\OneDrive - Fundacao Getulio Vargas - FGV\Documentos\Aquapolo\Base_PowerBI\dim_indicadores.parquet")),
+				    Fonte = Parquet.Document(File.Contents(PastaBase & "dim_indicadores.parquet")),
 				    Tipos = Table.TransformColumnTypes(Fonte, {
 				        {"ID_Indicador", type text},
 				        {"Etapa", type text},

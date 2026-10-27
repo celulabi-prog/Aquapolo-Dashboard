@@ -3,10 +3,13 @@ table 'Medidas HTML'
 
 	measure 'HTML Volume Clientes' = ```
 			    -- ===== EDITAR AQUI (Volume Clientes) =====
-			    VAR Valor = 237450            -- trocar pela medida real, ex.: [Volume Clientes]
-			    VAR Ref = 230000
-			    VAR VarPeriodo = 0.068     -- variação vs período anterior (0.068 = +6,8%)
-			    VAR TipoVar = "%"            -- "%" ou "p.p."
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Volumes | Todos Clientes" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
+			    VAR Anterior = CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR VarPeriodo = DIVIDE ( Valor - Anterior, Anterior )    -- variação vs 30 dias anteriores
+			    VAR TipoVar = "%"
 			    VAR MenorMelhor = FALSE ()
 			    VAR FmtValor = "#,##0"
 			    VAR UnidadeRef = " m³/d"
@@ -50,57 +53,23 @@ table 'Medidas HTML'
 
 	measure 'HTML Blend' = ```
 			    -- ===== EDITAR AQUI (Blend) =====
-			    VAR Valor = 34.2            -- trocar pela medida real, ex.: [Blend]
-			    VAR Ref = 30
-			    VAR VarPeriodo = 2.1     -- variação vs período anterior em pontos percentuais
-			    VAR TipoVar = "p.p."            -- "%" ou "p.p."
-			    VAR MenorMelhor = FALSE ()
-			    VAR FmtValor = "0.0"
-			    VAR UnidadeRef = " %"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			    VAR VariacaoBoa = IF ( MenorMelhor, VarPeriodo < 0, VarPeriodo > 0 )
-			    VAR CorVar = IF ( VariacaoBoa, "#2e7d32", "#c62828" )
-			    VAR Seta = IF ( VarPeriodo >= 0, "▲", "▼" )
-			    VAR TxtVar =
-			        IF ( TipoVar = "%", FORMAT ( VarPeriodo, "+0.0%;-0.0%" ), FORMAT ( VarPeriodo, "+0.0;-0.0" ) & " p.p." )
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;padding:2px 6px'>"
-			        & "<div style='font-size:40px;font-weight:700;line-height:1'>" & FORMAT ( Valor, FmtValor ) & "</div>"
-			        & "<div style='margin-top:10px;font-size:15px;font-weight:600;color:" & CorVar & "'>" & Seta & " " & TxtVar & " <span style='font-size:11px;font-weight:400;color:#4a5b70'>Δ Per.</span>"
-			        & "</div>"
-			        & "<div style='margin-top:14px'>"
-			        & "<div style='position:relative;height:10px;background:#e6edf5;border-radius:5px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:5px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:18px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<div style='display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:#4a5b70'>"
-			        & "<span>Ref. " & FORMAT ( Ref, FmtValor ) & UnidadeRef & "</span>"
-			        & "<b style='font-size:13px;color:#0b2a5b'>" & FORMAT ( Atingimento, "0%" ) & "</b>"
-			        & "</div>"
+			    -- A base (Base_PowerBI) ainda não tem o indicador de Blend. Quando tiver, copie o cartão 'HTML Perdas' e troque os Ids.
+			    "<div style='font-family:Segoe UI,sans-serif;color:#4a5b70;padding:2px 6px'>"
+			        & "<div style='font-size:40px;font-weight:700;line-height:1;color:#90a4ae'>—</div>"
+			        & "<div style='margin-top:10px;font-size:12px'>Sem fonte de dados na base</div>"
 			        & "</div>"
 			```
 		lineageTag: cd64ac2e-ad8a-4834-8dc3-3ea030101eb5
 
 	measure 'HTML Perdas' = ```
 			    -- ===== EDITAR AQUI (Perdas) =====
-			    VAR Valor = 12.6            -- trocar pela medida real, ex.: [Perdas]
-			    VAR Ref = 30
-			    VAR VarPeriodo = -1.4     -- variação vs período anterior em pontos percentuais
-			    VAR TipoVar = "p.p."            -- "%" ou "p.p."
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Perdas | Perda Total" }
+			    VAR Valor = 100 * CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = 100 * CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
+			    VAR Anterior = 100 * CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR VarPeriodo = Valor - Anterior    -- variação vs 30 dias anteriores, em pontos percentuais
+			    VAR TipoVar = "p.p."
 			    VAR MenorMelhor = TRUE ()
 			    VAR FmtValor = "0.0"
 			    VAR UnidadeRef = " %"
@@ -144,10 +113,13 @@ table 'Medidas HTML'
 
 	measure 'HTML Consumo Quimicos' = ```
 			    -- ===== EDITAR AQUI (Consumo Químicos) =====
-			    VAR Valor = 0.28            -- trocar pela medida real, ex.: [Consumo Químicos]
-			    VAR Ref = 0.35
-			    VAR VarPeriodo = -0.125     -- variação vs período anterior (0.068 = +6,8%)
-			    VAR TipoVar = "%"            -- "%" ou "p.p."
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Químicos | Consumo Unitário - Químicos" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
+			    VAR Anterior = CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR VarPeriodo = DIVIDE ( Valor - Anterior, Anterior )    -- variação vs 30 dias anteriores
+			    VAR TipoVar = "%"
 			    VAR MenorMelhor = TRUE ()
 			    VAR FmtValor = "0.00"
 			    VAR UnidadeRef = " kg/m³"
@@ -191,10 +163,13 @@ table 'Medidas HTML'
 
 	measure 'HTML Consumo Energia' = ```
 			    -- ===== EDITAR AQUI (Consumo Energia) =====
-			    VAR Valor = 0.81            -- trocar pela medida real, ex.: [Consumo Energia]
-			    VAR Ref = 0.9
-			    VAR VarPeriodo = -0.058     -- variação vs período anterior (0.068 = +6,8%)
-			    VAR TipoVar = "%"            -- "%" ou "p.p."
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Energia | Consumo Unitário - Energia" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
+			    VAR Anterior = CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR VarPeriodo = DIVIDE ( Valor - Anterior, Anterior )    -- variação vs 30 dias anteriores
+			    VAR TipoVar = "%"
 			    VAR MenorMelhor = TRUE ()
 			    VAR FmtValor = "0.00"
 			    VAR UnidadeRef = " kWh/m³"
@@ -238,10 +213,13 @@ table 'Medidas HTML'
 
 	measure 'HTML Consumo OR' = ```
 			    -- ===== EDITAR AQUI (Consumo OR) =====
-			    VAR Valor = 0.32            -- trocar pela medida real, ex.: [Consumo OR]
-			    VAR Ref = 0.4
-			    VAR VarPeriodo = -0.086     -- variação vs período anterior (0.068 = +6,8%)
-			    VAR TipoVar = "%"            -- "%" ou "p.p."
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Energia | Consumo OR" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
+			    VAR Anterior = CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR VarPeriodo = DIVIDE ( Valor - Anterior, Anterior )    -- variação vs 30 dias anteriores
+			    VAR TipoVar = "%"
 			    VAR MenorMelhor = TRUE ()
 			    VAR FmtValor = "0.00"
 			    VAR UnidadeRef = ""
@@ -285,24 +263,28 @@ table 'Medidas HTML'
 
 	measure 'HTML Consumo Soprador' = ```
 			    -- ===== EDITAR AQUI (Consumo Soprador TMBR) =====
-			    VAR Valor = 1.85            -- trocar pela medida real, ex.: [Consumo Soprador TMBR]
-			    VAR Ref = 2.0
-			    VAR VarPeriodo = -0.075     -- variação vs período anterior (0.068 = +6,8%)
-			    VAR TipoVar = "%"            -- "%" ou "p.p."
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Energia | Consumo SOP Biológico/ Amônia Removida" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
+			    VAR Anterior = CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR VarPeriodo = DIVIDE ( Valor - Anterior, Anterior )    -- variação vs 30 dias anteriores
+			    VAR TipoVar = "%"
 			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0.00"
+			    VAR FmtValor = "0.0"
 			    VAR UnidadeRef = ""
 			    -- ===== daqui pra baixo não precisa mexer =====
 			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
 			    VAR Atingimento = DIVIDE ( Valor, Ref )
 			    VAR Cor =
+			        IF ( ISBLANK ( Ref ), "#90a4ae",
 			        IF (
 			            MenorMelhor,
 			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
 			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
+			        ) )
 			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
+			    VAR Largura = IF ( ISBLANK ( Ref ), 0, MIN ( Atingimento, Escala ) / Escala * 100 )
 			    VAR Marcador = 100 / Escala
 			    VAR VariacaoBoa = IF ( MenorMelhor, VarPeriodo < 0, VarPeriodo > 0 )
 			    VAR CorVar = IF ( VariacaoBoa, "#2e7d32", "#c62828" )
@@ -332,10 +314,13 @@ table 'Medidas HTML'
 
 	measure 'HTML Consumo Coagulante' = ```
 			    -- ===== EDITAR AQUI (Consumo Coagulante) =====
-			    VAR Valor = 7.2            -- trocar pela medida real, ex.: [Consumo Coagulante]
-			    VAR Ref = 8.0
-			    VAR VarPeriodo = -0.1     -- variação vs período anterior (0.068 = +6,8%)
-			    VAR TipoVar = "%"            -- "%" ou "p.p."
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Químicos | PAC/ P rem" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
+			    VAR Anterior = CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR VarPeriodo = DIVIDE ( Valor - Anterior, Anterior )    -- variação vs 30 dias anteriores
+			    VAR TipoVar = "%"
 			    VAR MenorMelhor = TRUE ()
 			    VAR FmtValor = "0.0"
 			    VAR UnidadeRef = ""
@@ -379,8 +364,10 @@ table 'Medidas HTML'
 
 	measure 'HTML Retrolavagem' = ```
 			    -- ===== EDITAR AQUI (Nº Retrolavagem Disco) =====
-			    VAR Valor = 3            -- trocar pela medida real, ex.: [Nº Retrolavagem Disco]
-			    VAR Ref = 5
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Filtro Disco | Número de Retrolavagens (AV)" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
 			    VAR MenorMelhor = TRUE ()
 			    VAR FmtValor = "0"
 			    -- ===== daqui pra baixo não precisa mexer =====
@@ -413,8 +400,10 @@ table 'Medidas HTML'
 
 	measure 'HTML DQO' = ```
 			    -- ===== EDITAR AQUI (DQO) =====
-			    VAR Valor = 18            -- trocar pela medida real, ex.: [DQO]
-			    VAR Ref = 30
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Água Bruta | DQO" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
 			    VAR MenorMelhor = TRUE ()
 			    VAR FmtValor = "0"
 			    -- ===== daqui pra baixo não precisa mexer =====
@@ -447,8 +436,10 @@ table 'Medidas HTML'
 
 	measure 'HTML NH3' = ```
 			    -- ===== EDITAR AQUI (NH3) =====
-			    VAR Valor = 0.5            -- trocar pela medida real, ex.: [NH3]
-			    VAR Ref = 1.0
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Água Bruta | Amônia" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
 			    VAR MenorMelhor = TRUE ()
 			    VAR FmtValor = "0.0"
 			    -- ===== daqui pra baixo não precisa mexer =====
@@ -481,8 +472,10 @@ table 'Medidas HTML'
 
 	measure 'HTML Condutividade' = ```
 			    -- ===== EDITAR AQUI (Condutividade) =====
-			    VAR Valor = 520            -- trocar pela medida real, ex.: [Condutividade]
-			    VAR Ref = 800
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Água Bruta | Condutividade online" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
 			    VAR MenorMelhor = TRUE ()
 			    VAR FmtValor = "0"
 			    -- ===== daqui pra baixo não precisa mexer =====
@@ -515,8 +508,10 @@ table 'Medidas HTML'
 
 	measure 'HTML Dureza' = ```
 			    -- ===== EDITAR AQUI (Dureza) =====
-			    VAR Valor = 65            -- trocar pela medida real, ex.: [Dureza]
-			    VAR Ref = 100
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Água Bruta | Dureza" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
 			    VAR MenorMelhor = TRUE ()
 			    VAR FmtValor = "0"
 			    -- ===== daqui pra baixo não precisa mexer =====
@@ -549,18 +544,21 @@ table 'Medidas HTML'
 
 	measure 'HTML Idade Lodo' = ```
 			    -- ===== EDITAR AQUI (Idade do Lodo) =====
-			    VAR Valor = 18            -- trocar pela medida real, ex.: [Idade do Lodo]
-			    VAR Ref = 20
-			    VAR MenorMelhor = TRUE ()
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Reator Biológico | Idade do lodo (IL)" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR RefMin = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
 			    VAR FmtValor = "0"
 			    -- ===== daqui pra baixo não precisa mexer =====
 			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
 			    VAR Atingimento = DIVIDE ( Valor, Ref )
 			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        SWITCH (
+			            TRUE (),
+			            Valor >= RefMin && Valor <= Ref, "#43a047",
+			            Valor >= RefMin * ( 1 - Tolerancia ) && Valor <= Ref * ( 1 + Tolerancia ), "#f9a825",
+			            "#e53935"
 			        )
 			    VAR Escala = 1.3           -- barra cheia = 130% da referência
 			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
@@ -583,18 +581,21 @@ table 'Medidas HTML'
 
 	measure 'HTML FM' = ```
 			    -- ===== EDITAR AQUI (Alimento/Microorganismo) =====
-			    VAR Valor = 0.08            -- trocar pela medida real, ex.: [Alimento/Microorganismo]
-			    VAR Ref = 0.12
-			    VAR MenorMelhor = TRUE ()
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Reator Biológico | Alimento/ Microoganismo (F/M)" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR RefMin = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
 			    VAR FmtValor = "0.00"
 			    -- ===== daqui pra baixo não precisa mexer =====
 			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
 			    VAR Atingimento = DIVIDE ( Valor, Ref )
 			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        SWITCH (
+			            TRUE (),
+			            Valor >= RefMin && Valor <= Ref, "#43a047",
+			            Valor >= RefMin * ( 1 - Tolerancia ) && Valor <= Ref * ( 1 + Tolerancia ), "#f9a825",
+			            "#e53935"
 			        )
 			    VAR Escala = 1.3           -- barra cheia = 130% da referência
 			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
@@ -617,8 +618,10 @@ table 'Medidas HTML'
 
 	measure 'HTML PTM' = ```
 			    -- ===== EDITAR AQUI (Pressão Transmembrana) =====
-			    VAR Valor = 18            -- trocar pela medida real, ex.: [Pressão Transmembrana]
-			    VAR Ref = 25
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM1", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM2", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM3", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM4", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM5", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM6", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM7", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM8" }
+			    VAR Valor = 98.0665 * CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )    -- kgf/cm² -> kPa
+			    VAR Ref = 98.0665 * CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
 			    VAR MenorMelhor = TRUE ()
 			    VAR FmtValor = "0"
 			    -- ===== daqui pra baixo não precisa mexer =====
@@ -651,8 +654,10 @@ table 'Medidas HTML'
 
 	measure 'HTML Permeabilidade' = ```
 			    -- ===== EDITAR AQUI (Permeabilidade) =====
-			    VAR Valor = 420            -- trocar pela medida real, ex.: [Permeabilidade]
-			    VAR Ref = 400
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Membranas de Ultrafiltração | Permeablidade - TM 1", "Membranas de Ultrafiltração | Permeablidade - TM 2", "Membranas de Ultrafiltração | Permeablidade - TM 3", "Membranas de Ultrafiltração | Permeablidade - TM 4", "Membranas de Ultrafiltração | Permeablidade - TM 5", "Membranas de Ultrafiltração | Permeablidade - TM 6", "Membranas de Ultrafiltração | Permeablidade - TM 7", "Membranas de Ultrafiltração | Permeablidade - TM 8" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
 			    VAR MenorMelhor = FALSE ()
 			    VAR FmtValor = "0"
 			    -- ===== daqui pra baixo não precisa mexer =====
@@ -685,10 +690,12 @@ table 'Medidas HTML'
 
 	measure 'HTML Turbidez' = ```
 			    -- ===== EDITAR AQUI (Turbidez) =====
-			    VAR Valor = 0.4            -- trocar pela medida real, ex.: [Turbidez]
-			    VAR Ref = 1.0
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Membranas de Ultrafiltração | Turbidez online - TM1", "Membranas de Ultrafiltração | Turbidez online - TM2", "Membranas de Ultrafiltração | Turbidez online - TM3", "Membranas de Ultrafiltração | Turbidez online - TM4", "Membranas de Ultrafiltração | Turbidez online - TM5", "Membranas de Ultrafiltração | Turbidez online - TM6", "Membranas de Ultrafiltração | Turbidez online - TM7", "Membranas de Ultrafiltração | Turbidez online - TM8" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
 			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0.0"
+			    VAR FmtValor = "0.00"
 			    -- ===== daqui pra baixo não precisa mexer =====
 			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
 			    VAR Atingimento = DIVIDE ( Valor, Ref )
@@ -719,18 +726,21 @@ table 'Medidas HTML'
 
 	measure 'HTML Fluxo' = ```
 			    -- ===== EDITAR AQUI (Fluxo) =====
-			    VAR Valor = 520            -- trocar pela medida real, ex.: [Fluxo]
-			    VAR Ref = 500
-			    VAR MenorMelhor = FALSE ()
-			    VAR FmtValor = "0"
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Membranas de Ultrafiltração | Fluxo TM's" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR RefMin = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
+			    VAR FmtValor = "0.0"
 			    -- ===== daqui pra baixo não precisa mexer =====
 			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
 			    VAR Atingimento = DIVIDE ( Valor, Ref )
 			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
+			        SWITCH (
+			            TRUE (),
+			            Valor >= RefMin && Valor <= Ref, "#43a047",
+			            Valor >= RefMin * ( 1 - Tolerancia ) && Valor <= Ref * ( 1 + Tolerancia ), "#f9a825",
+			            "#e53935"
 			        )
 			    VAR Escala = 1.3           -- barra cheia = 130% da referência
 			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
@@ -753,8 +763,10 @@ table 'Medidas HTML'
 
 	measure 'HTML SDI' = ```
 			    -- ===== EDITAR AQUI (SDI) =====
-			    VAR Valor = 2.1            -- trocar pela medida real, ex.: [SDI]
-			    VAR Ref = 3.0
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Osmose Reversa | SDI" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
 			    VAR MenorMelhor = TRUE ()
 			    VAR FmtValor = "0.0"
 			    -- ===== daqui pra baixo não precisa mexer =====
@@ -787,8 +799,10 @@ table 'Medidas HTML'
 
 	measure 'HTML DP Skid 1' = ```
 			    -- ===== EDITAR AQUI (Diferencial de Pressão Skid 1) =====
-			    VAR Valor = 1.8            -- trocar pela medida real, ex.: [Diferencial de Pressão Skid 1]
-			    VAR Ref = 2.5
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Osmose Reversa | Diferencial de Pressão - Skid 1" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
 			    VAR MenorMelhor = TRUE ()
 			    VAR FmtValor = "0.0"
 			    -- ===== daqui pra baixo não precisa mexer =====
@@ -821,8 +835,10 @@ table 'Medidas HTML'
 
 	measure 'HTML DP Skid 2' = ```
 			    -- ===== EDITAR AQUI (Diferencial de Pressão Skid 2) =====
-			    VAR Valor = 2.0            -- trocar pela medida real, ex.: [Diferencial de Pressão Skid 2]
-			    VAR Ref = 2.5
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Osmose Reversa | Diferencial de Pressão - Skid 2" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
 			    VAR MenorMelhor = TRUE ()
 			    VAR FmtValor = "0.0"
 			    -- ===== daqui pra baixo não precisa mexer =====
@@ -855,8 +871,10 @@ table 'Medidas HTML'
 
 	measure 'HTML DP Skid 3' = ```
 			    -- ===== EDITAR AQUI (Diferencial de Pressão Skid 3) =====
-			    VAR Valor = 2.2            -- trocar pela medida real, ex.: [Diferencial de Pressão Skid 3]
-			    VAR Ref = 2.5
+			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
+			    VAR Ids = { "Osmose Reversa | Diferencial de Pressão - Skid 3" }
+			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
+			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
 			    VAR MenorMelhor = TRUE ()
 			    VAR FmtValor = "0.0"
 			    -- ===== daqui pra baixo não precisa mexer =====

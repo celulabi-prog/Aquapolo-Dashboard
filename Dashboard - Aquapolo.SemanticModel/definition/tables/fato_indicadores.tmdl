@@ -28,19 +28,11 @@ table fato_indicadores
 		lineageTag: 95c74f26-39ef-4db3-994d-db20bfce3ec4
 
 	measure 'Perda Total' =
-			VAR _base =
-			    CALCULATETABLE (
-			        ADDCOLUMNS (
-			            VALUES ( fato_indicadores[Data] ),
-			            "@n", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | BH Volumes Y" ),
-			            "@d", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | BH Volumes B" )
-			        ),
-			        REMOVEFILTERS ( dim_indicadores )
-			    )
-			VAR _dias = FILTER ( _base, NOT ISBLANK ( [@n] ) && NOT ISBLANK ( [@d] ) )
-			VAR _r = DIVIDE ( SUMX ( _dias, [@n] ), SUMX ( _dias, [@d] ) )
-			RETURN
-			    IF ( NOT ISBLANK ( _r ), 1 - _r )
+			CALCULATE (
+			    [Valor Indicador],
+			    REMOVEFILTERS ( dim_indicadores ),
+			    fato_indicadores[ID_Indicador] = "Perdas | Perda Total"
+			)
 		formatString: 0.0%
 		displayFolder: Visão Geral
 		lineageTag: d47d83db-eea0-4873-9934-09e8cc7b8c79
@@ -103,19 +95,11 @@ table fato_indicadores
 		lineageTag: 08206331-583e-4e0c-a4b4-35baf74ad0ac
 
 	measure 'Consumo Unitário Energia' =
-			VAR _base =
-			    CALCULATETABLE (
-			        ADDCOLUMNS (
-			            VALUES ( fato_indicadores[Data] ),
-			            "@n", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | Energia Total (AT)" ),
-			            "@d", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | BH Volumes Y" )
-			        ),
-			        REMOVEFILTERS ( dim_indicadores )
-			    )
-			VAR _dias = FILTER ( _base, NOT ISBLANK ( [@n] ) && NOT ISBLANK ( [@d] ) )
-			VAR _r = DIVIDE ( SUMX ( _dias, [@n] ), SUMX ( _dias, [@d] ) )
-			RETURN
-			    _r
+			CALCULATE (
+			    [Valor Indicador],
+			    REMOVEFILTERS ( dim_indicadores ),
+			    fato_indicadores[ID_Indicador] = "Energia | Consumo Unitário - Energia"
+			)
 		formatString: 0.000
 		displayFolder: Visão Geral
 		lineageTag: a22b6e7b-0328-4b6e-9d59-f4be89ec10b8
@@ -137,19 +121,11 @@ table fato_indicadores
 		lineageTag: bf66febe-5000-4aeb-a76b-0977738c9472
 
 	measure 'Consumo Unitário Químicos' =
-			VAR _base =
-			    CALCULATETABLE (
-			        ADDCOLUMNS (
-			            VALUES ( fato_indicadores[Data] ),
-			            "@n", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | Químicos Consumo (C)" ),
-			            "@d", CALCULATE ( SUM ( fato_indicadores[Valor] ), fato_indicadores[ID_Indicador] = "Componentes | Químicos Volume (E)" )
-			        ),
-			        REMOVEFILTERS ( dim_indicadores )
-			    )
-			VAR _dias = FILTER ( _base, NOT ISBLANK ( [@n] ) && NOT ISBLANK ( [@d] ) )
-			VAR _r = DIVIDE ( SUMX ( _dias, [@n] ), SUMX ( _dias, [@d] ) )
-			RETURN
-			    _r
+			CALCULATE (
+			    [Valor Indicador],
+			    REMOVEFILTERS ( dim_indicadores ),
+			    fato_indicadores[ID_Indicador] = "Químicos | Consumo Unitário - Químicos"
+			)
 		formatString: 0.0000
 		displayFolder: Visão Geral
 		lineageTag: defe52f2-2cf4-4c82-bf43-db0424892e42
@@ -588,6 +564,38 @@ table fato_indicadores
 		displayFolder: Entrega e Qualidade\Cores
 		lineageTag: a6f9645b-5907-4cb2-ba86-a5c3ce77d8d8
 
+	/// Razão das somas (Numerador / Denominador). Em leitura direta o Denominador é 1, então vira a média.
+	measure 'Valor Indicador' =
+			DIVIDE ( SUM ( fato_indicadores[Numerador] ), SUM ( fato_indicadores[Denominador] ) )
+		displayFolder: Base
+		lineageTag: f9ebea2d-2d47-4cce-bf48-15e9b0d1411f
+
+	/// Valor dos 30 dias que terminam na última data com dado (ou na última data selecionada).
+	measure 'Valor 30d' =
+			VAR _fim = MAX ( fato_indicadores[Data] )
+			RETURN
+			    CALCULATE (
+			        [Valor Indicador],
+			        REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ),
+			        fato_indicadores[Data] > _fim - 30,
+			        fato_indicadores[Data] <= _fim
+			    )
+		displayFolder: Base
+		lineageTag: e40a6180-1b44-4124-8281-c742751c4f92
+
+	/// Valor dos 30 dias anteriores ao período de [Valor 30d].
+	measure 'Valor 30d Anterior' =
+			VAR _fim = MAX ( fato_indicadores[Data] )
+			RETURN
+			    CALCULATE (
+			        [Valor Indicador],
+			        REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ),
+			        fato_indicadores[Data] > _fim - 60,
+			        fato_indicadores[Data] <= _fim - 30
+			    )
+		displayFolder: Base
+		lineageTag: 40fb2058-47a4-46ce-a3ac-c9d0e1988b0d
+
 	column ID_Indicador
 		dataType: string
 		lineageTag: 44f702d6-851b-4ea5-9073-51074ce3f438
@@ -636,6 +644,26 @@ table fato_indicadores
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
+	column Numerador
+		dataType: double
+		lineageTag: 7a280cae-bd11-46af-9650-2c9f8a8fcec9
+		summarizeBy: sum
+		sourceColumn: Numerador
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Denominador
+		dataType: double
+		lineageTag: 602bec28-279a-4684-8f4e-80ebdf9ebca1
+		summarizeBy: sum
+		sourceColumn: Denominador
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
 	column Arquivo
 		dataType: string
 		lineageTag: 7926f217-23d1-4ca9-85ad-d289c55ede5b
@@ -664,7 +692,7 @@ table fato_indicadores
 		mode: import
 		source =
 				let
-				    Fonte = Parquet.Document(File.Contents("C:\Users\Bruno\OneDrive - Fundacao Getulio Vargas - FGV\Documentos\Aquapolo\Base_PowerBI\fato_indicadores.parquet"))
+				    Fonte = Parquet.Document(File.Contents(PastaBase & "fato_indicadores.parquet"))
 				in
 				    Fonte
 
