@@ -50,6 +50,21 @@ Preenchendo o `Target_Max` desses indicadores na base, a barra e o percentual pa
 - **Ainda sem dado:** RoClean 902 e RoClean 193 não têm autonomia nem estoque na planilha. Também não existe meta de consumo por químico; ao preencher `Target_Max` na `dim_indicadores`, o status do consumo passa a ter cor sozinho.
 - Para mudar a lista ou a ordem dos químicos, edite a tabela **Químicos** e o `Mapa` da consulta **Químicos Diário** (os dois têm um comentário `EDITAR AQUI`). As medidas ficam na tabela **Medidas Químicos**.
 
+## Página Energia
+
+- Página **Energia** (`definition/pages/pagina_energia`): cabeçalho, card de consumo específico por área, card de perdas, bloco de comparativo mensal (colunas, linhas e rosca) e rodapé. São 5 visuais **HTML Content** e 4 segmentações.
+- As medidas ficam na tabela **Medidas Energia**. Os gráficos são SVG gerados em DAX (pasta `SVG`), e os blocos da página ficam na pasta `HTML`.
+- **Período:** é o mês escolhido nas segmentações **Ano** e **Mês**. Sem seleção, vale o último mês com dado de energia. O valor do mês é a razão das somas (kWh ÷ m³ no mês).
+- **Área:** aceita uma área, várias (Ctrl + clique) ou **Selecionar tudo**. Filtra o gráfico de colunas e destaca as fatias na rosca. O gráfico de linhas mostra a área quando só uma está marcada. Com várias ou todas, mostra o Consumo Unitário - Energia.
+- **Comparar:** com **Sim**, mostra também o mesmo mês do ano anterior.
+- **Status:** verde até a meta, amarelo até 10% acima, vermelho acima disso e cinza quando o indicador não tem meta na `dim_indicadores`.
+- **Rosca:** participação de cada área na soma de kWh (Numerador) das 6 áreas no mês.
+- **Pop-ups ao passar o mouse:** feitos só com CSS (`:hover`) dentro de cada visual HTML Content. Um visual não desenha fora do próprio retângulo, por isso cada pop-up abre dentro do seu card.
+  - **Linha de área ou de perda:** abre o painel de detalhe com status, valor do mês, target, energia ou volume, média diária, participação, variação contra o mês anterior e contra o mesmo mês do ano anterior, e um mini gráfico de 12 meses.
+  - **Coluna de uma área, mês no gráfico de linhas ou fatia da rosca:** mostra um cartão com os valores daquele ponto.
+  - Os pop-ups ficam ocultos por padrão. Se o CSS não carregar, a página funciona sem eles.
+- As tabelas `Energia Ano`, `Energia Mês`, `Energia Área` e `Energia Comparar` são calculadas e desconectadas do modelo. Servem só às segmentações da página. Para mudar a cor de uma área na rosca, altere `Energia Área`.
+
 ## Estrutura
 
 | Caminho | Conteúdo |

@@ -28,6 +28,11 @@ ref table 'Medidas Químicos'
 ref table dCalendario
 ref table Clientes
 ref table 'Medidas Volumes'
+ref table 'Medidas Energia'
+ref table 'Energia Ano'
+ref table 'Energia Mês'
+ref table 'Energia Área'
+ref table 'Energia Comparar'
 
 ref cultureInfo pt-BR
 
