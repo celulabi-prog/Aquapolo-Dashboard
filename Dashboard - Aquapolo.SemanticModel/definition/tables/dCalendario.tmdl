@@ -32,7 +32,7 @@ table dCalendario
 
 		annotation SummarizationSetBy = Automatic
 
-	column 'Mês'
+	column Mês
 		dataType: string
 		lineageTag: a4952bee-99a0-4ee9-9473-816b5eced596
 		summarizeBy: none
@@ -42,7 +42,7 @@ table dCalendario
 
 		annotation SummarizationSetBy = Automatic
 
-	column 'Mês/Ano'
+	column Mês/Ano
 		dataType: string
 		lineageTag: a75445d7-2017-4db6-9001-6fec8733434e
 		summarizeBy: none
@@ -65,22 +65,22 @@ table dCalendario
 
 	partition dCalendario = calculated
 		mode: import
-		source = ```
-			-- Calendário mensal da base: do 1º dia do mês mais antigo ao último dia do mês mais novo.
-			VAR _ini = CALCULATE ( MIN ( fato_indicadores[Data] ), ALL ( fato_indicadores ) )
-			VAR _fim = CALCULATE ( MAX ( fato_indicadores[Data] ), ALL ( fato_indicadores ) )
-			RETURN
-			    ADDCOLUMNS (
-			        SELECTCOLUMNS (
-			            CALENDAR ( DATE ( YEAR ( _ini ), MONTH ( _ini ), 1 ), EOMONTH ( _fim, 0 ) ),
-			            "Data", [Date]
-			        ),
-			        "Ano", YEAR ( [Data] ),
-			        "MesNum", MONTH ( [Data] ),
-			        "Mês", FORMAT ( [Data], "mmmm" ),
-			        "Mês/Ano", FORMAT ( [Data], "mmm/yy" ),
-			        "MesIdx", YEAR ( [Data] ) * 12 + MONTH ( [Data] )
-			    )
-			```
+		source =
+				-- Calendário mensal da base: do 1º dia do mês mais antigo ao último dia do mês mais novo.
+				VAR _ini = CALCULATE ( MIN ( fato_indicadores[Data] ), ALL ( fato_indicadores ) )
+				VAR _fim = CALCULATE ( MAX ( fato_indicadores[Data] ), ALL ( fato_indicadores ) )
+				RETURN
+				    ADDCOLUMNS (
+				        SELECTCOLUMNS (
+				            CALENDAR ( DATE ( YEAR ( _ini ), MONTH ( _ini ), 1 ), EOMONTH ( _fim, 0 ) ),
+				            "Data", [Date]
+				        ),
+				        "Ano", YEAR ( [Data] ),
+				        "MesNum", MONTH ( [Data] ),
+				        "Mês", FORMAT ( [Data], "mmmm" ),
+				        "Mês/Ano", FORMAT ( [Data], "mmm/yy" ),
+				        "MesIdx", YEAR ( [Data] ) * 12 + MONTH ( [Data] )
+				    )
 
 	annotation PBI_Id = dCalendario
+

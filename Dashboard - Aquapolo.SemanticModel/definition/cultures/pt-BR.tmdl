@@ -1,2 +1,53 @@
 cultureInfo pt-BR
 
+	linguisticMetadata =
+			{
+			  "Version": "2.0.0",
+			  "Language": "en-US",
+			  "Entities": {
+			    "clientes.cliente": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Clientes",
+			          "ConceptualProperty": "Cliente"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Cliente": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "dcalendario.mês_ano": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "dCalendario",
+			          "ConceptualProperty": "Mês/Ano"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Mês": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    }
+			  }
+			}
+		contentType: json
+

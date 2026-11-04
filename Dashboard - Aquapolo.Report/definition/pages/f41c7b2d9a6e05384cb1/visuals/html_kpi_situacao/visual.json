@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "html_kpi_situacao",
   "position": {
-    "x": 1442,
-    "y": 190,
+    "x": 1501,
+    "y": 116,
     "z": 5,
-    "height": 104,
-    "width": 460,
-    "tabOrder": 5
+    "height": 100,
+    "width": 401,
+    "tabOrder": 4
   },
   "visual": {
     "visualType": "htmlContent443BE3AD55E043BF878BED274D3A6855",

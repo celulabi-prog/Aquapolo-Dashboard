@@ -3,11 +3,11 @@
   "name": "html_ficha",
   "position": {
     "x": 1501,
-    "y": 306,
+    "y": 232,
     "z": 8,
-    "height": 726,
+    "height": 790,
     "width": 401,
-    "tabOrder": 8
+    "tabOrder": 7
   },
   "visual": {
     "visualType": "htmlContent443BE3AD55E043BF878BED274D3A6855",
