@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "diagnostico",
   "position": {
-    "x": 1292,
-    "y": 248,
+    "x": 1324,
+    "y": 268,
     "z": 5,
-    "height": 564,
-    "width": 608,
+    "height": 522,
+    "width": 574,
     "tabOrder": 5
   },
   "visual": {

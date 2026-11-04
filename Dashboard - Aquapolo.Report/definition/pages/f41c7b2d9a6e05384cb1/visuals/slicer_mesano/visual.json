@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "slicer_mesano",
   "position": {
-    "x": 1432,
-    "y": 32,
+    "x": 1455,
+    "y": 38,
     "z": 30,
-    "height": 64,
-    "width": 214,
+    "height": 62,
+    "width": 182,
     "tabOrder": 8
   },
   "visual": {
