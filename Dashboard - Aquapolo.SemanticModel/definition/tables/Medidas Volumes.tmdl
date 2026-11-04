@@ -1,0 +1,692 @@
+table 'Medidas Volumes'
+	lineageTag: 2d58c591-b413-4b63-948a-6661d2370c83
+
+	/// Mês em foco da página Volumes: o mês escolhido nos filtros ou, se nenhum for escolhido, o mês mais recente da base.
+	measure 'Vol Mês Idx' = MAX ( dCalendario[MesIdx] )
+		formatString: 0
+		displayFolder: Base
+		lineageTag: e620c13b-a8f0-4507-a61e-508dc13ceaa8
+
+	/// ID_Indicador do cliente escolhido no filtro. Sem escolha, usa Todos Clientes.
+	measure 'Vol ID Cliente' = SELECTEDVALUE ( Clientes[ID_Indicador], "Volumes | Todos Clientes" )
+		displayFolder: Base
+		lineageTag: bbde084f-a4e2-433f-a8f2-65af84c23067
+
+	/// Nome do cliente escolhido no filtro. Sem escolha, usa Todos Clientes.
+	measure 'Vol Cliente' = SELECTEDVALUE ( Clientes[Cliente], "Todos Clientes" )
+		displayFolder: Base
+		lineageTag: 5a2ce7d5-84a2-4c4c-86ab-f72f1d1cec53
+
+	/// Volume médio diário (m³/d) do cliente no mês em foco.
+	measure 'Vol do Mês' = ```
+			VAR _id = [Vol ID Cliente]
+			VAR _i = [Vol Mês Idx]
+			RETURN
+			    CALCULATE (
+			        [Valor Indicador],
+			        REMOVEFILTERS ( dim_indicadores ),
+			        REMOVEFILTERS ( Clientes ),
+			        REMOVEFILTERS ( dCalendario ),
+			        dCalendario[MesIdx] = _i,
+			        fato_indicadores[ID_Indicador] = _id
+			    )
+			```
+		formatString: #,0
+		displayFolder: Base
+		lineageTag: ff96c39c-510b-4ac4-8012-b1040ca9537e
+
+	/// Volume médio diário (m³/d) do cliente no mês anterior ao mês em foco.
+	measure 'Vol Mês Anterior' = ```
+			VAR _id = [Vol ID Cliente]
+			VAR _i = [Vol Mês Idx] - 1
+			RETURN
+			    CALCULATE (
+			        [Valor Indicador],
+			        REMOVEFILTERS ( dim_indicadores ),
+			        REMOVEFILTERS ( Clientes ),
+			        REMOVEFILTERS ( dCalendario ),
+			        dCalendario[MesIdx] = _i,
+			        fato_indicadores[ID_Indicador] = _id
+			    )
+			```
+		formatString: #,0
+		displayFolder: Base
+		lineageTag: a6d6fc43-9968-481c-ab54-ce6b582fd6c4
+
+	/// Volume médio diário (m³/d) do cliente no mesmo mês do ano anterior.
+	measure 'Vol Mesmo Mês Ano Anterior' = ```
+			VAR _id = [Vol ID Cliente]
+			VAR _i = [Vol Mês Idx] - 12
+			RETURN
+			    CALCULATE (
+			        [Valor Indicador],
+			        REMOVEFILTERS ( dim_indicadores ),
+			        REMOVEFILTERS ( Clientes ),
+			        REMOVEFILTERS ( dCalendario ),
+			        dCalendario[MesIdx] = _i,
+			        fato_indicadores[ID_Indicador] = _id
+			    )
+			```
+		formatString: #,0
+		displayFolder: Base
+		lineageTag: 33e4e3ae-3785-40e2-a153-83d26e025ccf
+
+	/// Meta contratual (m³/d) do cliente escolhido, vinda de Target_Min na dim_indicadores.
+	measure 'Vol Meta' = ```
+			VAR _id = [Vol ID Cliente]
+			RETURN CALCULATE ( MAX ( Clientes[Meta] ), REMOVEFILTERS ( Clientes ), Clientes[ID_Indicador] = _id )
+			```
+		formatString: #,0
+		displayFolder: Base
+		lineageTag: f0fb0ffd-ec1c-494d-bf19-5e2403c5d451
+
+	/// Dias com medição do cliente no mês em foco.
+	measure 'Vol Dias do Mês' = ```
+			VAR _id = [Vol ID Cliente]
+			VAR _i = [Vol Mês Idx]
+			RETURN
+			    CALCULATE (
+			        DISTINCTCOUNT ( fato_indicadores[Data] ),
+			        REMOVEFILTERS ( dim_indicadores ),
+			        REMOVEFILTERS ( Clientes ),
+			        REMOVEFILTERS ( dCalendario ),
+			        dCalendario[MesIdx] = _i,
+			        fato_indicadores[ID_Indicador] = _id
+			    )
+			```
+		formatString: 0
+		displayFolder: Base
+		lineageTag: dc17dd01-8be0-4825-a5bd-f77be145dc38
+
+	/// Média dos volumes mensais dos últimos 13 meses (inclui o mês em foco).
+	measure 'Vol Média 13m' = ```
+			VAR _id = [Vol ID Cliente]
+			VAR _m = [Vol Mês Idx]
+			VAR _meses = FILTER ( ALL ( dCalendario[MesIdx] ), dCalendario[MesIdx] > _m - 13 && dCalendario[MesIdx] <= _m )
+			RETURN
+			    AVERAGEX (
+			        _meses,
+			        VAR _i = dCalendario[MesIdx]
+			        RETURN
+			            CALCULATE (
+			                [Valor Indicador],
+			                REMOVEFILTERS ( dim_indicadores ),
+			                REMOVEFILTERS ( Clientes ),
+			                REMOVEFILTERS ( dCalendario ),
+			                dCalendario[MesIdx] = _i,
+			                fato_indicadores[ID_Indicador] = _id
+			            )
+			    )
+			```
+		formatString: #,0
+		displayFolder: Base
+		lineageTag: 1b1ebfaf-6fbc-4f72-b89c-b7912c24c173
+
+	/// Desvio padrão dos volumes mensais dos últimos 13 meses. Define a faixa esperada (média ± 1 desvio).
+	measure 'Vol Desvio 13m' = ```
+			VAR _id = [Vol ID Cliente]
+			VAR _m = [Vol Mês Idx]
+			VAR _meses = FILTER ( ALL ( dCalendario[MesIdx] ), dCalendario[MesIdx] > _m - 13 && dCalendario[MesIdx] <= _m )
+			RETURN
+			    STDEVX.P (
+			        _meses,
+			        VAR _i = dCalendario[MesIdx]
+			        RETURN
+			            CALCULATE (
+			                [Valor Indicador],
+			                REMOVEFILTERS ( dim_indicadores ),
+			                REMOVEFILTERS ( Clientes ),
+			                REMOVEFILTERS ( dCalendario ),
+			                dCalendario[MesIdx] = _i,
+			                fato_indicadores[ID_Indicador] = _id
+			            )
+			    )
+			```
+		formatString: #,0
+		displayFolder: Base
+		lineageTag: ae0111b1-25fe-411f-9093-690c4271f058
+
+	/// Faixa do topo da página Volumes: identificação, título e mês em foco.
+	measure 'HTML Vol Cabeçalho' = ```
+			VAR _m = [Vol Mês Idx]
+			VAR _rot = CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _m )
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;height:100%;box-sizing:border-box;padding:14px 28px;background:linear-gradient(100deg,#06182e 0%,#0b2744 55%,#14416e 100%);display:flex;align-items:center;justify-content:space-between'>"
+			        & "<div style='display:flex;align-items:center;gap:24px'>"
+			            & "<div>"
+			                & "<div style='font-size:42px;font-weight:800;color:#ffffff;line-height:1;letter-spacing:-1px'>Aquapolo</div>"
+			                & "<div style='margin-top:7px;font-size:14px;color:#9dc2e6;letter-spacing:0.5px'>GS Inima &nbsp;&#124;&nbsp; Sabesp</div>"
+			            & "</div>"
+			            & "<div style='width:1px;height:66px;background:#28557f'></div>"
+			            & "<div>"
+			                & "<div style='font-size:36px;font-weight:700;color:#ffffff;line-height:1'>Painel Operacional</div>"
+			                & "<div style='margin-top:6px;font-size:19px;color:#8fb6dd'>Indicadores de Volumes</div>"
+			            & "</div>"
+			        & "</div>"
+			        & "<div style='display:flex;align-items:center;gap:12px;padding:10px 20px;border:1px solid #2d5c8a;border-radius:10px;background:rgba(10,32,56,0.72)'>"
+			            & "<div style='font-size:24px;color:#4da3ff'>&#128197;</div>"
+			            & "<div>"
+			                & "<div style='font-size:12px;color:#8fb6dd'>Período</div>"
+			                & "<div style='font-size:20px;font-weight:700;color:#ffffff'>Mensal &#183; " & _rot & "</div>"
+			            & "</div>"
+			        & "</div>"
+			    & "</div>"
+			```
+		displayFolder: Página Volumes
+		lineageTag: 7393b2a6-cf58-478a-82ba-2dfa6545e204
+
+	/// Cartão "Volume atual": volume médio do mês em foco em m³/d e L/s, com a variação em relação ao mês anterior.
+	measure 'HTML Vol KPI Atual' = ```
+			VAR _vol = [Vol do Mês]
+			VAR _ant = [Vol Mês Anterior]
+			VAR _ls = DIVIDE ( _vol, 86.4 )
+			VAR _var = DIVIDE ( _vol - _ant, _ant )
+			VAR _cor = IF ( _var >= 0, "#2fe07a", "#ff6b6b" )
+			VAR _seta = IF ( _var >= 0, "&#9650;", "&#9660;" )
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;height:100%;box-sizing:border-box;padding:0 22px;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;display:flex;align-items:center;gap:20px'>"
+			        & "<div style='width:44px;height:44px;flex:none;border-radius:11px;background:rgba(77,163,255,0.16);color:#4da3ff;font-size:24px;display:flex;align-items:center;justify-content:center'>&#128167;</div>"
+			        & "<div>"
+			            & "<div style='font-size:13px;color:#8fb0d0'>Volume atual</div>"
+			            & "<div style='display:flex;align-items:baseline;gap:8px;margin-top:2px'>"
+			                & "<span style='font-size:34px;font-weight:700;color:#ffffff;line-height:1'>" & FORMAT ( _vol, "#,##0" ) & "</span>"
+			                & "<span style='font-size:13px;color:#8fb0d0'>m&#179;/d</span>"
+			                & "<span style='font-size:26px;font-weight:600;color:#cfe4fa;margin-left:14px'>" & FORMAT ( _ls, "#,##0" ) & "</span>"
+			                & "<span style='font-size:13px;color:#8fb0d0'>L/s</span>"
+			            & "</div>"
+			        & "</div>"
+			        & "<div style='width:1px;height:52px;background:#1d4066;margin-left:auto'></div>"
+			        & "<div style='text-align:left;min-width:150px'>"
+			            & "<div style='font-size:24px;font-weight:700;color:" & _cor & "'>" & _seta & " " & FORMAT ( _var, "+0.0%;-0.0%" ) & "</div>"
+			            & "<div style='font-size:12px;color:#8fb0d0'>vs. mês anterior</div>"
+			        & "</div>"
+			    & "</div>"
+			```
+		displayFolder: Página Volumes
+		lineageTag: 039ed771-c065-497a-947c-fa54f478b5e9
+
+	/// Cartão "Situação": compara o volume do mês com a faixa esperada (média de 13 meses ± 1 desvio padrão).
+	measure 'HTML Vol Situação' = ```
+			VAR _vol = [Vol do Mês]
+			VAR _med = [Vol Média 13m]
+			VAR _dp = [Vol Desvio 13m]
+			VAR _dist = ABS ( _vol - _med )
+			VAR _cor = SWITCH ( TRUE (), _dist <= _dp, "#2fe07a", _dist <= 2 * _dp, "#ffd93d", "#ff6b6b" )
+			VAR _txt =
+			    SWITCH (
+			        TRUE (),
+			        _dist <= _dp, "Consumo estável",
+			        _vol > _med, "Consumo acima do esperado",
+			        "Consumo abaixo do esperado"
+			    )
+			VAR _sub =
+			    SWITCH (
+			        TRUE (),
+			        _dist <= _dp, "Dentro da faixa histórica esperada.",
+			        _dist <= 2 * _dp, "Fora da faixa esperada, ainda sem desvio grave.",
+			        "Desvio relevante em relação aos 13 meses."
+			    )
+			VAR _icone = IF ( _dist <= _dp, "&#10003;", "&#33;" )
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;height:100%;box-sizing:border-box;padding:0 22px;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;display:flex;align-items:center;gap:18px'>"
+			        & "<div style='width:44px;height:44px;flex:none;border-radius:50%;border:2px solid " & _cor & ";color:" & _cor & ";font-size:22px;font-weight:700;display:flex;align-items:center;justify-content:center'>" & _icone & "</div>"
+			        & "<div>"
+			            & "<div style='font-size:13px;color:#8fb0d0'>Situação</div>"
+			            & "<div style='font-size:22px;font-weight:700;color:" & _cor & ";line-height:1.2'>" & _txt & "</div>"
+			            & "<div style='font-size:12px;color:#8fb0d0;margin-top:2px'>" & _sub & "</div>"
+			        & "</div>"
+			    & "</div>"
+			```
+		displayFolder: Página Volumes
+		lineageTag: eafd04dd-1723-46fd-9ce4-4cdeb0e77e31
+
+	/// Painel "Resumo por cliente": volume do mês, atingimento da meta e status de cada cliente.
+	measure 'HTML Vol Resumo Clientes' = ```
+			VAR _idSel = [Vol ID Cliente]
+			VAR _m = [Vol Mês Idx]
+			VAR _un = SELECTEDVALUE ( Unidade[Unidade], "m³/d" )
+			VAR _div = IF ( _un = "L/s", 86.4, 1 )
+			VAR _meses = FILTER ( ALL ( dCalendario[MesIdx] ), dCalendario[MesIdx] > _m - 13 && dCalendario[MesIdx] <= _m )
+			VAR _tab =
+			    ADDCOLUMNS (
+			        ALL ( Clientes[ID_Indicador], Clientes[Cliente], Clientes[Meta], Clientes[Ordem] ),
+			        "@Vol",
+			            VAR _i = Clientes[ID_Indicador]
+			            RETURN
+			                CALCULATE (
+			                    [Valor Indicador],
+			                    REMOVEFILTERS ( dim_indicadores ),
+			                    REMOVEFILTERS ( Clientes ),
+			                    REMOVEFILTERS ( dCalendario ),
+			                    dCalendario[MesIdx] = _m,
+			                    fato_indicadores[ID_Indicador] = _i
+			                ),
+			        "@Med",
+			            VAR _i = Clientes[ID_Indicador]
+			            RETURN
+			                AVERAGEX (
+			                    _meses,
+			                    VAR _k = dCalendario[MesIdx]
+			                    RETURN
+			                        CALCULATE (
+			                            [Valor Indicador],
+			                            REMOVEFILTERS ( dim_indicadores ),
+			                            REMOVEFILTERS ( Clientes ),
+			                            REMOVEFILTERS ( dCalendario ),
+			                            dCalendario[MesIdx] = _k,
+			                            fato_indicadores[ID_Indicador] = _i
+			                        )
+			                )
+			    )
+			VAR _linhas =
+			    CONCATENATEX (
+			        _tab,
+			        VAR _at = DIVIDE ( [@Vol], Clientes[Meta] )
+			        VAR _desv = DIVIDE ( [@Vol] - [@Med], [@Med] )
+			        VAR _cor = SWITCH ( TRUE (), _at >= 0.98, "#2fe07a", _at >= 0.90, "#ffd93d", "#ff6b6b" )
+			        VAR _dot = SWITCH ( TRUE (), ABS ( _desv ) <= 0.1, "#2fe07a", ABS ( _desv ) <= 0.2, "#ffd93d", "#ff6b6b" )
+			        VAR _sel = Clientes[ID_Indicador] = _idSel
+			        VAR _larg = MIN ( DIVIDE ( _at, 1.2 ) * 100, 100 )
+			        RETURN
+			            "<tr style='background:" & IF ( _sel, "#17406e", "transparent" ) & "'>"
+			                & "<td style='padding:7px 8px;border-left:3px solid " & IF ( _sel, "#4da3ff", "transparent" ) & ";color:" & IF ( _sel, "#ffffff", "#cfe4fa" ) & ";font-weight:" & IF ( _sel, "700", "400" ) & "'>" & Clientes[Cliente] & "</td>"
+			                & "<td style='padding:7px 6px;text-align:right;color:#ffffff;font-weight:600'>" & FORMAT ( DIVIDE ( [@Vol], _div ), "#,##0" ) & "</td>"
+			                & "<td style='padding:7px 8px;width:72px'><div style='height:9px;background:#15375c;border-radius:5px'><div style='width:" & FORMAT ( _larg, "0" ) & "%;height:9px;background:" & _cor & ";border-radius:5px'></div></div></td>"
+			                & "<td style='padding:7px 4px;text-align:right;color:#cfe4fa'>" & FORMAT ( _at, "0%" ) & "</td>"
+			                & "<td style='padding:7px 8px;text-align:center'><span style='display:inline-block;width:10px;height:10px;border-radius:50%;background:" & _dot & "'></span></td>"
+			            & "</tr>",
+			        "",
+			        Clientes[Ordem], ASC
+			    )
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;height:100%;box-sizing:border-box;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;overflow:hidden'>"
+			        & "<div style='padding:12px 16px;background:#13365a;border-bottom:1px solid #1d4066;display:flex;align-items:center;gap:10px'>"
+			            & "<span style='color:#4da3ff;font-size:17px'>&#9638;</span>"
+			            & "<span style='font-size:17px;font-weight:700;color:#ffffff'>Resumo por cliente</span>"
+			        & "</div>"
+			        & "<table style='width:100%;border-collapse:collapse;font-size:12px'>"
+			            & "<tr style='color:#8fb0d0;font-size:11px;text-align:left'>"
+			                & "<th style='padding:8px;font-weight:600'>Cliente</th>"
+			                & "<th style='padding:8px 6px;text-align:right;font-weight:600'>Atual<br>(" & _un & ")</th>"
+			                & "<th colspan='2' style='padding:8px;text-align:left;font-weight:600'>Ating. da meta (%)</th>"
+			                & "<th style='padding:8px;text-align:center;font-weight:600'>Status</th>"
+			            & "</tr>"
+			            & _linhas
+			        & "</table>"
+			    & "</div>"
+			```
+		displayFolder: Página Volumes
+		lineageTag: 0ffcb47c-64b1-41af-80c2-41f80b78fb4e
+
+	/// Painel "Histórico de medição": os 13 meses até o mês em foco, com volume, dias medidos e variação.
+	measure 'HTML Vol Histórico' = ```
+			VAR _id = [Vol ID Cliente]
+			VAR _cli = [Vol Cliente]
+			VAR _m = [Vol Mês Idx]
+			VAR _meses = FILTER ( ALL ( dCalendario[MesIdx] ), dCalendario[MesIdx] > _m - 13 && dCalendario[MesIdx] <= _m )
+			VAR _hist =
+			    ADDCOLUMNS (
+			        _meses,
+			        "@Rot",
+			            VAR _k = dCalendario[MesIdx]
+			            RETURN CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _k ),
+			        "@Vol",
+			            VAR _k = dCalendario[MesIdx]
+			            RETURN
+			                CALCULATE (
+			                    [Valor Indicador],
+			                    REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ), REMOVEFILTERS ( dCalendario ),
+			                    dCalendario[MesIdx] = _k, fato_indicadores[ID_Indicador] = _id
+			                ),
+			        "@Ant",
+			            VAR _k = dCalendario[MesIdx] - 1
+			            RETURN
+			                CALCULATE (
+			                    [Valor Indicador],
+			                    REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ), REMOVEFILTERS ( dCalendario ),
+			                    dCalendario[MesIdx] = _k, fato_indicadores[ID_Indicador] = _id
+			                ),
+			        "@Dias",
+			            VAR _k = dCalendario[MesIdx]
+			            RETURN
+			                CALCULATE (
+			                    DISTINCTCOUNT ( fato_indicadores[Data] ),
+			                    REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ), REMOVEFILTERS ( dCalendario ),
+			                    dCalendario[MesIdx] = _k, fato_indicadores[ID_Indicador] = _id
+			                )
+			    )
+			VAR _max = MAXX ( _hist, [@Vol] )
+			VAR _min = MINX ( _hist, [@Vol] )
+			VAR _media = AVERAGEX ( _hist, [@Vol] )
+			VAR _mediaDias = AVERAGEX ( _hist, [@Dias] )
+			VAR _mesMin = MINX ( FILTER ( _hist, [@Vol] = _min ), [@Rot] )
+			VAR _mesMax = MINX ( FILTER ( _hist, [@Vol] = _max ), [@Rot] )
+			VAR _linhas =
+			    CONCATENATEX (
+			        _hist,
+			        VAR _v = [@Vol]
+			        VAR _var = DIVIDE ( _v - [@Ant], [@Ant] )
+			        VAR _temAnt = NOT ISBLANK ( [@Ant] )
+			        VAR _cor = IF ( _var >= 0, "#2fe07a", "#ff6b6b" )
+			        VAR _seta = IF ( _var >= 0, "&#9650;", "&#9660;" )
+			        VAR _larg = DIVIDE ( _v, _max ) * 100
+			        RETURN
+			            "<tr style='border-top:1px solid #153354'>"
+			                & "<td style='padding:6px 10px;color:#cfe4fa'>" & [@Rot] & "</td>"
+			                & "<td style='padding:6px 10px;width:150px'><div style='height:13px;background:#15375c;border-radius:3px'><div style='width:" & FORMAT ( _larg, "0" ) & "%;height:13px;background:#5aa9f0;border-radius:3px'></div></div></td>"
+			                & "<td style='padding:6px 10px;text-align:right;color:#ffffff;font-weight:600'>" & FORMAT ( _v, "#,##0" ) & "</td>"
+			                & "<td style='padding:6px 10px;text-align:right;color:#cfe4fa'>" & FORMAT ( DIVIDE ( _v, 86.4 ), "#,##0" ) & "</td>"
+			                & "<td style='padding:6px 10px;text-align:right;color:#8fb0d0'>" & FORMAT ( [@Dias], "0" ) & "</td>"
+			                & "<td style='padding:6px 14px;text-align:right;color:" & IF ( _temAnt, _cor, "#8fb0d0" ) & ";font-weight:600'>" & IF ( _temAnt, FORMAT ( _var, "+0.0%;-0.0%" ) & " " & _seta, "&#8212;" ) & "</td>"
+			            & "</tr>",
+			        "",
+			        dCalendario[MesIdx], DESC
+			    )
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;height:100%;box-sizing:border-box;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;overflow:hidden'>"
+			        & "<div style='padding:12px 16px;background:#13365a;border-bottom:1px solid #1d4066;display:flex;align-items:center;gap:10px'>"
+			            & "<span style='color:#4da3ff;font-size:17px'>&#9638;</span>"
+			            & "<span style='font-size:17px;font-weight:700;color:#ffffff'>Histórico de medição &#8212; " & _cli & "</span>"
+			        & "</div>"
+			        & "<table style='width:100%;border-collapse:collapse;font-size:12px'>"
+			            & "<tr style='color:#8fb0d0;font-size:11px'>"
+			                & "<th style='padding:7px 10px;text-align:left;font-weight:600'>Mês/Ano</th>"
+			                & "<th></th>"
+			                & "<th style='padding:7px 10px;text-align:right;font-weight:600'>Volume (m&#179;/d)</th>"
+			                & "<th style='padding:7px 10px;text-align:right;font-weight:600'>Volume (L/s)</th>"
+			                & "<th style='padding:7px 10px;text-align:right;font-weight:600'>Dias</th>"
+			                & "<th style='padding:7px 14px;text-align:right;font-weight:600'>Variação vs. mês anterior</th>"
+			            & "</tr>"
+			            & _linhas
+			        & "</table>"
+			        & "<div style='padding:8px 14px;background:#13365a;border-top:1px solid #1d4066;display:flex;align-items:center;gap:26px;font-size:12px;color:#8fb0d0'>"
+			            & "<span>Média (13 meses) <b style='color:#ffffff;font-size:13px'>" & FORMAT ( _media, "#,##0" ) & "</b> m&#179;/d &#183; <b style='color:#cfe4fa'>" & FORMAT ( DIVIDE ( _media, 86.4 ), "#,##0" ) & "</b> L/s &#183; <b style='color:#cfe4fa'>" & FORMAT ( _mediaDias, "0" ) & "</b> dias</span>"
+			            & "<span style='margin-left:auto'>Mínimo <b style='color:#ffffff'>" & FORMAT ( _min, "#,##0" ) & "</b> (" & _mesMin & ")</span>"
+			            & "<span>Máximo <b style='color:#ffffff'>" & FORMAT ( _max, "#,##0" ) & "</b> (" & _mesMax & ")</span>"
+			        & "</div>"
+			    & "</div>"
+			```
+		displayFolder: Página Volumes
+		lineageTag: 0e4d0227-76c3-47e2-a417-5d2579b9b538
+
+	/// Painel "Diagnóstico do cliente": meta, média de 13 meses, desvios, pico e menor consumo histórico.
+	measure 'HTML Vol Diagnóstico' = ```
+			VAR _id = [Vol ID Cliente]
+			VAR _cli = [Vol Cliente]
+			VAR _vol = [Vol do Mês]
+			VAR _meta = [Vol Meta]
+			VAR _med = [Vol Média 13m]
+			VAR _dp = [Vol Desvio 13m]
+			VAR _anoAnt = [Vol Mesmo Mês Ano Anterior]
+			VAR _dMed = DIVIDE ( _vol - _med, _med )
+			VAR _dAno = DIVIDE ( _vol - _anoAnt, _anoAnt )
+			VAR _dist = ABS ( _vol - _med )
+			VAR _corSit = SWITCH ( TRUE (), _dist <= _dp, "#2fe07a", _dist <= 2 * _dp, "#ffd93d", "#ff6b6b" )
+			VAR _txtSit = SWITCH ( TRUE (), _dist <= _dp, "Consumo estável", _vol > _med, "Consumo acima do esperado", "Consumo abaixo do esperado" )
+			VAR _hist =
+			    FILTER (
+			        ADDCOLUMNS (
+			            ALL ( dCalendario[MesIdx] ),
+			            "@Rot",
+			                VAR _k = dCalendario[MesIdx]
+			                RETURN CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _k ),
+			            "@Vol",
+			                VAR _k = dCalendario[MesIdx]
+			                RETURN
+			                    CALCULATE (
+			                        [Valor Indicador],
+			                        REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ), REMOVEFILTERS ( dCalendario ),
+			                        dCalendario[MesIdx] = _k, fato_indicadores[ID_Indicador] = _id
+			                    ),
+			            "@Dias",
+			                VAR _k = dCalendario[MesIdx]
+			                RETURN
+			                    CALCULATE (
+			                        DISTINCTCOUNT ( fato_indicadores[Data] ),
+			                        REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ), REMOVEFILTERS ( dCalendario ),
+			                        dCalendario[MesIdx] = _k, fato_indicadores[ID_Indicador] = _id
+			                    )
+			        ),
+			        [@Dias] >= 25
+			    )
+			VAR _pico = MAXX ( _hist, [@Vol] )
+			VAR _vale = MINX ( _hist, [@Vol] )
+			VAR _mesPico = MINX ( FILTER ( _hist, [@Vol] = _pico ), [@Rot] )
+			VAR _mesVale = MINX ( FILTER ( _hist, [@Vol] = _vale ), [@Rot] )
+			VAR _linha1 = "<tr style='border-bottom:1px solid #153354'><td style='padding:11px 4px;color:#8fb0d0;font-size:12px'>"
+			VAR _linha2 = "</td><td style='padding:11px 4px;text-align:right;color:#ffffff;font-weight:700;font-size:16px;white-space:nowrap'>"
+			VAR _linha3 = "</td><td style='padding:11px 0 11px 10px;text-align:right;color:#8fb0d0;font-size:12px;white-space:nowrap'>"
+			VAR _linha4 = "</td></tr>"
+			VAR _dotMed = SWITCH ( TRUE (), ABS ( _dMed ) <= 0.1, "#2fe07a", ABS ( _dMed ) <= 0.2, "#ffd93d", "#ff6b6b" )
+			VAR _dotAno = SWITCH ( TRUE (), ABS ( _dAno ) <= 0.1, "#2fe07a", ABS ( _dAno ) <= 0.2, "#ffd93d", "#ff6b6b" )
+			VAR _bola = "<span style='display:inline-block;width:10px;height:10px;border-radius:50%;background:"
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;height:100%;box-sizing:border-box;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;overflow:hidden'>"
+			        & "<div style='padding:12px 16px;background:#13365a;border-bottom:1px solid #1d4066;display:flex;align-items:center;gap:10px'>"
+			            & "<span style='color:#4da3ff;font-size:17px'>&#9776;</span>"
+			            & "<span style='font-size:16px;font-weight:700;color:#ffffff'>Diagnóstico do cliente &#8212; " & _cli & "</span>"
+			        & "</div>"
+			        & "<div style='padding:4px 16px'>"
+			        & "<table style='width:100%;border-collapse:collapse'>"
+			            & _linha1 & "Meta contratual" & _linha2 & FORMAT ( _meta, "#,##0" ) & "<span style='font-size:11px;color:#8fb0d0;font-weight:400'> m&#179;/d</span>" & _linha3 & FORMAT ( DIVIDE ( _meta, 86.4 ), "#,##0" ) & " L/s" & _linha4
+			            & _linha1 & "Média 13 meses" & _linha2 & FORMAT ( _med, "#,##0" ) & "<span style='font-size:11px;color:#8fb0d0;font-weight:400'> m&#179;/d</span>" & _linha3 & FORMAT ( DIVIDE ( _med, 86.4 ), "#,##0" ) & " L/s" & _linha4
+			            & _linha1 & "Desvio vs. média 13 meses" & "</td><td style='padding:11px 4px;text-align:right;font-weight:700;font-size:16px;color:" & _dotMed & "'>" & FORMAT ( _dMed, "+0.0%;-0.0%" ) & _linha3 & _bola & _dotMed & "'></span>" & _linha4
+			            & _linha1 & "Desvio vs. mesmo mês<br>do ano anterior" & "</td><td style='padding:11px 4px;text-align:right;font-weight:700;font-size:16px;color:" & _dotAno & "'>" & FORMAT ( _dAno, "+0.0%;-0.0%" ) & _linha3 & _bola & _dotAno & "'></span>" & _linha4
+			            & _linha1 & "Pico histórico<br><span style='font-size:11px'>(" & _mesPico & ")</span>" & _linha2 & FORMAT ( _pico, "#,##0" ) & "<span style='font-size:11px;color:#8fb0d0;font-weight:400'> m&#179;/d</span>" & _linha3 & FORMAT ( DIVIDE ( _pico, 86.4 ), "#,##0" ) & " L/s" & _linha4
+			            & _linha1 & "Menor consumo histórico<br><span style='font-size:11px'>(" & _mesVale & ")</span>" & _linha2 & FORMAT ( _vale, "#,##0" ) & "<span style='font-size:11px;color:#8fb0d0;font-weight:400'> m&#179;/d</span>" & _linha3 & FORMAT ( DIVIDE ( _vale, 86.4 ), "#,##0" ) & " L/s" & _linha4
+			            & "<tr><td style='padding:11px 4px;color:#8fb0d0;font-size:12px'>Status</td><td colspan='2' style='padding:11px 4px;text-align:right'>"
+			                & _bola & _corSit & ";margin-right:7px'></span>"
+			                & "<span style='font-size:16px;font-weight:700;color:" & _corSit & "'>" & _txtSit & "</span>"
+			                & "<div style='font-size:11px;color:#8fb0d0;margin-top:2px'>" & IF ( _dist <= _dp, "Dentro da faixa histórica esperada.", "Fora da faixa histórica esperada." ) & "</div>"
+			            & "</td></tr>"
+			        & "</table>"
+			        & "<div style='margin-top:6px;padding:10px 12px;background:rgba(77,163,255,0.10);border:1px solid #27527d;border-radius:8px;display:flex;gap:9px'>"
+			            & "<span style='color:#4da3ff;font-size:14px'>&#9432;</span>"
+			            & "<span style='font-size:11.5px;color:#b9d3ec;line-height:1.45'>O volume atual está " & FORMAT ( ABS ( _dMed ), "0.0%" ) & IF ( _dMed >= 0, " acima", " abaixo" ) & " da média dos últimos 13 meses e " & IF ( _dist <= _dp, "dentro", "fora" ) & " da faixa esperada para este período.</span>"
+			        & "</div>"
+			        & "</div>"
+			    & "</div>"
+			```
+		displayFolder: Página Volumes
+		lineageTag: 00848fef-f7e0-418a-99fc-a6d3a85d3459
+
+	/// Gráfico "Evolução do volume": 13 meses em linha, com a faixa esperada e a meta contratual.
+	measure 'HTML Vol Evolução' = ```
+			VAR _id = [Vol ID Cliente]
+			VAR _cli = [Vol Cliente]
+			VAR _m = [Vol Mês Idx]
+			VAR _meta = [Vol Meta]
+			VAR _un = SELECTEDVALUE ( Unidade[Unidade], "m³/d" )
+			VAR _div = IF ( _un = "L/s", 86.4, 1 )
+			VAR _meses = FILTER ( ALL ( dCalendario[MesIdx] ), dCalendario[MesIdx] > _m - 13 && dCalendario[MesIdx] <= _m )
+			VAR _base =
+			    ADDCOLUMNS (
+			        _meses,
+			        "@Rot",
+			            VAR _k = dCalendario[MesIdx]
+			            RETURN CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _k ),
+			        "@Vol",
+			            VAR _k = dCalendario[MesIdx]
+			            RETURN
+			                DIVIDE (
+			                    CALCULATE (
+			                        [Valor Indicador],
+			                        REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ), REMOVEFILTERS ( dCalendario ),
+			                        dCalendario[MesIdx] = _k, fato_indicadores[ID_Indicador] = _id
+			                    ),
+			                    _div
+			                )
+			    )
+			VAR _hist = ADDCOLUMNS ( _base, "@i", VAR _k = dCalendario[MesIdx] RETURN COUNTROWS ( FILTER ( _base, dCalendario[MesIdx] <= _k ) ) )
+			VAR _n = COUNTROWS ( _hist )
+			VAR _med = AVERAGEX ( _hist, [@Vol] )
+			VAR _dp = STDEVX.P ( _hist, [@Vol] )
+			VAR _metaU = DIVIDE ( _meta, _div )
+			VAR _lo = MIN ( MINX ( _hist, [@Vol] ), MIN ( _med - _dp, _metaU ) )
+			VAR _hi = MAX ( MAXX ( _hist, [@Vol] ), MAX ( _med + _dp, _metaU ) )
+			VAR _pad = ( _hi - _lo ) * 0.18 + 1
+			VAR _ymin = _lo - _pad
+			VAR _ymax = _hi + _pad
+			VAR _esc = DIVIDE ( 88, _ymax - _ymin )
+			VAR _yBandaTopo = 96 - ( _med + _dp - _ymin ) * _esc
+			VAR _yBandaBase = 96 - ( _med - _dp - _ymin ) * _esc
+			VAR _yMeta = 96 - ( _metaU - _ymin ) * _esc
+			VAR _pts = CONCATENATEX ( _hist, FORMAT ( 58 + ( [@i] - 1 ) * DIVIDE ( 930, _n - 1 ), "0" ) & "," & FORMAT ( 96 - ( [@Vol] - _ymin ) * _esc, "0" ), " ", dCalendario[MesIdx], ASC )
+			VAR _bolas = CONCATENATEX ( _hist, "<circle cx='" & FORMAT ( 58 + ( [@i] - 1 ) * DIVIDE ( 930, _n - 1 ), "0" ) & "' cy='" & FORMAT ( 96 - ( [@Vol] - _ymin ) * _esc, "0" ) & "' r='3.6' fill='#0f2a47' stroke='#6ab0f3' stroke-width='2'/>", "", dCalendario[MesIdx], ASC )
+			VAR _rotX = CONCATENATEX ( _hist, "<text x='" & FORMAT ( 58 + ( [@i] - 1 ) * DIVIDE ( 930, _n - 1 ), "0" ) & "' y='117' fill='#8fb0d0' font-size='9.5' text-anchor='middle'>" & [@Rot] & "</text>", "", dCalendario[MesIdx], ASC )
+			VAR _eixoY =
+			    CONCATENATEX (
+			        GENERATESERIES ( 0, 3, 1 ),
+			        VAR _v = _ymin + ( _ymax - _ymin ) * DIVIDE ( [Value], 3 )
+			        VAR _y = 96 - ( _v - _ymin ) * _esc
+			        RETURN
+			            "<line x1='58' y1='" & FORMAT ( _y, "0" ) & "' x2='988' y2='" & FORMAT ( _y, "0" ) & "' stroke='#15375c' stroke-width='1'/>"
+			                & "<text x='50' y='" & FORMAT ( _y + 3, "0" ) & "' fill='#8fb0d0' font-size='9.5' text-anchor='end'>" & FORMAT ( _v, "#,##0" ) & "</text>",
+			        ""
+			    )
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;height:100%;box-sizing:border-box;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;padding:8px 10px 2px 10px'>"
+			        & "<div style='display:flex;align-items:center;gap:16px;padding:0 6px 4px 6px'>"
+			            & "<span style='font-size:13px;font-weight:700;color:#ffffff'>Evolução do volume &#8212; " & _cli & " (" & _un & ")</span>"
+			            & "<span style='margin-left:auto;font-size:10.5px;color:#8fb0d0'><span style='color:#6ab0f3'>&#9679;</span> Volume &nbsp; <span style='color:#2d5f93'>&#9632;</span> Faixa esperada &nbsp; <span style='color:#cfe4fa'>&#9476;&#9476;</span> Meta contratual (" & FORMAT ( _metaU, "#,##0" ) & ")</span>"
+			        & "</div>"
+			        & "<svg viewBox='0 0 1000 124' style='width:100%;height:calc(100% - 26px)' font-family='Segoe UI,sans-serif'>"
+			            & _eixoY
+			            & "<rect x='58' y='" & FORMAT ( _yBandaTopo, "0" ) & "' width='930' height='" & FORMAT ( MAX ( _yBandaBase - _yBandaTopo, 0 ), "0" ) & "' fill='#2d5f93' fill-opacity='0.35'/>"
+			            & "<line x1='58' y1='" & FORMAT ( _yMeta, "0" ) & "' x2='988' y2='" & FORMAT ( _yMeta, "0" ) & "' stroke='#cfe4fa' stroke-width='1.4' stroke-dasharray='7 5'/>"
+			            & "<polyline points='" & _pts & "' fill='none' stroke='#6ab0f3' stroke-width='2.4' stroke-linejoin='round'/>"
+			            & _bolas
+			            & _rotX
+			        & "</svg>"
+			    & "</div>"
+			```
+		displayFolder: Página Volumes
+		lineageTag: 79cc6705-0196-43e2-a36f-ac05b9ed4623
+
+	/// Gráfico "Volume atual vs. mesmo mês do ano anterior", cliente a cliente (sem Todos Clientes).
+	measure 'HTML Vol Comparação Ano' = ```
+			VAR _m = [Vol Mês Idx]
+			VAR _un = SELECTEDVALUE ( Unidade[Unidade], "m³/d" )
+			VAR _div = IF ( _un = "L/s", 86.4, 1 )
+			VAR _rotAtual = CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _m )
+			VAR _rotAnt = CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _m - 12 )
+			VAR _base =
+			    ADDCOLUMNS (
+			        FILTER ( ALL ( Clientes[ID_Indicador], Clientes[Cliente], Clientes[Ordem] ), Clientes[Cliente] <> "Todos Clientes" ),
+			        "@Atual",
+			            VAR _i = Clientes[ID_Indicador]
+			            RETURN
+			                DIVIDE (
+			                    CALCULATE (
+			                        [Valor Indicador],
+			                        REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ), REMOVEFILTERS ( dCalendario ),
+			                        dCalendario[MesIdx] = _m, fato_indicadores[ID_Indicador] = _i
+			                    ),
+			                    _div
+			                ),
+			        "@Ant",
+			            VAR _i = Clientes[ID_Indicador]
+			            RETURN
+			                DIVIDE (
+			                    CALCULATE (
+			                        [Valor Indicador],
+			                        REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ), REMOVEFILTERS ( dCalendario ),
+			                        dCalendario[MesIdx] = _m - 12, fato_indicadores[ID_Indicador] = _i
+			                    ),
+			                    _div
+			                )
+			    )
+			VAR _tab = ADDCOLUMNS ( _base, "@i", VAR _o = Clientes[Ordem] RETURN COUNTROWS ( FILTER ( _base, Clientes[Ordem] <= _o ) ) )
+			VAR _n = COUNTROWS ( _tab )
+			VAR _ymax = MAX ( MAXX ( _tab, MAX ( [@Atual], [@Ant] ) ), 1 )
+			VAR _gw = DIVIDE ( 796, _n )
+			VAR _barras =
+			    CONCATENATEX (
+			        _tab,
+			        VAR _cx = 50 + ( [@i] - 0.5 ) * _gw
+			        VAR _h1 = DIVIDE ( [@Atual], _ymax ) * 70
+			        VAR _h2 = DIVIDE ( [@Ant], _ymax ) * 70
+			        VAR _y1 = 94 - _h1
+			        VAR _y2 = 94 - _h2
+			        VAR _var = DIVIDE ( [@Atual] - [@Ant], [@Ant] )
+			        VAR _cor = IF ( _var >= 0, "#2fe07a", "#ff6b6b" )
+			        VAR _nome = Clientes[Cliente]
+			        VAR _sp = SEARCH ( " ", _nome, 1, 0 )
+			        VAR _l1 = IF ( _sp = 0, _nome, LEFT ( _nome, _sp - 1 ) )
+			        VAR _l2 = IF ( _sp = 0, "", MID ( _nome, _sp + 1, 40 ) )
+			        RETURN
+			            "<rect x='" & FORMAT ( _cx - 22, "0" ) & "' y='" & FORMAT ( _y1, "0" ) & "' width='20' height='" & FORMAT ( MAX ( _h1, 1 ), "0" ) & "' fill='#4da3ff' rx='2'/>"
+			                & "<rect x='" & FORMAT ( _cx + 2, "0" ) & "' y='" & FORMAT ( _y2, "0" ) & "' width='20' height='" & FORMAT ( MAX ( _h2, 1 ), "0" ) & "' fill='#2fe07a' rx='2'/>"
+			                & "<text x='" & FORMAT ( _cx, "0" ) & "' y='" & FORMAT ( MIN ( _y1, _y2 ) - 5, "0" ) & "' fill='" & _cor & "' font-size='9' font-weight='600' text-anchor='middle'>" & FORMAT ( _var, "+0.0%;-0.0%" ) & "</text>"
+			                & "<text x='" & FORMAT ( _cx, "0" ) & "' y='108' fill='#8fb0d0' font-size='8.5' text-anchor='middle'>" & _l1 & "</text>"
+			                & "<text x='" & FORMAT ( _cx, "0" ) & "' y='118' fill='#8fb0d0' font-size='8.5' text-anchor='middle'>" & _l2 & "</text>",
+			        "",
+			        Clientes[Ordem], ASC
+			    )
+			VAR _eixoY =
+			    CONCATENATEX (
+			        GENERATESERIES ( 0, 4, 1 ),
+			        VAR _v = _ymax * DIVIDE ( [Value], 4 )
+			        VAR _y = 94 - DIVIDE ( _v, _ymax ) * 70
+			        RETURN
+			            "<line x1='50' y1='" & FORMAT ( _y, "0" ) & "' x2='846' y2='" & FORMAT ( _y, "0" ) & "' stroke='#15375c' stroke-width='1'/>"
+			                & "<text x='44' y='" & FORMAT ( _y + 3, "0" ) & "' fill='#8fb0d0' font-size='9' text-anchor='end'>" & FORMAT ( _v, "#,##0" ) & "</text>",
+			        ""
+			    )
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;height:100%;box-sizing:border-box;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;padding:8px 10px 2px 10px'>"
+			        & "<div style='display:flex;align-items:center;gap:16px;padding:0 6px 4px 6px'>"
+			            & "<span style='font-size:13px;font-weight:700;color:#ffffff'>Volume atual vs. mesmo mês do ano anterior (" & _un & ")</span>"
+			            & "<span style='margin-left:auto;font-size:10.5px;color:#8fb0d0'><span style='color:#4da3ff'>&#9679;</span> " & _rotAtual & " &nbsp; <span style='color:#2fe07a'>&#9679;</span> " & _rotAnt & " &nbsp; <span style='color:#cfe4fa'>&#9675;</span> Variação (%)</span>"
+			        & "</div>"
+			        & "<svg viewBox='0 0 856 124' style='width:100%;height:calc(100% - 26px)' font-family='Segoe UI,sans-serif'>"
+			            & _eixoY
+			            & _barras
+			        & "</svg>"
+			    & "</div>"
+			```
+		displayFolder: Página Volumes
+		lineageTag: 5a4f9e0a-8c7c-44a0-93d0-7727e05c33d5
+
+	/// Faixa "Comparativos": fundo e título da barra de filtros da página Volumes.
+	measure 'HTML Vol Comparativos' = ```
+			"<div style='font-family:Segoe UI,sans-serif;height:100%;box-sizing:border-box;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;display:flex;align-items:center;padding:0 18px;gap:10px'>"
+			    & "<span style='color:#4da3ff;font-size:16px'>&#9638;</span>"
+			    & "<span style='font-size:16px;font-weight:700;color:#ffffff'>Comparativos</span>"
+			& "</div>"
+			```
+		displayFolder: Página Volumes
+		lineageTag: d17aa44a-a132-4d96-8fe4-2e3ca0290e58
+
+	/// Rodapé da página Volumes: data da última medição na base e legenda de cores.
+	measure 'HTML Vol Rodapé' = ```
+			VAR _ult = CALCULATE ( MAX ( fato_indicadores[Data] ), ALL ( fato_indicadores ), REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( Clientes ), REMOVEFILTERS ( dim_indicadores ) )
+			VAR _pt = "<span style='display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;background:"
+			RETURN
+			    "<div style='font-family:Segoe UI,sans-serif;height:100%;box-sizing:border-box;display:flex;align-items:center;gap:26px;font-size:11.5px;color:#8fb0d0;padding:0 8px'>"
+			        & "<span>&#128339; Última medição na base: <b style='color:#cfe4fa'>" & FORMAT ( _ult, "dd/mm/yyyy" ) & "</b></span>"
+			        & "<span style='color:#1d4066'>&#124;</span>"
+			        & "<span>" & _pt & "#2fe07a'></span>Dentro da meta &nbsp;&nbsp;" & _pt & "#ffd93d'></span>Atenção &nbsp;&nbsp;" & _pt & "#ff6b6b'></span>Fora da meta</span>"
+			        & "<span style='color:#1d4066'>&#124;</span>"
+			        & "<span>Faixa esperada = média dos 13 meses &#177; 1 desvio padrão.</span>"
+			        & "<span style='margin-left:auto;color:#6f93b6'>Aquapolo &#183; GS Inima &#183; Sabesp</span>"
+			    & "</div>"
+			```
+		displayFolder: Página Volumes
+		lineageTag: a46ab601-2691-4310-a90c-63583e59253a
+
+	column Aux
+		dataType: string
+		isHidden
+		lineageTag: 83f4ec86-7ab9-4661-9ae3-d24350d1afa6
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Aux]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Medidas Volumes' = calculated
+		mode: import
+		source = ROW("Aux", BLANK())
+
+	annotation PBI_Id = MedidasVolumes

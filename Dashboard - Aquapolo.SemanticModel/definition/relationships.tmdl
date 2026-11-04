@@ -7,3 +7,11 @@ relationship AutoDetected_4ac666b1-7648-4927-af05-900e8d310ad9
 	fromColumn: fato_indicadores.ID_Indicador
 	toColumn: dim_indicadores.ID_Indicador
 
+
+relationship b0bd108a-028b-497b-a383-42c68fc83c1a
+	fromColumn: fato_indicadores.Data
+	toColumn: dCalendario.Data
+
+relationship 7383bb1d-337a-4a8a-9924-2bdbba317743
+	fromColumn: fato_indicadores.ID_Indicador
+	toColumn: Clientes.ID_Indicador
