@@ -1,0 +1,54 @@
+/// Meses para o seletor de Período da página Indicadores Químicos. O mês mais recente aparece como "Último mês", para a seleção salva acompanhar a base.
+table Meses
+	lineageTag: cc930a72-8cac-4fdf-8d35-87a7bc51b2fd
+
+	column Início
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: 4f0f735e-20c6-43cc-acf0-151a9d4250f9
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Início]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Período
+		dataType: string
+		lineageTag: b10f4d37-ba7f-4ff9-8847-82f121415951
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Período]
+		sortByColumn: Início
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mês
+		dataType: string
+		isHidden
+		lineageTag: 4f82e3b8-bef6-49df-86af-8a4a473289df
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Mês]
+		sortByColumn: Início
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Meses = calculated
+		mode: import
+		source = ```
+				VAR _ult = CALCULATE ( MAX ( fato_indicadores[Data] ), fato_indicadores[Etapa] = "Químicos - Autonomia" )
+				VAR _ini = CALCULATE ( MIN ( fato_indicadores[Data] ), fato_indicadores[Etapa] = "Químicos - Autonomia" )
+				VAR _ultMes = DATE ( YEAR ( _ult ), MONTH ( _ult ), 1 )
+				VAR _meses =
+					DISTINCT ( SELECTCOLUMNS ( CALENDAR ( _ini, _ult ), "Início", DATE ( YEAR ( [Date] ), MONTH ( [Date] ), 1 ) ) )
+				RETURN
+					ADDCOLUMNS (
+						_meses,
+						"Período", IF ( [Início] = _ultMes, "Último mês", FORMAT ( [Início], "mmm/yyyy", "pt-BR" ) ),
+						"Mês", FORMAT ( [Início], "mmm/yyyy", "pt-BR" )
+					)
+				```
+
+	annotation PBI_Id = 8f4fdf33c442404e9c479590cb0d8386
+

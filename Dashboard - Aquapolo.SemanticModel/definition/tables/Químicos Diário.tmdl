@@ -1,0 +1,115 @@
+/// Consumo diário (kg) e estoque (L) de cada químico, lidos da planilha "Consumo de quimicos EPAI.xlsm" que fica em Base_PowerBI\Planilhas.
+table 'Químicos Diário'
+	isHidden
+	lineageTag: 940e694c-2caa-4556-987b-27e6730567a7
+
+	column Data
+		dataType: dateTime
+		isHidden
+		formatString: Short Date
+		lineageTag: 26398c40-2d45-4587-bda1-517f3ccf39d1
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	column Químico
+		dataType: string
+		isHidden
+		lineageTag: 9af1eb45-4473-4bcd-8379-6d5cbabbd852
+		summarizeBy: none
+		sourceColumn: Químico
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Consumo kg'
+		dataType: double
+		isHidden
+		lineageTag: f7433d6b-c1c3-4d04-bd2c-507be0d550a0
+		summarizeBy: sum
+		sourceColumn: Consumo kg
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column 'Estoque L'
+		dataType: double
+		isHidden
+		lineageTag: 6650a0b3-4fcf-48e8-bcf7-f9448a595d6a
+		summarizeBy: none
+		sourceColumn: Estoque L
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Densidade
+		dataType: double
+		isHidden
+		lineageTag: a4f23b02-b89a-4e92-a56c-cf06f50bfb6c
+		summarizeBy: none
+		sourceColumn: Densidade
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Químicos Diário' = m
+		mode: import
+		source =
+				let
+					// ===== EDITAR AQUI: nome do químico na página -> aba da planilha =====
+					Mapa = {
+						{ "PAC", "PAC" },
+						{ "Soda", "Soda" },
+						{ "Hipoclorito", "Hipoclorito" },
+						{ "Ácido Cítrico", "Cítrico" },
+						{ "Purate", "PURATE" },
+						{ "Ácido Sulfúrico", "Sulfúrico" },
+						{ "IK - 220", "IK220" },
+						{ "Vitec 1400", "VITEC" }
+					},
+					Livro = Excel.Workbook ( File.Contents ( PastaBase & "Planilhas\Consumo de quimicos EPAI.xlsm" ), null, true ),
+					LerAba = ( quimico as text, aba as text ) as table =>
+						let
+							Bruta = Livro{[Item = aba, Kind = "Sheet"]}[Data],
+							SemErros = Table.ReplaceErrorValues ( Bruta, List.Transform ( Table.ColumnNames ( Bruta ), each { _, null } ) ),
+							Linhas = Table.ToRows ( SemErros ),
+							Texto = ( v ) => if v is text then Text.Trim ( Text.Clean ( v ) ) else "",
+							Numero = ( v ) => if v is number then v else null,
+							// densidade: primeiro número da linha que tem a palavra "Densidade"
+							LinhaDens = List.First ( List.Select ( Linhas, each List.Contains ( List.Transform ( _, Texto ), "Densidade" ) ), {} ),
+							Densidade = List.First ( List.Select ( LinhaDens, each _ is number ), null ),
+							// cabeçalho da tabela diária: linha cuja 1ª célula começa com "DIA"
+							PosCab = List.PositionOf ( List.Transform ( Linhas, each Text.StartsWith ( Texto ( _{0} ), "DIA" ) ), true ),
+							Cab = List.Transform ( Linhas{PosCab}, Texto ),
+							Coluna = ( trecho as text ) as number => List.PositionOf ( List.Transform ( Cab, each Text.Contains ( _, trecho, Comparer.OrdinalIgnoreCase ) ), true ),
+							ColConsumo = Coluna ( "Consumo (Kg/dia)" ),
+							ColEstoque = if Coluna ( "Total estoque" ) >= 0 then Coluna ( "Total estoque" ) else Coluna ( "Estoque (L)" ),
+							Dados = List.Select ( List.Skip ( Linhas, PosCab + 1 ), each _{0} is datetime or _{0} is date ),
+							Registros = List.Transform (
+								Dados,
+								each [
+									Data = Date.From ( _{0} ),
+									#"Químico" = quimico,
+									#"Consumo kg" = Numero ( _{ColConsumo} ),
+									#"Estoque L" = Numero ( _{ColEstoque} ),
+									Densidade = Densidade
+								]
+							)
+						in
+							Table.FromRecords ( Registros, { "Data", "Químico", "Consumo kg", "Estoque L", "Densidade" } ),
+					Tudo = Table.Combine ( List.Transform ( Mapa, each LerAba ( _{0}, _{1} ) ) ),
+					ComDado = Table.SelectRows ( Tudo, each [Data] >= #date ( 2024, 1, 1 ) and ( [#"Consumo kg"] <> null or [#"Estoque L"] <> null ) ),
+					Tipos = Table.TransformColumnTypes (
+						ComDado,
+						{ { "Data", type date }, { "Químico", type text }, { "Consumo kg", type number }, { "Estoque L", type number }, { "Densidade", type number } }
+					)
+				in
+					Tipos
+
+	annotation PBI_ResultType = Table
+

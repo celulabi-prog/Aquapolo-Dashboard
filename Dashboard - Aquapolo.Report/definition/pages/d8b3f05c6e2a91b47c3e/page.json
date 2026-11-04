@@ -1,0 +1,41 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/page/2.1.0/schema.json",
+  "name": "d8b3f05c6e2a91b47c3e",
+  "displayName": "Detalhe do químico",
+  "displayOption": "FitToPage",
+  "height": 600,
+  "width": 500,
+  "pageBinding": {
+    "name": "a3f7c2e9b14d6058e2c1",
+    "type": "Tooltip",
+    "parameters": []
+  },
+  "type": "Tooltip",
+  "visibility": "HiddenInViewMode",
+  "objects": {
+    "background": [
+      {
+        "properties": {
+          "color": {
+            "solid": {
+              "color": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'#0D2C5C'"
+                  }
+                }
+              }
+            }
+          },
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0D"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}

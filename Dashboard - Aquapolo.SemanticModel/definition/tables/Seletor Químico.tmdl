@@ -1,0 +1,39 @@
+/// Opções do seletor "Químico" do gráfico de evolução: "Todos" (consumo total, kg/m³) ou um químico com consumo na planilha (g/m³).
+table 'Seletor Químico'
+	lineageTag: 02550b07-41b9-484a-8394-0ec5e8aee9e8
+
+	column Ordem
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2eda3a68-3eee-4ba6-a1bf-2cc4dac1363c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ordem]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Opção
+		dataType: string
+		lineageTag: 72ac83d4-3bf3-4e68-ac50-ec28154768b1
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Opção]
+		sortByColumn: Ordem
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Seletor Químico' = calculated
+		mode: import
+		source = ```
+				UNION (
+					ROW ( "Ordem", 0, "Opção", "Todos" ),
+					FILTER (
+						SELECTCOLUMNS ( 'Químicos', "Ordem", 'Químicos'[Ordem], "Opção", 'Químicos'[Químico] ),
+						[Opção] IN VALUES ( 'Químicos Diário'[Químico] )
+					)
+				)
+				```
+
+	annotation PBI_Id = 91fc08ec04cb4e9ea125e12de374439a
+

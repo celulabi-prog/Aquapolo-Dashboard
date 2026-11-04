@@ -1,0 +1,19 @@
+/// Caixa "Comparar com mesmo mês do ano anterior" do gráfico de evolução. Marcada = mostra a linha do ano anterior.
+table 'Comparar Ano Anterior'
+	lineageTag: 537f794f-465a-4ec2-8267-59207a63e0c6
+
+	column Opção
+		dataType: string
+		lineageTag: 2e847ed3-e3c1-43e9-9096-fa9d9e8a20d7
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Opção]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Comparar Ano Anterior' = calculated
+		mode: import
+		source = DATATABLE ( "Opção", STRING, { { "Comparar com mesmo mês do ano anterior" } } )
+
+	annotation PBI_Id = ec84c2480fde4ae9b9b73f3b8bd9c65b
+
