@@ -215,9 +215,9 @@ table 'Medidas Volumes'
 	measure 'HTML Vol Cabeçalho' = ```
 			VAR _ult = CALCULATE ( MAX ( fato_indicadores[Data] ), ALL ( fato_indicadores ), REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
 			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ) )
-			VAR _pt = "<span style='display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:"
+			VAR _pt = "<span style='display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px;background:"
 			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
-			    "<div style='font-family:Segoe UI,sans-serif;position:relative;height:100%;box-sizing:border-box;background:linear-gradient(100deg,#0c2038 0%,#133053 60%,#17436f 100%);border:1px solid #1e3f66;border-radius:10px'>"
+			    "<div style='font-family:Segoe UI,sans-serif;position:relative;height:100%;box-sizing:border-box;background:linear-gradient(100deg,#0c2038 0%,#133053 60%,#17436f 100%);border:1px solid #1e3150;border-radius:8px'>"
 			        & "<div style='position:absolute;left:22px;top:27px'>"
 			            & "<div style='font-size:27px;font-weight:800;color:#ffffff;line-height:1;letter-spacing:-0.6px'>Aquapolo</div>"
 			            & "<div style='margin-top:5px;font-size:10.5px;color:#9dc2e6'>GS Inima &nbsp;&#124;&nbsp; Sabesp</div>"
@@ -227,8 +227,8 @@ table 'Medidas Volumes'
 			            & "<div style='font-size:19px;font-weight:700;color:#ffffff;line-height:1.1'>Painel Operacional</div>"
 			            & "<div style='margin-top:4px;font-size:11px;color:#8fb6dd'>Indicadores de volumes por cliente</div>"
 			        & "</div>"
-			        & "<div style='position:absolute;left:880px;top:45px;font-size:11px;color:#b9d3ec'>"
-			            & _pt & "#2ee07a'></span>Dentro da meta &nbsp;&nbsp;&nbsp;" & _pt & "#fbbf24'></span>Atenção &nbsp;&nbsp;&nbsp;" & _pt & "#ff5c5c'></span>Fora da meta"
+			        & "<div style='position:absolute;left:760px;top:46px;font-size:10px;color:#93b3d4'>"
+			            & _pt & "#22c55e'></span>Dentro da meta &nbsp;&nbsp;&nbsp;" & _pt & "#eab308'></span>Atenção &nbsp;&nbsp;&nbsp;" & _pt & "#ef4444'></span>Fora da meta"
 			        & "</div>"
 			        & "<div style='position:absolute;left:1664px;top:33px;text-align:right;width:192px'>"
 			            & "<div style='font-size:10px;color:#8fb6dd'>Última atualização</div>"
@@ -236,7 +236,7 @@ table 'Medidas Volumes'
 			        & "</div>"
 			    & "</div>"
 			RETURN
-			    IF ( ISBLANK ( _ult ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
+			    IF ( ISBLANK ( _ult ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f1f38;border:1px solid #1e3150;border-radius:8px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
 			```
 		displayFolder: Página Volumes
 		lineageTag: c015bb1f-8640-56e4-90c2-807c9d95b9f3
@@ -245,7 +245,7 @@ table 'Medidas Volumes'
 	measure 'HTML Vol Cartão Cliente' = ```
 			VAR _cli = [Vol Cliente]
 			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
-			    "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;padding:13px 18px'>"
+			    "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f1f38;border:1px solid #1e3150;border-radius:8px;padding:13px 18px'>"
 			        & "<div style='font-size:11.5px;color:#8fa9c4;letter-spacing:0.4px'>Cliente selecionado</div>"
 			    & "</div>"
 			RETURN _html
@@ -262,11 +262,11 @@ table 'Medidas Volumes'
 			VAR _rotAnt = CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _m - 1 )
 			VAR _tem = NOT ISBLANK ( _ant ) && _ant <> 0
 			VAR _var = DIVIDE ( _vol - _ant, _ant )
-			VAR _cor = IF ( NOT _tem, "#64809c", IF ( _var >= 0, "#2ee07a", "#ff5c5c" ) )
+			VAR _cor = IF ( NOT _tem, "#64809c", IF ( _var >= 0, "#22c55e", "#ef4444" ) )
 			VAR _seta = IF ( NOT _tem, "", IF ( _var >= 0, "&#9650;", "&#9660;" ) )
-			VAR _div = "<div style='width:1px;height:58px;background:#1e3f66'></div>"
+			VAR _div = "<div style='width:1px;height:58px;background:#1e3150'></div>"
 			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
-			    "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;flex-direction:row;align-items:center;padding:0 24px;gap:26px'>"
+			    "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f1f38;border:1px solid #1e3150;border-radius:8px;flex-direction:row;align-items:center;padding:0 24px;gap:26px'>"
 			        & "<div style='flex:1.25'>"
 			            & "<div style='font-size:11.5px;color:#8fa9c4'>Volume atual &#183; " & _rot & "</div>"
 			            & "<div style='font-size:34px;font-weight:700;color:#ffffff;line-height:1.05;margin-top:3px'>" & FORMAT ( _vol, "#,##0" ) & "</div>"
@@ -283,11 +283,11 @@ table 'Medidas Volumes'
 			            & "<div style='font-size:11.5px;color:#8fa9c4'>vs. " & _rotAnt & "</div>"
 			            & "<div style='font-size:26px;font-weight:700;margin-top:3px;line-height:1.05;color:" & _cor & "'>"
 			            & IF ( _tem, _seta & " " & FORMAT ( _var, "+0.0%;-0.0%" ), "&#8212;" ) & "</div>"
-			            & "<div style='font-size:11px;color:#8fa9c4'>" & IF ( _tem, "mês anterior " & FORMAT ( _ant, "#,##0" ), "sem base" ) & "</div>"
+			            & "<div style='font-size:11px;color:#8fa9c4'>" & IF ( _tem, "volume anterior " & FORMAT ( _ant, "#,##0" ), "sem base" ) & "</div>"
 			        & "</div>"
 			    & "</div>"
 			RETURN
-			    IF ( ISBLANK ( _m ) || ISBLANK ( _vol ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
+			    IF ( ISBLANK ( _m ) || ISBLANK ( _vol ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f1f38;border:1px solid #1e3150;border-radius:8px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
 			```
 		displayFolder: Página Volumes
 		lineageTag: 40e328d7-4d1b-5454-9bb8-bb7c1e3423f2
@@ -300,12 +300,12 @@ table 'Medidas Volumes'
 			VAR _dp = [Vol Desvio 12m]
 			VAR _tem = NOT ISBLANK ( _vol ) && NOT ISBLANK ( _med )
 			VAR _dist = ABS ( _vol - _med )
-			VAR _cor = SWITCH ( TRUE (), NOT _tem, "#64809c", _dist <= _dp, "#2ee07a", _dist <= 2 * _dp, "#fbbf24", "#ff5c5c" )
+			VAR _cor = SWITCH ( TRUE (), NOT _tem, "#64809c", _dist <= _dp, "#22c55e", _dist <= 2 * _dp, "#eab308", "#ef4444" )
 			VAR _txt = SWITCH ( TRUE (), NOT _tem, "Sem referência", _dist <= _dp, "Consumo estável", _vol > _med, "Consumo acima do esperado", "Consumo abaixo do esperado" )
-			VAR _sub = IF ( _tem, "Faixa esperada " & FORMAT ( _med - _dp, "#,##0" ) & " &#8211; " & FORMAT ( _med + _dp, "#,##0" ) & " m&#179;/d", "Sem histórico suficiente" )
+			VAR _sub = IF ( _tem, "Faixa esperada: " & FORMAT ( _med - _dp, "#,##0" ) & " &#8211; " & FORMAT ( _med + _dp, "#,##0" ) & " m&#179;/d", "Sem histórico suficiente" )
 			VAR _ic = IF ( _tem && _dist <= _dp, "&#10003;", "&#33;" )
 			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
-			    "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;flex-direction:row;align-items:center;padding:0 24px;gap:18px'>"
+			    "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f1f38;border:1px solid #1e3150;border-radius:8px;flex-direction:row;align-items:center;padding:0 24px;gap:18px'>"
 			        & "<div style='width:46px;height:46px;flex:none;border-radius:50%;border:2px solid " & _cor & ";color:" & _cor & ";font-size:23px;font-weight:700;display:flex;align-items:center;justify-content:center'>" & _ic & "</div>"
 			        & "<div>"
 			            & "<div style='font-size:11.5px;color:#8fa9c4'>Situação</div>"
@@ -314,7 +314,7 @@ table 'Medidas Volumes'
 			        & "</div>"
 			    & "</div>"
 			RETURN
-			    IF ( ISBLANK ( _m ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
+			    IF ( ISBLANK ( _m ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f1f38;border:1px solid #1e3150;border-radius:8px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
 			```
 		displayFolder: Página Volumes
 		lineageTag: fc07a8e0-035d-5329-88a3-b8893a3cf517
@@ -368,18 +368,19 @@ table 'Medidas Volumes'
 			        VAR _v = [@Vol]
 			        VAR _meta = Clientes[Meta]
 			        VAR _at = DIVIDE ( _v, _meta )
-			        VAR _cor = SWITCH ( TRUE (), ISBLANK ( _at ), "#64809c", _at >= 1, "#2ee07a", _at >= 0.9, "#fbbf24", "#ff5c5c" )
+			        VAR _cor = SWITCH ( TRUE (), ISBLANK ( _at ), "#64809c", _at >= 1, "#22c55e", _at >= 0.85, "#eab308", "#ef4444" )
 			        VAR _larg = MIN ( MAX ( DIVIDE ( _at, 1.3 ) * 100, 0 ), 100 )
 			        VAR _temMes = NOT ISBLANK ( [@Ant] ) && [@Ant] <> 0
 			        VAR _temAno = NOT ISBLANK ( [@Ano] ) && [@Ano] <> 0
 			        VAR _vMes = DIVIDE ( _v - [@Ant], [@Ant] )
 			        VAR _vAno = DIVIDE ( _v - [@Ano], [@Ano] )
-			        VAR _corMes = IF ( NOT _temMes, "#64809c", IF ( _vMes >= 0, "#2ee07a", "#ff5c5c" ) )
-			        VAR _corAno = IF ( NOT _temAno, "#64809c", IF ( _vAno >= 0, "#2ee07a", "#ff5c5c" ) )
-			        VAR _sel = Clientes[ID_Indicador] = _idSel
+			        VAR _corMes = IF ( NOT _temMes, "#64809c", IF ( _vMes >= 0, "#22c55e", "#ef4444" ) )
+			        VAR _corAno = IF ( NOT _temAno, "#64809c", IF ( _vAno >= 0, "#22c55e", "#ef4444" ) )
+			        VAR _sel = Clientes[ID_Indicador] = _idSel && _idSel <> "Volumes | Todos Clientes"
+			        VAR _todos = Clientes[Cliente] = "Todos Clientes"
 			        VAR _o = Clientes[Ordem]
 			        VAR _pos = COUNTROWS ( FILTER ( _tab, Clientes[Ordem] <= _o ) )
-			        VAR _topo = MIN ( MAX ( 68 + ( _pos - 1 ) * 38 - 28, 6 ), 212 )
+			        VAR _topo = MIN ( MAX ( 64 + ( _pos - 1 ) * 35.5 - 26, 6 ), 182 )
 			        VAR _idl = Clientes[ID_Indicador]
 			        VAR _serie = FILTER ( _grade, Clientes[ID_Indicador] = _idl && NOT ISBLANK ( [@V] ) )
 			        VAR _lo = MINX ( _serie, [@V] )
@@ -390,7 +391,7 @@ table 'Medidas Volumes'
 			                " ", dCalendario[MesIdx], ASC )
 			        VAR _dist = ABS ( _v - [@Med] )
 			        VAR _temRef = NOT ISBLANK ( [@Med] ) && NOT ISBLANK ( _v )
-			        VAR _corSit = SWITCH ( TRUE (), NOT _temRef, "#64809c", _dist <= [@Dp], "#2ee07a", _dist <= 2 * [@Dp], "#fbbf24", "#ff5c5c" )
+			        VAR _corSit = SWITCH ( TRUE (), NOT _temRef, "#64809c", _dist <= [@Dp], "#22c55e", _dist <= 2 * [@Dp], "#eab308", "#ef4444" )
 			        VAR _txtSit = SWITCH ( TRUE (), NOT _temRef, "sem referência", _dist <= [@Dp], "estável", _v > [@Med], "acima do esperado", "abaixo do esperado" )
 			        VAR _r1 = "<div style='font-size:9.5px;color:#8fa9c4'>"
 			        VAR _r2 = "</div><div style='font-size:14px;font-weight:700;color:#ffffff;margin-top:1px'>"
@@ -398,7 +399,7 @@ table 'Medidas Volumes'
 
 			        VAR _pop =
 			            "<div class='vpop' style='top:" & FORMAT ( _topo + 0, "0" ) & "px'>"
-			                & "<div style='padding:7px 12px;background:#16304e;border-bottom:1px solid #1e3f66;display:flex;align-items:center;gap:8px'>"
+			                & "<div style='padding:7px 12px;background:#152a48;border-bottom:1px solid #1e3150;display:flex;align-items:center;gap:8px'>"
 			                    & "<span style='font-size:13px;font-weight:700;color:#ffffff;letter-spacing:0.5px'>" & _nome & "</span>"
 			                    & "<span style='margin-left:auto;font-size:9.5px;font-weight:700;color:" & _corSit & ";border:1px solid " & _corSit & ";border-radius:20px;padding:1px 8px'>" & _txtSit & "</span>"
 			                & "</div>"
@@ -412,16 +413,16 @@ table 'Medidas Volumes'
 			                & "</table>"
 			                & "<div style='margin:0 12px;font-size:9.5px;color:#8fa9c4'>" & FORMAT ( [@Dias] + 0, "0" ) & " dias medidos"
 			                    & IF ( _temRef, " &#183; faixa esperada <b style='color:#cfe4fa'>" & FORMAT ( [@Med] - [@Dp], "#,##0" ) & " &#8211; " & FORMAT ( [@Med] + [@Dp], "#,##0" ) & "</b> m&#179;/d", "" ) & "</div>"
-			                & "<div style='margin:6px 12px 10px 12px;padding:4px 7px 0 7px;background:#0b1e35;border:1px solid #1e3f66;border-radius:6px'>"
+			                & "<div style='margin:6px 12px 10px 12px;padding:4px 7px 0 7px;background:#0b1e35;border:1px solid #1e3150;border-radius:6px'>"
 			                    & "<div style='font-size:9.5px;color:#8fa9c4'>Últimos 13 meses (m&#179;/d)</div>"
 			                    & "<svg viewBox='0 0 396 50' style='width:100%;height:44px'><polyline points='" & _spark & "' fill='none' stroke='#6ab0f3' stroke-width='2'/></svg>"
 			                & "</div>"
 			            & "</div>"
 			        RETURN
-			            "<tr class='vrow'>"
-			                & "<td class='c1' style='border-left:3px solid " & IF ( _sel, "#4a9eff", "transparent" ) & ";color:" & IF ( _sel, "#ffffff", "#cfe4fa" ) & ";font-weight:" & IF ( _sel, "700", "400" ) & "'>" & _nome & "</td>"
+			            "<tr class='vrow' style='background:" & IF ( _sel, "#16304f", "transparent" ) & "'>"
+			                & "<td class='c1' style='border-left:2px solid " & IF ( _sel, "#4a9eff", "transparent" ) & ";color:" & IF ( _sel || _todos, "#ffffff", "#c3d8ee" ) & ";font-weight:" & IF ( _sel || _todos, "700", "400" ) & "'>" & _nome & "</td>"
 			                & "<td class='cn'>" & FORMAT ( _v, "#,##0" ) & "</td>"
-			                & "<td style='padding:0 8px'><div style='position:relative;height:9px;background:#15304d;border-radius:5px'>"
+			                & "<td style='padding:0 8px'><div style='position:relative;height:9px;background:#152840;border-radius:5px'>"
 			                    & "<div style='width:" & FORMAT ( _larg + 0, "0" ) & "%;height:9px;background:" & _cor & ";border-radius:5px'></div>"
 			                    & "<div style='position:absolute;left:77%;top:-3px;height:15px;border-left:1px dashed #9fc0e0'></div></div></td>"
 			                & "<td class='cp' style='color:" & _cor & "'>" & IF ( ISBLANK ( _at ), "&#8212;", FORMAT ( _at, "0%" ) ) & "</td>"
@@ -434,23 +435,23 @@ table 'Medidas Volumes'
 			VAR _css =
 			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}"
 			    & ".vwrap{position:relative;height:100%;font-family:Segoe UI,sans-serif;pointer-events:none}"
-			    & ".vcard{position:absolute;left:0;top:0;width:535px;height:100%;display:flex;flex-direction:column;"
-			    & "background:#10243c;border:1px solid #1e3f66;border-radius:10px;pointer-events:auto}"
-			    & "table.vt{width:100%;height:100%;border-collapse:collapse;font-size:11.5px;table-layout:fixed}"
+			    & ".vcard{position:absolute;left:0;top:0;width:531px;height:100%;display:flex;flex-direction:column;"
+			    & "background:#0f1f38;border:1px solid #1e3150;border-radius:8px;pointer-events:auto}"
+			    & "table.vt{width:100%;height:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}"
 			    & "table.vt th{font-size:9.5px;color:#8fa9c4;font-weight:600;padding:5px 6px;text-align:right;letter-spacing:0.3px}"
 			    & "table.vt th.l{text-align:left;padding-left:16px}"
-			    & "tr.vh{height:26px}"
-			    & "tr.vrow{border-top:1px solid #15304d}"
-			    & "tr.vrow:hover{background:#19406b}"
+			    & "tr.vh{height:24px}"
+			    & "tr.vrow{border-top:1px solid #152840}"
+			    & "tr.vrow:hover{background:#17304f}"
 			    & "td.c1{padding:0 6px 0 13px}"
-			    & "td.cn{text-align:right;padding:0 6px;color:#ffffff;font-weight:600;font-size:12.5px}"
-			    & "td.cp{text-align:right;padding:0 4px;font-weight:700;font-size:11.5px}"
-			    & ".vpop{display:none;position:absolute;left:547px;width:420px;background:#10243c;border:1px solid #2d5c8a;"
+			    & "td.cn{text-align:right;padding:0 6px;color:#ffffff;font-weight:600;font-size:11.5px}"
+			    & "td.cp{text-align:right;padding:0 4px;font-weight:700;font-size:11px}"
+			    & ".vpop{display:none;position:absolute;left:543px;width:420px;background:#0f1f38;border:1px solid #2d5c8a;"
 			    & "border-radius:10px;box-shadow:0 14px 34px rgba(0,0,0,0.65);text-align:left;pointer-events:none}"
 			    & "tr.vrow:hover .vpop{display:block}</style>"
 			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
 			    _css & "<div class='vwrap'><div class='vcard'>"
-			        & "<div style='padding:11px 16px;background:#16304e;border-bottom:1px solid #1e3f66;display:flex;align-items:center;gap:9px;flex:none'>" & "<span style='color:#4a9eff;font-size:13px'>&#9632;</span>" & "<span style='font-size:13.5px;font-weight:700;color:#ffffff;letter-spacing:0.7px'>" & "RESUMO POR CLIENTE" & "</span>" & "<span style='margin-left:auto;font-size:10.5px;color:#5f7d9c'>" & _rot & "</span>" & "</div>"
+			        & "<div style='padding:9px 15px;background:#152a48;border-bottom:1px solid #1e3150;display:flex;align-items:center;gap:8px;flex:none'>" & "<span style='color:#4a9eff;font-size:9px;line-height:1'>&#9632;</span>" & "<span style='font-size:12px;font-weight:700;color:#ffffff;letter-spacing:1.1px'>" & "RESUMO POR CLIENTE" & "</span>" & "<span style='margin-left:auto;font-size:10px;color:#5f7d9c'>" & _rot & "</span>" & "</div>"
 			        & "<div style='flex:1;min-height:0;display:flex;flex-direction:column'><table class='vt'>"
 			        & "<colgroup><col style='width:172px'><col style='width:92px'><col style='width:162px'><col style='width:50px'><col style='width:28px'></colgroup>"
 			        & "<tr class='vh'><th class='l'>CLIENTE</th><th>ATUAL m&#179;/d</th><th colspan='2'>ATING. META</th><th></th></tr>"
@@ -458,7 +459,7 @@ table 'Medidas Volumes'
 			        & "</table></div>"
 			    & "</div></div>"
 			RETURN
-			    IF ( ISBLANK ( _m ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
+			    IF ( ISBLANK ( _m ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f1f38;border:1px solid #1e3150;border-radius:8px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
 			```
 		displayFolder: Página Volumes
 		lineageTag: 41c46d25-3479-50c5-925f-658e424df94c
@@ -481,6 +482,8 @@ table 'Medidas Volumes'
 			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), dCalendario[MesIdx] = _k, fato_indicadores[ID_Indicador] = _id )
 			    )
 			VAR _max = MAXX ( _hist, [@V] )
+			VAR _piso = MINX ( _hist, [@V] ) * 0.94
+			VAR _faixa = MAX ( _max - _piso, 0.0001 )
 			VAR _cheios = FILTER ( _hist, [@D] >= 25 )
 			VAR _med = AVERAGEX ( _cheios, [@V] )
 			VAR _min = MINX ( _cheios, [@V] )
@@ -493,18 +496,18 @@ table 'Medidas Volumes'
 			        VAR _v = [@V]
 			        VAR _tem = NOT ISBLANK ( [@A] ) && [@A] <> 0 && NOT ISBLANK ( _v )
 			        VAR _d = DIVIDE ( _v - [@A], [@A] )
-			        VAR _c = IF ( NOT _tem, "#64809c", IF ( _d >= 0, "#2ee07a", "#ff5c5c" ) )
+			        VAR _c = IF ( NOT _tem, "#64809c", IF ( _d >= 0, "#22c55e", "#ef4444" ) )
 			        VAR _seta = IF ( NOT _tem, "", IF ( _d >= 0, "&#9650;", "&#9660;" ) )
-			        VAR _larg = MIN ( MAX ( DIVIDE ( _v, _max ) * 100, 0 ), 100 )
+			        VAR _larg = MIN ( MAX ( 32 + DIVIDE ( _v - _piso, _faixa ) * 68, 0 ), 100 )
 			        VAR _foco = dCalendario[MesIdx] = _m
 			        VAR _parcial = [@D] < 25
 			        RETURN
-			            "<tr style='border-top:1px solid #15304d" & IF ( _foco, ";background:#19406b", "" ) & "'>"
+			            "<tr style='border-top:1px solid #152840" & IF ( _foco, ";background:#19406b", "" ) & "'>"
 			                & "<td style='padding:0 8px 0 16px;color:" & IF ( _foco, "#ffffff", "#8fa9c4" ) & "'>" & [@Rot] & "</td>"
-			                & "<td style='padding:0 8px'><div style='height:11px;background:#15304d;border-radius:3px'><div style='width:" & FORMAT ( _larg + 0, "0" ) & "%;height:11px;background:#3b82f6;border-radius:3px'></div></div></td>"
+			                & "<td style='padding:0 8px'><div style='height:13px;background:#152840;border-radius:3px'><div style='width:" & FORMAT ( _larg + 0, "0" ) & "%;height:13px;background:#3b82f6;border-radius:3px'></div></div></td>"
 			                & "<td style='padding:0 8px;text-align:right;color:#ffffff;font-weight:600'>" & FORMAT ( _v, "#,##0" ) & "</td>"
 			                & "<td style='padding:0 8px;text-align:right;color:#cfe4fa'>" & FORMAT ( DIVIDE ( _v, 86.4 ), "#,##0" ) & "</td>"
-			                & "<td style='padding:0 8px;text-align:right;color:" & IF ( _parcial, "#fbbf24", "#8fa9c4" ) & "'>" & FORMAT ( [@D] + 0, "0" ) & "</td>"
+			                & "<td style='padding:0 8px;text-align:right;color:" & IF ( _parcial, "#eab308", "#8fa9c4" ) & "'>" & FORMAT ( [@D] + 0, "0" ) & "</td>"
 			                & "<td style='padding:0 16px 0 8px;text-align:right;font-weight:600;color:" & _c & "'>" & IF ( _tem, _seta & " " & FORMAT ( _d, "+0.0%;-0.0%" ), "&#8212;" ) & "</td>"
 			            & "</tr>",
 			        "",
@@ -512,26 +515,26 @@ table 'Medidas Volumes'
 			    )
 			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
 			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>"
-			    & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px'>"
-			        & "<div style='padding:11px 16px;background:#16304e;border-bottom:1px solid #1e3f66;display:flex;align-items:center;gap:9px;flex:none'>" & "<span style='color:#4a9eff;font-size:13px'>&#9632;</span>" & "<span style='font-size:13.5px;font-weight:700;color:#ffffff;letter-spacing:0.7px'>" & "HISTÓRICO DE MEDIÇÃO &#8212; " & _cli & "</span>" & "<span style='margin-left:auto;font-size:10.5px;color:#5f7d9c'>" & "13 meses &#183; média diária" & "</span>" & "</div>"
+			    & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f1f38;border:1px solid #1e3150;border-radius:8px'>"
+			        & "<div style='padding:9px 15px;background:#152a48;border-bottom:1px solid #1e3150;display:flex;align-items:center;gap:8px;flex:none'>" & "<span style='color:#4a9eff;font-size:9px;line-height:1'>&#9632;</span>" & "<span style='font-size:12px;font-weight:700;color:#ffffff;letter-spacing:1.1px'>" & "HISTÓRICO DE MEDIÇÃO &#8212; " & _cli & "</span>" & "<span style='margin-left:auto;font-size:10px;color:#5f7d9c'>" & "13 meses" & "</span>" & "</div>"
 			        & "<div style='flex:1;min-height:0;display:flex;flex-direction:column'>"
-			        & "<table style='width:100%;height:100%;border-collapse:collapse;font-size:11.5px;table-layout:fixed'>"
+			        & "<table style='width:100%;height:100%;border-collapse:collapse;font-size:11px;table-layout:fixed'>"
 			        & "<colgroup><col style='width:80px'><col style='width:240px'><col style='width:108px'><col style='width:72px'><col style='width:60px'><col style='width:128px'></colgroup>"
-			        & "<tr style='font-size:9.5px;color:#8fa9c4'><th style='padding:5px 8px 5px 16px;text-align:left;font-weight:600'>MÊS/ANO</th><th></th>"
+			        & "<tr style='font-size:9.5px;color:#8fa9c4'><th style='padding:5px 8px 5px 16px;text-align:left;font-weight:600'>REF/MÊS</th><th></th>"
 			        & "<th style='padding:5px 8px;text-align:right;font-weight:600'>VOLUME m&#179;/d</th>"
 			        & "<th style='padding:5px 8px;text-align:right;font-weight:600'>L/s</th>"
 			        & "<th style='padding:5px 8px;text-align:right;font-weight:600'>DIAS</th>"
 			        & "<th style='padding:5px 16px 5px 8px;text-align:right;font-weight:600'>VS. MÊS ANT.</th></tr>"
 			        & _linhas
 			        & "</table></div>"
-			        & "<div style='padding:9px 16px;background:#16304e;border-top:1px solid #1e3f66;display:flex;gap:22px;font-size:11px;color:#8fa9c4'>"
+			        & "<div style='padding:9px 16px;background:#152a48;border-top:1px solid #1e3150;display:flex;gap:22px;font-size:11px;color:#8fa9c4'>"
 			            & "<span>Média 13m <b style='color:#ffffff;font-size:12.5px'>" & FORMAT ( _med, "#,##0" ) & "</b> &#183; " & FORMAT ( DIVIDE ( _med, 86.4 ), "#,##0" ) & " L/s</span>"
 			            & "<span style='margin-left:auto'>Mín <b style='color:#ffffff'>" & FORMAT ( _min, "#,##0" ) & "</b> (" & _mMin & ")</span>"
 			            & "<span>Máx <b style='color:#ffffff'>" & FORMAT ( _pico, "#,##0" ) & "</b> (" & _mMax & ")</span>"
 			        & "</div>"
 			    & "</div>"
 			RETURN
-			    IF ( ISBLANK ( _m ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
+			    IF ( ISBLANK ( _m ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f1f38;border:1px solid #1e3150;border-radius:8px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
 			```
 		displayFolder: Página Volumes
 		lineageTag: 7fecf9ac-2ca8-5d88-9f8a-0d98d0f7fa23
@@ -567,9 +570,9 @@ table 'Medidas Volumes'
 			VAR _vale = MINX ( _todos, [@V] )
 			VAR _mPico = MAXX ( TOPN ( 1, FILTER ( _todos, [@V] = _pico ), dCalendario[MesIdx], DESC ), [@Rot] )
 			VAR _mVale = MAXX ( TOPN ( 1, FILTER ( _todos, [@V] = _vale ), dCalendario[MesIdx], DESC ), [@Rot] )
-			VAR _corMed = IF ( NOT _temRef, "#64809c", SWITCH ( TRUE (), ABS ( _dMed ) <= 0.1, "#2ee07a", ABS ( _dMed ) <= 0.2, "#fbbf24", "#ff5c5c" ) )
-			VAR _corAno = IF ( NOT _temAno, "#64809c", SWITCH ( TRUE (), ABS ( _dAno ) <= 0.1, "#2ee07a", ABS ( _dAno ) <= 0.2, "#fbbf24", "#ff5c5c" ) )
-			VAR _a = "<tr style='border-bottom:1px solid #15304d'><td style='padding:11px 16px;color:#8fa9c4;font-size:11.5px'>"
+			VAR _corMed = IF ( NOT _temRef, "#64809c", SWITCH ( TRUE (), ABS ( _dMed ) <= 0.1, "#22c55e", ABS ( _dMed ) <= 0.2, "#eab308", "#ef4444" ) )
+			VAR _corAno = IF ( NOT _temAno, "#64809c", SWITCH ( TRUE (), ABS ( _dAno ) <= 0.1, "#22c55e", ABS ( _dAno ) <= 0.2, "#eab308", "#ef4444" ) )
+			VAR _a = "<tr style='border-bottom:1px solid #152840'><td style='padding:11px 16px;color:#8fa9c4;font-size:11.5px'>"
 			VAR _b = "</td><td style='padding:11px 10px;text-align:right;color:#ffffff;font-weight:700;font-size:19px;white-space:nowrap'>"
 			VAR _c = "</td><td style='padding:11px 16px 11px 4px;text-align:right;color:#8fa9c4;font-size:11.5px;white-space:nowrap'>"
 			VAR _f = "</td></tr>"
@@ -578,8 +581,8 @@ table 'Medidas Volumes'
 			VAR _seta = "<span style='font-size:13px'>"
 			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
 			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>"
-			    & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px'>"
-			        & "<div style='padding:11px 16px;background:#16304e;border-bottom:1px solid #1e3f66;display:flex;align-items:center;gap:9px;flex:none'>" & "<span style='color:#4a9eff;font-size:13px'>&#9632;</span>" & "<span style='font-size:13.5px;font-weight:700;color:#ffffff;letter-spacing:0.7px'>" & "DIAGNÓSTICO &#8212; " & _cli & "</span>" & "<span style='margin-left:auto;font-size:10.5px;color:#5f7d9c'>" & "mês em foco vs. histórico" & "</span>" & "</div>"
+			    & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f1f38;border:1px solid #1e3150;border-radius:8px'>"
+			        & "<div style='padding:9px 15px;background:#152a48;border-bottom:1px solid #1e3150;display:flex;align-items:center;gap:8px;flex:none'>" & "<span style='color:#4a9eff;font-size:9px;line-height:1'>&#9632;</span>" & "<span style='font-size:12px;font-weight:700;color:#ffffff;letter-spacing:1.1px'>" & "DIAGNÓSTICO &#8212; " & _cli & "</span>" & "<span style='margin-left:auto;font-size:10px;color:#5f7d9c'>" & "mês ref. vs histórico" & "</span>" & "</div>"
 			        & "<div style='flex:1;min-height:0;display:flex;flex-direction:column'>"
 			        & "<table style='width:100%;height:100%;border-collapse:collapse'>"
 			            & _a & "Meta contratual" & _b & FORMAT ( _meta, "#,##0" ) & _u & _c & FORMAT ( DIVIDE ( _meta, 86.4 ), "#,##0" ) & " L/s" & _f
@@ -594,15 +597,15 @@ table 'Medidas Volumes'
 			        & "</table></div>"
 			        & "<div style='margin:0 16px 16px 16px;padding:12px 14px;background:rgba(74,158,255,0.09);border:1px solid #27527d;border-radius:8px;display:flex;gap:10px'>"
 			            & "<span style='color:#4a9eff;font-size:15px'>&#9432;</span>"
-			            & "<span style='font-size:11.5px;color:#b9d3ec;line-height:1.5'>O volume atual está <b style='color:#ffffff'>"
+			            & "<span style='font-size:11.5px;color:#b9d3ec;line-height:1.5'>O volume atual está <b style='color:" & IF ( _dMed >= 0, "#22c55e", "#ef4444" ) & "'>"
 			            & IF ( _temRef, FORMAT ( ABS ( _dMed ), "0.0%" ) & IF ( _dMed >= 0, " acima", " abaixo" ), "sem referência" )
 			            & "</b> da média dos 12 meses anteriores e "
-			            & IF ( _temRef && ABS ( _vol - _med ) <= _dp, "<b style='color:#2ee07a'>dentro</b>", "<b style='color:#fbbf24'>fora</b>" )
+			            & IF ( _temRef && ABS ( _vol - _med ) <= _dp, "<b style='color:#22c55e'>dentro</b>", "<b style='color:#eab308'>fora</b>" )
 			            & " da faixa esperada para o período.</span>"
 			        & "</div>"
 			    & "</div>"
 			RETURN
-			    IF ( ISBLANK ( _m ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
+			    IF ( ISBLANK ( _m ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f1f38;border:1px solid #1e3150;border-radius:8px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
 			```
 		displayFolder: Página Volumes
 		lineageTag: 14992e3f-9369-5e00-a4bc-ac9baef448a1
@@ -627,44 +630,45 @@ table 'Medidas Volumes'
 			VAR _maxP = MAX ( MAXX ( _tab, [@Var] ), 0 )
 			VAR _maxN = MAX ( - MINX ( _tab, [@Var] ), 0 )
 			VAR _tot = MAX ( _maxP + _maxN, 0.01 )
-			VAR _y0 = 18 + 142 * DIVIDE ( _maxP, _tot )
-			VAR _gw = DIVIDE ( 1840, _n )
+			VAR _y0 = 16 + 152 * DIVIDE ( _maxP, _tot )
+			VAR _gw = DIVIDE ( 1832, _n )
 			VAR _barras =
 			    CONCATENATEX (
 			        _tab,
 			        VAR _vv = [@Var]
 			        VAR _pos = COUNTROWS ( FILTER ( _tab, [@Var] > _vv ) ) + 1
 			        VAR _cx = 8 + ( _pos - 0.5 ) * _gw
-			        VAR _h = MAX ( ABS ( _vv ) / _tot * 142, 1 )
-			        VAR _sel = Clientes[ID_Indicador] = _idSel
+			        VAR _h = MAX ( ABS ( _vv ) / _tot * 152, 1 )
+			        VAR _sel = Clientes[ID_Indicador] = _idSel && _idSel <> "Volumes | Todos Clientes"
+			        VAR _todos = Clientes[Cliente] = "Todos Clientes"
 			        VAR _sobe = _vv >= 0
-			        VAR _cor = IF ( _sobe, "#2ee07a", "#ff5c5c" )
+			        VAR _cor = IF ( _sobe, "#22c55e", "#ef4444" )
 			        VAR _y = IF ( _sobe, _y0 - _h, _y0 )
-			        VAR _yr = IF ( _sobe, _y0 - _h - 7, _y0 + _h + 14 )
+			        VAR _yr = IF ( _sobe, _y0 - _h - 9, _y0 + _h + 17 )
 			        VAR _nome = SUBSTITUTE ( SUBSTITUTE ( Clientes[Cliente], "&", "&amp;" ), "<", "&lt;" )
-			        VAR _bw = MIN ( _gw * 0.46, 78 )
+			        VAR _bw = MIN ( _gw * 0.60, 108 )
 			        RETURN
 			            "<rect x='" & FORMAT ( _cx - _bw / 2 + 0, "0" ) & "' y='" & FORMAT ( _y + 0, "0" ) & "' width='" & FORMAT ( _bw + 0, "0" )
 			                & "' height='" & FORMAT ( _h + 0, "0" ) & "' rx='3' fill='" & _cor & "' fill-opacity='" & IF ( _sel, "1", "0.82" ) & "'"
 			                & IF ( _sel, " stroke='#ffffff' stroke-width='1.6'", "" ) & "/>"
-			                & "<text x='" & FORMAT ( _cx + 0, "0" ) & "' y='" & FORMAT ( _yr + 0, "0" ) & "' fill='" & _cor & "' font-size='12' font-weight='700' text-anchor='middle'>" & FORMAT ( _vv, "+0.0%;-0.0%" ) & "</text>"
-			                & "<text x='" & FORMAT ( _cx + 0, "0" ) & "' y='188' fill='" & IF ( _sel, "#ffffff", "#8fa9c4" ) & "' font-size='11.5' font-weight='" & IF ( _sel, "700", "400" ) & "' text-anchor='middle'>" & _nome & "</text>",
+			                & "<text x='" & FORMAT ( _cx + 0, "0" ) & "' y='" & FORMAT ( _yr + 0, "0" ) & "' fill='" & _cor & "' font-size='13' font-weight='700' text-anchor='middle'>" & FORMAT ( _vv, "+0.0%;-0.0%" ) & "</text>"
+			                & "<text x='" & FORMAT ( _cx + 0, "0" ) & "' y='196' fill='" & IF ( _sel, "#ffffff", "#8fa9c4" ) & "' font-size='12' font-weight='" & IF ( _sel, "700", "400" ) & "' text-anchor='middle'>" & _nome & "</text>",
 			        "",
 			        [@Var], DESC
 			    )
 			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
 			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>"
-			    & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px'>"
-			        & "<div style='padding:11px 16px;background:#16304e;border-bottom:1px solid #1e3f66;display:flex;align-items:center;gap:9px;flex:none'>" & "<span style='color:#4a9eff;font-size:13px'>&#9632;</span>" & "<span style='font-size:13.5px;font-weight:700;color:#ffffff;letter-spacing:0.7px'>" & "VARIAÇÃO VS. MESMO MÊS DO ANO ANTERIOR" & "</span>" & "<span style='margin-left:auto;font-size:10.5px;color:#5f7d9c'>" & _rot & " vs. " & _rotAno & " &#183; todos os clientes, ordenado" & "</span>" & "</div>"
+			    & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f1f38;border:1px solid #1e3150;border-radius:8px'>"
+			        & "<div style='padding:9px 15px;background:#152a48;border-bottom:1px solid #1e3150;display:flex;align-items:center;gap:8px;flex:none'>" & "<span style='color:#4a9eff;font-size:9px;line-height:1'>&#9632;</span>" & "<span style='font-size:12px;font-weight:700;color:#ffffff;letter-spacing:1.1px'>" & "VARIAÇÃO VS. MESMO MÊS DO ANO ANTERIOR" & "</span>" & "<span style='margin-left:auto;font-size:10px;color:#5f7d9c'>" & _rot & " vs. " & _rotAno & " &#183; todos os clientes, ordenado" & "</span>" & "</div>"
 			        & "<div style='flex:1;min-height:0;padding:4px 12px 6px 12px'>"
-			            & "<svg viewBox='0 0 1856 198' style='width:100%;height:100%;display:block' font-family='Segoe UI,sans-serif'>"
-			                & "<line x1='8' y1='" & FORMAT ( _y0 + 0, "0" ) & "' x2='1848' y2='" & FORMAT ( _y0 + 0, "0" ) & "' stroke='#2a4d75' stroke-width='1'/>"
+			            & "<svg viewBox='0 0 1848 212' style='width:100%;height:100%;display:block' font-family='Segoe UI,sans-serif'>"
+			                & "<line x1='8' y1='" & FORMAT ( _y0 + 0, "0" ) & "' x2='1840' y2='" & FORMAT ( _y0 + 0, "0" ) & "' stroke='#2a4d75' stroke-width='1'/>"
 			                & _barras
 			            & "</svg>"
 			        & "</div>"
 			    & "</div>"
 			RETURN
-			    IF ( ISBLANK ( _m ) || _n = 0, "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
+			    IF ( ISBLANK ( _m ) || _n = 0, "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f1f38;border:1px solid #1e3150;border-radius:8px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
 			```
 		displayFolder: Página Volumes
 		lineageTag: 1670bcc0-d063-5b5f-909e-300abf927dcc

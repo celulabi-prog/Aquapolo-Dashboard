@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "historico",
   "position": {
-    "x": 577,
-    "y": 268,
+    "x": 581,
+    "y": 278,
     "z": 4,
-    "height": 522,
-    "width": 727,
+    "height": 490,
+    "width": 720,
     "tabOrder": 4
   },
   "visual": {
