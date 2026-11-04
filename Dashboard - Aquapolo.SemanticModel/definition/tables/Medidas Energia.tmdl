@@ -1,0 +1,1092 @@
+/// Medidas da página Energia. Cada visual HTML Content da página mostra uma medida "HTML Energia ...".
+/// Período: mês escolhido nas segmentações Ano/Mês; sem seleção, usa o último mês com dado de energia.
+/// Valor do mês = razão das somas (kWh ÷ m³) pela medida [Valor Indicador]. Metas vêm da dim_indicadores.
+/// Interatividade: pop-ups de detalhe feitos só com CSS (:hover) dentro de cada visual. Ficam ocultos por padrão
+/// (display:none / opacity 0); se o CSS não carregar, a página continua funcionando sem os pop-ups.
+table 'Medidas Energia'
+	lineageTag: f2ce664b-ce1b-40b2-9f7f-b0bf0f06e656
+
+	/// Última data com dado de energia na base.
+	measure 'En Última Data' =
+			CALCULATE (
+			    MAX ( fato_indicadores[Data] ),
+			    REMOVEFILTERS ( dim_indicadores ),
+			    LEFT ( fato_indicadores[ID_Indicador], 9 ) = "Energia |"
+			)
+		formatString: dd/mm/yyyy
+		displayFolder: Base
+		lineageTag: 6793735e-4a90-4112-90fc-77335f6a9b5c
+
+	/// Ano de referência: o ano selecionado ou, sem seleção, o ano da última data com dado.
+	measure 'En Ano Ref' =
+			VAR _ult = [En Última Data]
+			VAR _anoSel = SELECTEDVALUE ( 'Energia Ano'[Ano] )
+			VAR _mesSel = SELECTEDVALUE ( 'Energia Mês'[MesNum] )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        NOT ISBLANK ( _anoSel ), _anoSel,
+			        NOT ISBLANK ( _mesSel ) && _mesSel > MONTH ( _ult ), YEAR ( _ult ) - 1,    -- mês ainda sem dado no ano atual: usa o ano anterior
+			        YEAR ( _ult )
+			    )
+		formatString: 0
+		displayFolder: Base
+		lineageTag: f7540b93-b94a-4d95-a2dd-496cf937880f
+
+	/// Mês de referência (1 a 12): o mês selecionado ou, sem seleção, o último mês com dado no ano de referência.
+	measure 'En Mês Ref' =
+			VAR _ano = [En Ano Ref]
+			VAR _ultAno =
+			    CALCULATE (
+			        MAX ( fato_indicadores[Data] ),
+			        REMOVEFILTERS ( dim_indicadores ),
+			        LEFT ( fato_indicadores[ID_Indicador], 9 ) = "Energia |",
+			        YEAR ( fato_indicadores[Data] ) = _ano
+			    )
+			VAR _mesSel = SELECTEDVALUE ( 'Energia Mês'[MesNum] )
+			RETURN
+			    SWITCH (
+			        TRUE (),
+			        NOT ISBLANK ( _mesSel ), _mesSel,
+			        ISBLANK ( _ultAno ), 12,
+			        MONTH ( _ultAno )
+			    )
+		formatString: 0
+		displayFolder: Base
+		lineageTag: e7124b96-6523-42d9-b676-edffda470fcd
+
+	/// TRUE quando a comparação com o mesmo mês do ano anterior está ligada (padrão: ligada).
+	measure 'En Comparar' = SELECTEDVALUE ( 'Energia Comparar'[Comparar], "Sim" ) = "Sim"
+		displayFolder: Base
+		lineageTag: 0d710fbe-c9b5-423e-86d4-f53a228f26c3
+
+	/// Mês de referência por extenso curto, ex.: "Set/2026".
+	measure 'En Período' =
+			VAR _t = FORMAT ( DATE ( [En Ano Ref], [En Mês Ref], 1 ), "mmm/yyyy", "pt-BR" )
+			RETURN UPPER ( LEFT ( _t, 1 ) ) & MID ( _t, 2, 20 )
+		displayFolder: Base
+		lineageTag: c1b0cec2-fb2c-41d3-ab93-4bd0f2bb0385
+
+	/// Gráfico de colunas (SVG): consumo por área no mês de referência vs mesmo mês do ano anterior.
+	/// Ao passar o mouse numa área, abre um cartão com os dois valores, a variação e o target.
+	measure 'SVG Energia Barras' =
+			VAR W = 760
+			VAR H = 330
+			VAR L = 52
+			VAR R = 8
+			VAR Tp = 44
+			VAR B = 34
+			VAR PW = W - L - R
+			VAR PH = H - Tp - B
+			VAR Y0 = Tp + PH
+			VAR _ano = [En Ano Ref]
+			VAR _mes = [En Mês Ref]
+			VAR _comp = [En Comparar]
+			VAR _iniA = DATE ( _ano, _mes, 1 )
+			VAR _iniP = DATE ( _ano - 1, _mes, 1 )
+			VAR _tA = FORMAT ( _iniA, "mmm/yyyy", "pt-BR" )
+			VAR _tP = FORMAT ( _iniP, "mmm/yyyy", "pt-BR" )
+			VAR _perA = UPPER ( LEFT ( _tA, 1 ) ) & MID ( _tA, 2, 20 )
+			VAR _perP = UPPER ( LEFT ( _tP, 1 ) ) & MID ( _tP, 2, 20 )
+			VAR Areas0 = FILTER ( ALL ( 'Energia Área' ), 'Energia Área'[Área] IN VALUES ( 'Energia Área'[Área] ) )
+			VAR Areas =
+			    ADDCOLUMNS (
+			        Areas0,
+			        "@i", RANKX ( Areas0, 'Energia Área'[Ordem], , ASC ) - 1,
+			        "@a",
+			            VAR _id = 'Energia Área'[ID_Indicador]
+			            VAR _x =
+			                CALCULATE (
+			                    [Valor Indicador],
+			                    REMOVEFILTERS ( dim_indicadores ),
+			                    fato_indicadores[ID_Indicador] = _id,
+			                    fato_indicadores[Data] >= _iniA,
+			                    fato_indicadores[Data] < EDATE ( _iniA, 1 )
+			                )
+			            RETURN IF ( _x > 0, _x ),
+			        "@p",
+			            VAR _id = 'Energia Área'[ID_Indicador]
+			            VAR _x =
+			                CALCULATE (
+			                    [Valor Indicador],
+			                    REMOVEFILTERS ( dim_indicadores ),
+			                    fato_indicadores[ID_Indicador] = _id,
+			                    fato_indicadores[Data] >= _iniP,
+			                    fato_indicadores[Data] < EDATE ( _iniP, 1 )
+			                )
+			            RETURN IF ( _comp && _x > 0, _x ),
+			        "@t", LOOKUPVALUE ( dim_indicadores[Target_Max], dim_indicadores[ID_Indicador], 'Energia Área'[ID_Indicador] ),
+			        "@tt", LOOKUPVALUE ( dim_indicadores[Target], dim_indicadores[ID_Indicador], 'Energia Área'[ID_Indicador] )
+			    )
+			VAR N = COUNTROWS ( Areas )
+			-- escala do eixo Y com passo "redondo"
+			VAR _mx = MAXX ( Areas, MAX ( [@a] + 0, [@p] + 0 ) )
+			VAR _raw = IF ( _mx > 0, _mx * 1.15 / 5, 0.02 )
+			VAR _mag = POWER ( 10, INT ( LOG10 ( _raw ) ) )
+			VAR _n = _raw / _mag
+			VAR _step = _mag * SWITCH ( TRUE (), _n <= 1, 1, _n <= 2, 2, _n <= 2.5, 2.5, _n <= 5, 5, 10 )
+			VAR _nt = MAX ( 1, ROUNDUP ( _mx * 1.15 / _step, 0 ) )
+			VAR _top = _nt * _step
+			-- casas decimais do eixo: as necessárias para o passo (ex.: 0,005 → 3), no mínimo 2 abaixo de 1
+			VAR _dec = MINX ( FILTER ( GENERATESERIES ( 0, 4, 1 ), ROUND ( _step * POWER ( 10, [Value] ), 6 ) = INT ( ROUND ( _step * POWER ( 10, [Value] ), 6 ) ) ), [Value] )
+			VAR _decEixo = IF ( _step < 1, MAX ( 2, _dec ), _dec )
+			VAR _fmtEixo = IF ( _decEixo = 0, "0", "0." & REPT ( "0", _decEixo ) )
+			VAR _fmtVal = IF ( _mx < 0.1, "0.000", "0.00" )    -- valores pequenos (ex.: SOP) ganham uma casa a mais
+			VAR Grade =
+			    CONCATENATEX (
+			        GENERATESERIES ( 0, _nt, 1 ),
+			        VAR _v = [Value] * _step
+			        VAR _y = Y0 - _v / _top * PH
+			        RETURN
+			            "<line x1='" & L & "' x2='" & ( W - R ) & "' y1='" & FORMAT ( _y, "0.0", "en-US" ) & "' y2='" & FORMAT ( _y, "0.0", "en-US" ) & "' stroke='#1D3C66' stroke-width='1'/>"
+			                & "<text x='" & ( L - 8 ) & "' y='" & FORMAT ( _y + 4, "0.0", "en-US" ) & "' text-anchor='end' font-size='13' fill='#9FB6D6'>" & FORMAT ( _v, _fmtEixo, "pt-BR" ) & "</text>",
+			        "",
+			        [Value], ASC
+			    )
+			VAR GW = PW / N
+			VAR BW = MIN ( GW * 0.32, 56 )
+			-- cada área vira um grupo <g class='hb bN'>; a área invisível "hit" cobre a coluna toda para o hover
+			VAR Barras =
+			    CONCATENATEX (
+			        Areas,
+			        VAR _cx = L + GW * ( [@i] + 0.5 )
+			        VAR _a = [@a]
+			        VAR _p = [@p]
+			        VAR _xa = IF ( _comp, _cx + 3, _cx - BW / 2 )
+			        VAR _xp = _cx - 3 - BW
+			        VAR _ha = ( _a + 0 ) / _top * PH
+			        VAR _hp = ( _p + 0 ) / _top * PH
+			        RETURN
+			            "<g class='hb b" & [@i] & "'>"
+			                & "<rect class='hit' x='" & FORMAT ( L + GW * [@i], "0.0", "en-US" ) & "' y='" & Tp & "' width='" & FORMAT ( GW, "0.0", "en-US" ) & "' height='" & ( H - Tp ) & "' rx='6' fill='#FFFFFF' fill-opacity='0'/>"
+			                & IF (
+			                    NOT ISBLANK ( _p ),
+			                    "<rect x='" & FORMAT ( _xp, "0.0", "en-US" ) & "' y='" & FORMAT ( Y0 - _hp, "0.0", "en-US" ) & "' width='" & FORMAT ( BW, "0.0", "en-US" ) & "' height='" & FORMAT ( _hp, "0.0", "en-US" ) & "' rx='2' fill='#3B9CFF'/>"
+			                        & "<text x='" & FORMAT ( _xp + BW / 2, "0.0", "en-US" ) & "' y='" & FORMAT ( Y0 - _hp - 7, "0.0", "en-US" ) & "' text-anchor='middle' font-size='13' font-weight='600' fill='#CFE0F7'>" & FORMAT ( _p, _fmtVal, "pt-BR" ) & "</text>"
+			                )
+			                & IF (
+			                    NOT ISBLANK ( _a ),
+			                    "<rect x='" & FORMAT ( _xa, "0.0", "en-US" ) & "' y='" & FORMAT ( Y0 - _ha, "0.0", "en-US" ) & "' width='" & FORMAT ( BW, "0.0", "en-US" ) & "' height='" & FORMAT ( _ha, "0.0", "en-US" ) & "' rx='2' fill='#3EE08F'/>"
+			                        & "<text x='" & FORMAT ( _xa + BW / 2, "0.0", "en-US" ) & "' y='" & FORMAT ( Y0 - _ha - 7, "0.0", "en-US" ) & "' text-anchor='middle' font-size='13' font-weight='600' fill='#E8F1FF'>" & FORMAT ( _a, _fmtVal, "pt-BR" ) & "</text>"
+			                )
+			                & "<text x='" & FORMAT ( _cx, "0.0", "en-US" ) & "' y='" & ( H - 10 ) & "' text-anchor='middle' font-size='15' fill='#CFE0F7'>" & 'Energia Área'[Área] & "</text>"
+			                & "</g>",
+			        "",
+			        [@i], ASC
+			    )
+			-- cartões de detalhe (um por área), ocultos até o hover no grupo correspondente
+			VAR Dicas =
+			    CONCATENATEX (
+			        Areas,
+			        VAR _cx = L + GW * ( [@i] + 0.5 )
+			        VAR _a = [@a]
+			        VAR _p = [@p]
+			        VAR _t = [@t]
+			        VAR _cor = SWITCH ( TRUE (), ISBLANK ( _a ) || ISBLANK ( _t ), "#5B6F8C", _a <= _t, "#3EE08F", _a <= _t * 1.1, "#F5C542", "#FF5A5F" )
+			        VAR _d = IF ( NOT ISBLANK ( _a ) && _p > 0, _a / _p - 1 )
+			        VAR _xt = IF ( [@i] + 0.5 < N / 2, _cx + BW + 12, _cx - BW - 12 - 210 )
+			        VAR _xb = MIN ( MAX ( _xt, L ), W - R - 210 )
+			        VAR _yAlvo = IF ( _comp, 110, 66 )
+			        RETURN
+			            "<g class='tp t" & [@i] & "' opacity='0' pointer-events='none' transform='translate(" & FORMAT ( _xb, "0.0", "en-US" ) & "," & ( Tp + 4 ) & ")'>"
+			                & "<rect width='210' height='" & ( _yAlvo + 12 ) & "' rx='8' fill='#0B2140' stroke='#3B9CFF' stroke-width='1'/>"
+			                & "<text x='12' y='22' font-size='15' font-weight='700' fill='#E8F1FF'>" & 'Energia Área'[Área] & "</text>"
+			                & "<circle cx='194' cy='17' r='6' fill='" & _cor & "'/>"
+			                & "<rect x='12' y='34' width='10' height='10' rx='2' fill='#3EE08F'/>"
+			                & "<text x='28' y='44' font-size='13' fill='#CFE0F7'>" & _perA & ": <tspan font-weight='700' fill='#E8F1FF'>" & IF ( ISBLANK ( _a ), "—", FORMAT ( _a, "0.000", "pt-BR" ) ) & "</tspan> kWh/m³</text>"
+			                & IF (
+			                    _comp,
+			                    "<rect x='12' y='56' width='10' height='10' rx='2' fill='#3B9CFF'/>"
+			                        & "<text x='28' y='66' font-size='13' fill='#CFE0F7'>" & _perP & ": <tspan font-weight='700' fill='#E8F1FF'>" & IF ( ISBLANK ( _p ), "—", FORMAT ( _p, "0.000", "pt-BR" ) ) & "</tspan> kWh/m³</text>"
+			                        & "<text x='12' y='88' font-size='13' fill='#CFE0F7'>Variação: <tspan font-weight='700' fill='" & IF ( ISBLANK ( _d ), "#CFE0F7", IF ( _d <= 0, "#3EE08F", "#FF5A5F" ) ) & "'>"
+			                        & IF ( ISBLANK ( _d ), "—", IF ( _d <= 0, "▼ ", "▲ " ) & FORMAT ( _d, "+0.0%;-0.0%;0.0%", "pt-BR" ) ) & "</tspan></text>"
+			                )
+			                & "<text x='12' y='" & _yAlvo & "' font-size='13' fill='#9FB6D6'>Target: " & IF ( ISBLANK ( _t ), "sem meta na base", [@tt] & " kWh/m³" ) & "</text>"
+			                & "</g>",
+			        "",
+			        [@i], ASC
+			    )
+			VAR _css =
+			    "<style>"
+			        & ".hb .hit{transition:fill-opacity .15s}"
+			        & ".hb:hover .hit{fill-opacity:.07}"
+			        & ".tp{transition:opacity .15s}"
+			        & CONCATENATEX ( Areas, ".b" & [@i] & ":hover~.t" & [@i], ",", [@i], ASC ) & "{opacity:1}"
+			        & "</style>"
+			VAR Eixo = "<line x1='" & L & "' x2='" & ( W - R ) & "' y1='" & Y0 & "' y2='" & Y0 & "' stroke='#4A6A94' stroke-width='1.5'/>"
+			VAR Legenda =
+			    IF (
+			        _comp,
+			        "<circle cx='" & ( W - 250 ) & "' cy='16' r='7' fill='#3B9CFF'/><text x='" & ( W - 238 ) & "' y='21' font-size='14' fill='#CFE0F7'>" & _perP & "</text>"
+			    )
+			        & "<circle cx='" & ( W - 120 ) & "' cy='16' r='7' fill='#3EE08F'/><text x='" & ( W - 108 ) & "' y='21' font-size='14' fill='#CFE0F7'>" & _perA & "</text>"
+			RETURN
+			    _css
+			        & "<svg xmlns='http://www.w3.org/2000/svg' width='" & W & "' height='" & H & "' viewBox='0 0 " & W & " " & H & "' style='display:block' font-family='Segoe UI,sans-serif'>"
+			        & Grade & Eixo & Barras & Legenda & Dicas
+			        & "</svg>"
+		displayFolder: SVG
+		lineageTag: eac181a1-5aab-4fe3-a6e6-da670c078a6f
+
+	/// Gráfico de linhas (SVG): evolução mensal do consumo unitário (ou da área selecionada), ano de referência vs ano anterior, com a linha de target.
+	/// Ao passar o mouse num mês, mostra a linha-guia e um cartão com os valores dos dois anos, a variação e o target.
+	measure 'SVG Energia Linha' =
+			VAR W = 590
+			VAR H = 330
+			VAR L = 50
+			VAR R = 18
+			VAR Tp = 46
+			VAR B = 32
+			VAR PW = W - L - R
+			VAR PH = H - Tp - B
+			VAR Y0 = Tp + PH
+			VAR _ano = [En Ano Ref]
+			VAR _mes = [En Mês Ref]
+			VAR _comp = [En Comparar]
+			VAR _id = SELECTEDVALUE ( 'Energia Área'[ID_Indicador], "Energia | Consumo Unitário - Energia" )
+			VAR _alvo = LOOKUPVALUE ( dim_indicadores[Target_Max], dim_indicadores[ID_Indicador], _id )
+			VAR _alvoTxt = LOOKUPVALUE ( dim_indicadores[Target], dim_indicadores[ID_Indicador], _id )
+			VAR S =
+			    ADDCOLUMNS (
+			        GENERATESERIES ( 1, 12, 1 ),
+			        "@a",
+			            VAR _i = DATE ( _ano, [Value], 1 )
+			            VAR _x =
+			                CALCULATE (
+			                    [Valor Indicador],
+			                    REMOVEFILTERS ( dim_indicadores ),
+			                    fato_indicadores[ID_Indicador] = _id,
+			                    fato_indicadores[Data] >= _i,
+			                    fato_indicadores[Data] < EDATE ( _i, 1 )
+			                )
+			            RETURN IF ( _x > 0, _x ),
+			        "@p",
+			            VAR _i = DATE ( _ano - 1, [Value], 1 )
+			            VAR _x =
+			                CALCULATE (
+			                    [Valor Indicador],
+			                    REMOVEFILTERS ( dim_indicadores ),
+			                    fato_indicadores[ID_Indicador] = _id,
+			                    fato_indicadores[Data] >= _i,
+			                    fato_indicadores[Data] < EDATE ( _i, 1 )
+			                )
+			            RETURN IF ( _comp && _x > 0, _x )
+			    )
+			-- faixa do eixo Y: cobre as duas séries e o target, com passo "redondo"
+			VAR _vals = UNION ( SELECTCOLUMNS ( S, "v", [@a] ), SELECTCOLUMNS ( S, "v", [@p] ), ROW ( "v", _alvo ) )
+			VAR _validos = FILTER ( _vals, NOT ISBLANK ( [v] ) )
+			VAR _lo0 = MINX ( _validos, [v] )
+			VAR _hi0 = MAXX ( _validos, [v] )
+			VAR _temDado = COUNTROWS ( FILTER ( S, NOT ISBLANK ( [@a] ) || NOT ISBLANK ( [@p] ) ) ) > 0
+			VAR _span = IF ( _hi0 > _lo0, _hi0 - _lo0, MAX ( _hi0, 0.1 ) * 0.2 )
+			VAR _raw = _span / 4
+			VAR _mag = POWER ( 10, INT ( LOG10 ( _raw ) ) )
+			VAR _n = _raw / _mag
+			VAR _step = _mag * SWITCH ( TRUE (), _n <= 1, 1, _n <= 2, 2, _n <= 2.5, 2.5, _n <= 5, 5, 10 )
+			VAR _lo1 = _step * INT ( _lo0 / _step )
+			VAR _lo = MAX ( 0, IF ( _lo0 - _lo1 < _step * 0.2, _lo1 - _step, _lo1 ) )
+			VAR _hi1 = _step * ROUNDUP ( _hi0 / _step, 0 )
+			VAR _hi = IF ( _hi1 - _hi0 < _step * 0.2, _hi1 + _step, _hi1 )
+			VAR _nt = ROUND ( ( _hi - _lo ) / _step, 0 )
+			VAR _escY = PH / ( _hi - _lo )
+			VAR _dx = PW / 11
+			VAR _dec = MINX ( FILTER ( GENERATESERIES ( 0, 4, 1 ), ROUND ( _step * POWER ( 10, [Value] ), 6 ) = INT ( ROUND ( _step * POWER ( 10, [Value] ), 6 ) ) ), [Value] )
+			VAR _decEixo = IF ( _step < 1, MAX ( 2, _dec ), _dec )
+			VAR _fmtEixo = IF ( _decEixo = 0, "0", "0." & REPT ( "0", _decEixo ) )
+			VAR Grade =
+			    CONCATENATEX (
+			        GENERATESERIES ( 0, _nt, 1 ),
+			        VAR _y = Y0 - [Value] * _step * _escY
+			        RETURN
+			            "<line x1='" & L & "' x2='" & ( W - R ) & "' y1='" & FORMAT ( _y, "0.0", "en-US" ) & "' y2='" & FORMAT ( _y, "0.0", "en-US" ) & "' stroke='#1D3C66' stroke-width='1'/>"
+			                & "<text x='" & ( L - 8 ) & "' y='" & FORMAT ( _y + 4, "0.0", "en-US" ) & "' text-anchor='end' font-size='13' fill='#9FB6D6'>" & FORMAT ( _lo + [Value] * _step, _fmtEixo, "pt-BR" ) & "</text>",
+			        "",
+			        [Value], ASC
+			    )
+			VAR Faixa =
+			    "<rect x='" & FORMAT ( L + ( _mes - 1.5 ) * _dx, "0.0", "en-US" ) & "' y='" & Tp & "' width='" & FORMAT ( _dx, "0.0", "en-US" ) & "' height='" & PH & "' fill='#FFFFFF' fill-opacity='0.06'/>"
+			VAR Meses =
+			    CONCATENATEX (
+			        GENERATESERIES ( 1, 12, 1 ),
+			        VAR _t = FORMAT ( DATE ( 2000, [Value], 1 ), "mmm", "pt-BR" )
+			        RETURN
+			            "<text x='" & FORMAT ( L + ( [Value] - 1 ) * _dx, "0.0", "en-US" ) & "' y='" & ( H - 8 ) & "' text-anchor='middle' font-size='13' "
+			                & IF ( [Value] = _mes, "font-weight='700' fill='#FFFFFF'", "fill='#9FB6D6'" ) & ">"
+			                & UPPER ( LEFT ( _t, 1 ) ) & MID ( _t, 2, 5 ) & "</text>",
+			        "",
+			        [Value], ASC
+			    )
+			VAR PontosA = FILTER ( S, NOT ISBLANK ( [@a] ) )
+			VAR PontosP = FILTER ( S, NOT ISBLANK ( [@p] ) )
+			VAR LinhaA =
+			    "<polyline points='"
+			        & CONCATENATEX ( PontosA, FORMAT ( L + ( [Value] - 1 ) * _dx, "0.0", "en-US" ) & "," & FORMAT ( Y0 - ( [@a] - _lo ) * _escY, "0.0", "en-US" ), " ", [Value], ASC )
+			        & "' fill='none' stroke='#3EE08F' stroke-width='3' stroke-linejoin='round'/>"
+			        & CONCATENATEX (
+			            PontosA,
+			            "<circle cx='" & FORMAT ( L + ( [Value] - 1 ) * _dx, "0.0", "en-US" ) & "' cy='" & FORMAT ( Y0 - ( [@a] - _lo ) * _escY, "0.0", "en-US" ) & "' r='" & IF ( [Value] = _mes, "6", "4" ) & "' fill='#3EE08F' stroke='#0A2244' stroke-width='1.5'/>",
+			            "",
+			            [Value], ASC
+			        )
+			VAR LinhaP =
+			    "<polyline points='"
+			        & CONCATENATEX ( PontosP, FORMAT ( L + ( [Value] - 1 ) * _dx, "0.0", "en-US" ) & "," & FORMAT ( Y0 - ( [@p] - _lo ) * _escY, "0.0", "en-US" ), " ", [Value], ASC )
+			        & "' fill='none' stroke='#3B9CFF' stroke-width='2.5' stroke-linejoin='round'/>"
+			        & CONCATENATEX (
+			            PontosP,
+			            "<circle cx='" & FORMAT ( L + ( [Value] - 1 ) * _dx, "0.0", "en-US" ) & "' cy='" & FORMAT ( Y0 - ( [@p] - _lo ) * _escY, "0.0", "en-US" ) & "' r='4' fill='#3B9CFF' stroke='#0A2244' stroke-width='1.5'/>",
+			            "",
+			            [Value], ASC
+			        )
+			VAR _yAlvo = Y0 - ( _alvo - _lo ) * _escY
+			VAR Alvo =
+			    IF (
+			        NOT ISBLANK ( _alvo ),
+			        "<line x1='" & L & "' x2='" & ( W - R ) & "' y1='" & FORMAT ( _yAlvo, "0.0", "en-US" ) & "' y2='" & FORMAT ( _yAlvo, "0.0", "en-US" ) & "' stroke='#E8F1FF' stroke-width='1.5' stroke-dasharray='6 5'/>"
+			            & "<text x='" & ( W - R ) & "' y='" & FORMAT ( _yAlvo - 7, "0.0", "en-US" ) & "' text-anchor='end' font-size='13' fill='#E8F1FF'>Target " & _alvoTxt & "</text>"
+			    )
+			VAR Legenda =
+			    IF (
+			        _comp,
+			        "<circle cx='" & ( L + 10 ) & "' cy='16' r='7' fill='#3B9CFF'/><text x='" & ( L + 22 ) & "' y='21' font-size='14' fill='#CFE0F7'>" & ( _ano - 1 ) & "</text>"
+			    )
+			        & "<circle cx='" & ( L + 90 ) & "' cy='16' r='7' fill='#3EE08F'/><text x='" & ( L + 102 ) & "' y='21' font-size='14' fill='#CFE0F7'>" & _ano & "</text>"
+			        & IF (
+			            NOT ISBLANK ( _alvo ),
+			            "<line x1='" & ( L + 170 ) & "' x2='" & ( L + 196 ) & "' y1='16' y2='16' stroke='#E8F1FF' stroke-width='2' stroke-dasharray='6 4'/><text x='" & ( L + 204 ) & "' y='21' font-size='14' fill='#CFE0F7'>Target " & _alvoTxt & "</text>"
+			        )
+			-- uma faixa invisível por mês (por cima das linhas) captura o hover e mostra a linha-guia
+			VAR Hits =
+			    CONCATENATEX (
+			        S,
+			        VAR _x = L + ( [Value] - 1 ) * _dx
+			        RETURN
+			            "<g class='hm m" & [Value] & "'>"
+			                & "<rect class='hit' x='" & FORMAT ( _x - _dx / 2, "0.0", "en-US" ) & "' y='" & Tp & "' width='" & FORMAT ( _dx, "0.0", "en-US" ) & "' height='" & ( H - Tp ) & "' fill='#FFFFFF' fill-opacity='0'/>"
+			                & "<line class='gd' x1='" & FORMAT ( _x, "0.0", "en-US" ) & "' x2='" & FORMAT ( _x, "0.0", "en-US" ) & "' y1='" & Tp & "' y2='" & Y0 & "' stroke='#CFE0F7' stroke-width='1' stroke-dasharray='3 3' opacity='0'/>"
+			                & "</g>",
+			        "",
+			        [Value], ASC
+			    )
+			VAR Dicas =
+			    CONCATENATEX (
+			        FILTER ( S, NOT ISBLANK ( [@a] ) || NOT ISBLANK ( [@p] ) ),
+			        VAR _k = [Value]
+			        VAR _x = L + ( _k - 1 ) * _dx
+			        VAR _a = [@a]
+			        VAR _p = [@p]
+			        VAR _d = IF ( NOT ISBLANK ( _a ) && _p > 0, _a / _p - 1 )
+			        VAR _cor = SWITCH ( TRUE (), ISBLANK ( _a ) || ISBLANK ( _alvo ), "#5B6F8C", _a <= _alvo, "#3EE08F", _a <= _alvo * 1.1, "#F5C542", "#FF5A5F" )
+			        VAR _nm = FORMAT ( DATE ( 2000, _k, 1 ), "mmmm", "pt-BR" )
+			        VAR _bx = IF ( _k <= 6, _x + 12, _x - 12 - 200 )
+			        VAR _yA = IF ( _comp, 110, 66 )
+			        RETURN
+			            "<g class='tp u" & _k & "' opacity='0' pointer-events='none' transform='translate(" & FORMAT ( _bx, "0.0", "en-US" ) & "," & ( Tp + 4 ) & ")'>"
+			                & "<rect width='200' height='" & ( _yA + 12 ) & "' rx='8' fill='#0B2140' stroke='#3B9CFF' stroke-width='1'/>"
+			                & "<text x='12' y='22' font-size='15' font-weight='700' fill='#E8F1FF'>" & UPPER ( LEFT ( _nm, 1 ) ) & MID ( _nm, 2, 20 ) & "</text>"
+			                & "<circle cx='184' cy='17' r='6' fill='" & _cor & "'/>"
+			                & "<rect x='12' y='34' width='10' height='10' rx='2' fill='#3EE08F'/>"
+			                & "<text x='28' y='44' font-size='13' fill='#CFE0F7'>" & _ano & ": <tspan font-weight='700' fill='#E8F1FF'>" & IF ( ISBLANK ( _a ), "—", FORMAT ( _a, "0.000", "pt-BR" ) ) & "</tspan> kWh/m³</text>"
+			                & IF (
+			                    _comp,
+			                    "<rect x='12' y='56' width='10' height='10' rx='2' fill='#3B9CFF'/>"
+			                        & "<text x='28' y='66' font-size='13' fill='#CFE0F7'>" & ( _ano - 1 ) & ": <tspan font-weight='700' fill='#E8F1FF'>" & IF ( ISBLANK ( _p ), "—", FORMAT ( _p, "0.000", "pt-BR" ) ) & "</tspan> kWh/m³</text>"
+			                        & "<text x='12' y='88' font-size='13' fill='#CFE0F7'>Variação: <tspan font-weight='700' fill='" & IF ( ISBLANK ( _d ), "#CFE0F7", IF ( _d <= 0, "#3EE08F", "#FF5A5F" ) ) & "'>"
+			                        & IF ( ISBLANK ( _d ), "—", IF ( _d <= 0, "▼ ", "▲ " ) & FORMAT ( _d, "+0.0%;-0.0%;0.0%", "pt-BR" ) ) & "</tspan></text>"
+			                )
+			                & "<text x='12' y='" & _yA & "' font-size='13' fill='#9FB6D6'>Target: " & IF ( ISBLANK ( _alvo ), "sem meta na base", _alvoTxt & " kWh/m³" ) & "</text>"
+			                & "</g>",
+			        "",
+			        [Value], ASC
+			    )
+			VAR _css =
+			    "<style>"
+			        & ".hm .hit{transition:fill-opacity .12s}"
+			        & ".hm:hover .hit{fill-opacity:.05}"
+			        & ".hm .gd{transition:opacity .12s}"
+			        & ".hm:hover .gd{opacity:1}"
+			        & ".tp{transition:opacity .15s}"
+			        & CONCATENATEX ( S, ".m" & [Value] & ":hover~.u" & [Value], ",", [Value], ASC ) & "{opacity:1}"
+			        & "</style>"
+			VAR Abre = "<svg xmlns='http://www.w3.org/2000/svg' width='" & W & "' height='" & H & "' viewBox='0 0 " & W & " " & H & "' style='display:block' font-family='Segoe UI,sans-serif'>"
+			RETURN
+			    IF (
+			        _temDado,
+			        _css & Abre & Grade & Faixa & Alvo & IF ( _comp, LinhaP ) & LinhaA & Meses & Legenda & Hits & Dicas & "</svg>",
+			        Abre & "<text x='" & ( W / 2 ) & "' y='" & ( H / 2 ) & "' text-anchor='middle' font-size='16' fill='#9FB6D6'>Sem dados para o período</text></svg>"
+			    )
+		displayFolder: SVG
+		lineageTag: d26cfddf-e115-4584-a3db-05e82f7cfcae
+
+	/// Rosca (SVG): participação de cada área no consumo de energia (kWh) do mês de referência.
+	/// Ao passar o mouse numa fatia, o centro da rosca mostra a energia, a participação e o consumo específico da área.
+	measure 'SVG Energia Rosca' =
+			VAR W = 420
+			VAR H = 330
+			VAR CX = 150
+			VAR CY = 170
+			VAR RE = 130
+			VAR RI = 74
+			VAR _ano = [En Ano Ref]
+			VAR _mes = [En Mês Ref]
+			VAR _ini = DATE ( _ano, _mes, 1 )
+			VAR _fim = EDATE ( _ini, 1 )
+			VAR _selecao = VALUES ( 'Energia Área'[Área] )    -- áreas marcadas na segmentação (todas, se nada ou "Selecionar tudo")
+			VAR _filtrado = COUNTROWS ( _selecao ) < COUNTROWS ( ALL ( 'Energia Área'[Área] ) )
+			VAR Tb =
+			    ADDCOLUMNS (
+			        ALL ( 'Energia Área' ),
+			        "@k",
+			            VAR _id = 'Energia Área'[ID_Indicador]
+			            VAR _x =
+			                CALCULATE (
+			                    SUM ( fato_indicadores[Numerador] ),    -- Numerador = energia da área em kWh
+			                    REMOVEFILTERS ( dim_indicadores ),
+			                    fato_indicadores[ID_Indicador] = _id,
+			                    fato_indicadores[Data] >= _ini,
+			                    fato_indicadores[Data] < _fim
+			                )
+			            RETURN IF ( _x > 0, _x ),
+			        "@v",
+			            VAR _id = 'Energia Área'[ID_Indicador]
+			            RETURN
+			                CALCULATE (
+			                    [Valor Indicador],
+			                    REMOVEFILTERS ( dim_indicadores ),
+			                    fato_indicadores[ID_Indicador] = _id,
+			                    fato_indicadores[Data] >= _ini,
+			                    fato_indicadores[Data] < _fim
+			                )
+			    )
+			VAR _tot = SUMX ( Tb, [@k] )
+			-- ordena as fatias da maior para a menor: @cum = soma das fatias anteriores, @idx = posição
+			VAR T =
+			    ADDCOLUMNS (
+			        FILTER ( Tb, NOT ISBLANK ( [@k] ) ),
+			        "@cum",
+			            VAR _k = [@k]
+			            VAR _o = 'Energia Área'[Ordem]
+			            RETURN SUMX ( FILTER ( Tb, [@k] > _k || ( [@k] = _k && 'Energia Área'[Ordem] < _o ) ), [@k] ) + 0,
+			        "@idx",
+			            VAR _k = [@k]
+			            VAR _o = 'Energia Área'[Ordem]
+			            RETURN COUNTROWS ( FILTER ( Tb, NOT ISBLANK ( [@k] ) && ( [@k] > _k || ( [@k] = _k && 'Energia Área'[Ordem] < _o ) ) ) ) + 0
+			    )
+			VAR Fatias =
+			    CONCATENATEX (
+			        T,
+			        VAR _s0 = [@cum] / _tot
+			        VAR _s1 = MIN ( ( [@cum] + [@k] ) / _tot, _s0 + 0.9999 )
+			        VAR _a0 = 2 * PI () * _s0 - PI () / 2
+			        VAR _a1 = 2 * PI () * _s1 - PI () / 2
+			        VAR _am = ( _a0 + _a1 ) / 2
+			        VAR _rl = ( RE + RI ) / 2
+			        VAR _big = IF ( _s1 - _s0 > 0.5, "1", "0" )
+			        VAR _pct = [@k] / _tot
+			        VAR _op = IF ( NOT _filtrado || 'Energia Área'[Área] IN _selecao, "1", "0.25" )
+			        VAR _d =
+			            "M" & FORMAT ( CX + RE * COS ( _a0 ), "0.0", "en-US" ) & " " & FORMAT ( CY + RE * SIN ( _a0 ), "0.0", "en-US" )
+			                & " A" & RE & " " & RE & " 0 " & _big & " 1 " & FORMAT ( CX + RE * COS ( _a1 ), "0.0", "en-US" ) & " " & FORMAT ( CY + RE * SIN ( _a1 ), "0.0", "en-US" )
+			                & " L" & FORMAT ( CX + RI * COS ( _a1 ), "0.0", "en-US" ) & " " & FORMAT ( CY + RI * SIN ( _a1 ), "0.0", "en-US" )
+			                & " A" & RI & " " & RI & " 0 " & _big & " 0 " & FORMAT ( CX + RI * COS ( _a0 ), "0.0", "en-US" ) & " " & FORMAT ( CY + RI * SIN ( _a0 ), "0.0", "en-US" )
+			                & " Z"
+			        RETURN
+			            "<path class='sl s" & 'Energia Área'[Ordem] & "' d='" & _d & "' fill='" & 'Energia Área'[Cor] & "' stroke='#0A2244' stroke-width='2' opacity='" & _op & "'/>"
+			                & IF (
+			                    _pct >= 0.04,
+			                    "<text pointer-events='none' x='" & FORMAT ( CX + _rl * COS ( _am ), "0.0", "en-US" ) & "' y='" & FORMAT ( CY + _rl * SIN ( _am ) + 5, "0.0", "en-US" ) & "' text-anchor='middle' font-size='15' font-weight='700' fill='" & 'Energia Área'[CorTexto] & "' opacity='" & _op & "'>"
+			                        & FORMAT ( _pct, "0%", "pt-BR" ) & "</text>"
+			                ),
+			        "",
+			        [@cum], ASC
+			    )
+			VAR Centro =
+			    "<g class='cd0' pointer-events='none'>"
+			        & "<text x='" & CX & "' y='" & ( CY - 12 ) & "' text-anchor='middle' font-size='14' fill='#9FB6D6'>Total áreas</text>"
+			        & "<text x='" & CX & "' y='" & ( CY + 20 ) & "' text-anchor='middle' font-size='26' font-weight='700' fill='#E8F1FF'>" & FORMAT ( _tot / 1000, "#,0", "pt-BR" ) & " MWh</text>"
+			        & "</g>"
+			-- centro alternativo de cada fatia, oculto até o hover nela
+			VAR Centros =
+			    CONCATENATEX (
+			        T,
+			        "<g class='cc c" & 'Energia Área'[Ordem] & "' opacity='0' pointer-events='none'>"
+			            & "<text x='" & CX & "' y='" & ( CY - 22 ) & "' text-anchor='middle' font-size='15' font-weight='700' fill='#8CC8FF'>" & 'Energia Área'[Área] & "</text>"
+			            & "<text x='" & CX & "' y='" & ( CY + 6 ) & "' text-anchor='middle' font-size='22' font-weight='700' fill='#E8F1FF'>" & FORMAT ( [@k] / 1000, "#,0.0", "pt-BR" ) & " MWh</text>"
+			            & "<text x='" & CX & "' y='" & ( CY + 28 ) & "' text-anchor='middle' font-size='12' fill='#CFE0F7'>" & FORMAT ( [@k] / _tot, "0.0%", "pt-BR" ) & " · " & FORMAT ( [@v], "0.000", "pt-BR" ) & " kWh/m³</text>"
+			            & "</g>",
+			        "",
+			        [@cum], ASC
+			    )
+			VAR Legenda =
+			    CONCATENATEX (
+			        T,
+			        VAR _y = 70 + [@idx] * 38
+			        VAR _peso = IF ( _filtrado && 'Energia Área'[Área] IN _selecao, " font-weight='700'", "" )
+			        RETURN
+			            "<rect x='298' y='" & ( _y - 9 ) & "' width='16' height='16' rx='3' fill='" & 'Energia Área'[Cor] & "'/>"
+			                & "<text x='322' y='" & ( _y + 5 ) & "' font-size='16' fill='#E8F1FF'" & _peso & ">" & 'Energia Área'[Área] & "</text>"
+			                & "<text x='" & ( W - 4 ) & "' y='" & ( _y + 5 ) & "' text-anchor='end' font-size='16' font-weight='700' fill='#E8F1FF'>" & FORMAT ( [@k] / _tot, "0%", "pt-BR" ) & "</text>",
+			        "",
+			        [@idx], ASC
+			    )
+			VAR _css =
+			    "<style>"
+			        & ".sl{transition:opacity .15s}"
+			        & ".sl:hover{opacity:1;stroke:#E8F1FF;stroke-width:3}"
+			        & ".cd0,.cc{transition:opacity .15s}"
+			        & CONCATENATEX ( T, ".s" & 'Energia Área'[Ordem] & ":hover~.c" & 'Energia Área'[Ordem], ",", [@cum], ASC ) & "{opacity:1}"
+			        & CONCATENATEX ( T, ".s" & 'Energia Área'[Ordem] & ":hover~.cd0", ",", [@cum], ASC ) & "{opacity:0}"
+			        & "</style>"
+			VAR Abre = "<svg xmlns='http://www.w3.org/2000/svg' width='" & W & "' height='" & H & "' viewBox='0 0 " & W & " " & H & "' style='display:block' font-family='Segoe UI,sans-serif'>"
+			RETURN
+			    IF (
+			        _tot > 0,
+			        _css & Abre & Fatias & Centro & Centros & Legenda & "</svg>",
+			        Abre & "<text x='" & CX & "' y='" & CY & "' text-anchor='middle' font-size='16' fill='#9FB6D6'>Sem dados no mês</text></svg>"
+			    )
+		displayFolder: SVG
+		lineageTag: dc6f0a94-9ad7-489b-9ccd-c214262683d1
+
+	/// Cabeçalho da página: título, consumo unitário do mês e período de referência.
+	measure 'HTML Energia Cabeçalho' =
+			VAR _ano = [En Ano Ref]
+			VAR _mes = [En Mês Ref]
+			VAR _ini = DATE ( _ano, _mes, 1 )
+			VAR _fim = EDATE ( _ini, 1 )
+			VAR _tMes = FORMAT ( _ini, "mmmm/yyyy", "pt-BR" )
+			VAR _mesNome = UPPER ( LEFT ( _tMes, 1 ) ) & MID ( _tMes, 2, 30 )
+			VAR _id = "Energia | Consumo Unitário - Energia"
+			VAR _cu =
+			    CALCULATE (
+			        [Valor Indicador],
+			        REMOVEFILTERS ( dim_indicadores ),
+			        fato_indicadores[ID_Indicador] = _id,
+			        fato_indicadores[Data] >= _ini,
+			        fato_indicadores[Data] < _fim
+			    )
+			VAR _alvo = LOOKUPVALUE ( dim_indicadores[Target_Max], dim_indicadores[ID_Indicador], _id )
+			VAR _alvoTxt = LOOKUPVALUE ( dim_indicadores[Target], dim_indicadores[ID_Indicador], _id )
+			VAR _cor =
+			    SWITCH (
+			        TRUE (),
+			        ISBLANK ( _cu ) || ISBLANK ( _alvo ), "#5B6F8C",
+			        _cu <= _alvo, "#3EE08F",
+			        _cu <= _alvo * 1.1, "#F5C542",
+			        "#FF5A5F"
+			    )
+			VAR _calendario = "<svg width='38' height='38' viewBox='0 0 24 24' fill='none' stroke='#CFE0F7' stroke-width='1.6'><rect x='3' y='5' width='18' height='16' rx='2'/><line x1='3' y1='10' x2='21' y2='10'/><line x1='8' y1='3' x2='8' y2='7'/><line x1='16' y1='3' x2='16' y2='7'/><rect x='7' y='13' width='3' height='3' fill='#CFE0F7' stroke='none'/><rect x='14' y='13' width='3' height='3' fill='#CFE0F7' stroke='none'/></svg>"
+			RETURN
+			    "<div style='position:relative;width:1916px;height:136px;overflow:hidden;font-family:Segoe UI,sans-serif;color:#FFFFFF;background:linear-gradient(90deg,#0B2A55 0%,#0A2244 45%,#071A36 100%);border-bottom:2px solid #1D4B80'>"
+			        & "<div style='position:absolute;left:36px;top:14px'>"
+			        & "<div style='font-size:62px;font-weight:700;line-height:1;letter-spacing:-1px'>Aquapolo</div>"
+			        & "<div style='margin-top:8px;font-size:20px;color:#CFE0F7'>GS Inima <span style='color:#5B7FAE'>|</span> Sabesp</div>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:410px;top:-10px;width:4px;height:160px;background:#3B9CFF;transform:skewX(-18deg)'></div>"
+			        & "<div style='position:absolute;left:470px;top:16px'>"
+			        & "<div style='font-size:56px;font-weight:700;line-height:1'>Painel Operacional</div>"
+			        & "<div style='margin-top:8px;font-size:32px;color:#8CC8FF'>Indicadores de Energia</div>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:1090px;top:28px;width:420px;height:80px;box-sizing:border-box;padding:0 20px;display:flex;align-items:center;border:1px solid #2A5A94;border-radius:10px;background:#0D2A52'>"
+			        & "<div><div style='font-size:15px;color:#9FB6D6'>Consumo unitário de energia</div>"
+			        & "<div style='font-size:30px;font-weight:700;line-height:1.1'>" & IF ( ISBLANK ( _cu ), "—", FORMAT ( _cu, "0.00", "pt-BR" ) ) & " <span style='font-size:16px;font-weight:400;color:#CFE0F7'>kWh/m³</span></div></div>"
+			        & "<div style='margin-left:auto;display:flex;align-items:center;font-size:15px;color:#CFE0F7'>"
+			        & "<span style='display:inline-block;width:16px;height:16px;border-radius:50%;margin-right:8px;background:" & _cor & "'></span>Target " & IF ( ISBLANK ( _alvoTxt ), "—", _alvoTxt )
+			        & "</div></div>"
+			        & "<div style='position:absolute;right:30px;top:28px;width:330px;height:80px;box-sizing:border-box;padding:0 20px;display:flex;align-items:center;border:1px solid #2A5A94;border-radius:10px;background:#0D2A52'>"
+			        & _calendario
+			        & "<div style='margin-left:16px'><div style='font-size:15px;color:#9FB6D6'>Mês de referência</div>"
+			        & "<div style='font-size:26px;font-weight:700;line-height:1.1'>" & _mesNome & "</div></div>"
+			        & "</div>"
+			        & "</div>"
+		displayFolder: HTML
+		lineageTag: 74427574-9e84-4011-a1f4-ffdc950de629
+
+	/// Card "Consumo específico por área": valor do mês, barra, target e status de cada área.
+	/// Ao passar o mouse numa linha, abre o painel "Detalhe da área" com energia, volume, média diária,
+	/// participação, comparação com o mês anterior e com o mesmo mês do ano anterior, e a evolução dos 12 meses.
+	measure 'HTML Energia Consumo Áreas' =
+			VAR _ano = [En Ano Ref]
+			VAR _mes = [En Mês Ref]
+			VAR _comp = [En Comparar]
+			VAR _ini = DATE ( _ano, _mes, 1 )
+			VAR _fim = EDATE ( _ini, 1 )
+			VAR _iniMA = EDATE ( _ini, -1 )
+			VAR _iniAA = EDATE ( _ini, -12 )
+			VAR T =
+			    ADDCOLUMNS (
+			        ALL ( 'Energia Área' ),
+			        "@v",
+			            VAR _id = 'Energia Área'[ID_Indicador]
+			            VAR _x = CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = _id, fato_indicadores[Data] >= _ini, fato_indicadores[Data] < _fim )
+			            RETURN IF ( _x > 0, _x ),
+			        "@vMA",
+			            VAR _id = 'Energia Área'[ID_Indicador]
+			            VAR _x = CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = _id, fato_indicadores[Data] >= _iniMA, fato_indicadores[Data] < _ini )
+			            RETURN IF ( _x > 0, _x ),
+			        "@vAA",
+			            VAR _id = 'Energia Área'[ID_Indicador]
+			            VAR _x = CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = _id, fato_indicadores[Data] >= _iniAA, fato_indicadores[Data] < EDATE ( _iniAA, 1 ) )
+			            RETURN IF ( _x > 0, _x ),
+			        "@kwh",
+			            VAR _id = 'Energia Área'[ID_Indicador]
+			            RETURN CALCULATE ( SUM ( fato_indicadores[Numerador] ), REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = _id, fato_indicadores[Data] >= _ini, fato_indicadores[Data] < _fim ),
+			        "@m3",
+			            VAR _id = 'Energia Área'[ID_Indicador]
+			            RETURN CALCULATE ( SUM ( fato_indicadores[Denominador] ), REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = _id, fato_indicadores[Data] >= _ini, fato_indicadores[Data] < _fim ),
+			        "@dias",
+			            VAR _id = 'Energia Área'[ID_Indicador]
+			            RETURN CALCULATE ( DISTINCTCOUNT ( fato_indicadores[Data] ), REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = _id, fato_indicadores[Data] >= _ini, fato_indicadores[Data] < _fim ),
+			        "@t", LOOKUPVALUE ( dim_indicadores[Target_Max], dim_indicadores[ID_Indicador], 'Energia Área'[ID_Indicador] ),
+			        "@tt", LOOKUPVALUE ( dim_indicadores[Target], dim_indicadores[ID_Indicador], 'Energia Área'[ID_Indicador] )
+			    )
+			VAR _kwhTot = SUMX ( T, [@kwh] )
+			-- ===== daqui pra baixo é só layout =====
+			VAR _esc0 = MAXX ( T, MAX ( [@v] + 0, [@t] + 0 ) ) * 1.15    -- barra cheia = 115% do maior valor/target
+			VAR _esc = IF ( _esc0 > 0, _esc0, 1 )
+			VAR _it = "<div class='it'><div class='lb'>"
+			VAR _icoP = "<svg width='18' height='22' viewBox='0 0 24 28'><path d='M14 0 L2 16 H11 L9 28 L22 10 H13 Z' fill='#3B9CFF'/></svg>"
+			VAR _mesesMini =
+			    CONCATENATEX (
+			        GENERATESERIES ( 1, 12, 1 ),
+			        VAR _nm = FORMAT ( DATE ( 2000, [Value], 1 ), "mmm", "pt-BR" )
+			        RETURN
+			            "<text x='" & FORMAT ( 40 + ( [Value] - 1 ) * 412 / 11, "0.0", "en-US" ) & "' y='87' text-anchor='middle' font-size='10' fill='" & IF ( [Value] = _mes, "#FFFFFF", "#9FB6D6" ) & "'>"
+			                & UPPER ( LEFT ( _nm, 1 ) ) & MID ( _nm, 2, 5 ) & "</text>",
+			        "",
+			        [Value], ASC
+			    )
+			VAR Linhas =
+			    CONCATENATEX (
+			        T,
+			        VAR _id = 'Energia Área'[ID_Indicador]
+			        VAR _area = 'Energia Área'[Área]
+			        VAR _i = 'Energia Área'[Ordem] - 1
+			        VAR _v = [@v]
+			        VAR _t = [@t]
+			        VAR _cor =
+			            SWITCH (
+			                TRUE (),
+			                ISBLANK ( _v ) || ISBLANK ( _t ), "#5B6F8C",
+			                _v <= _t, "#3EE08F",
+			                _v <= _t * 1.1, "#F5C542",
+			                "#FF5A5F"
+			            )
+			        VAR _status = SWITCH ( TRUE (), ISBLANK ( _v ), "Sem dado", ISBLANK ( _t ), "Sem meta", _v <= _t, "Dentro da meta", _v <= _t * 1.1, "Atenção", "Fora da meta" )
+			        VAR _corBarra = IF ( ISBLANK ( _t ), "#3B9CFF", _cor )
+			        VAR _w = MIN ( ( _v + 0 ) / _esc, 1 ) * 100
+			        VAR _fmt = IF ( _v < 0.1, "0.000", "0.00" )
+			        -- comparações (menor consumo é melhor: queda em verde, alta em vermelho)
+			        VAR _dMA = IF ( NOT ISBLANK ( _v ) && [@vMA] > 0, _v / [@vMA] - 1 )
+			        VAR _dAA = IF ( NOT ISBLANK ( _v ) && [@vAA] > 0, _v / [@vAA] - 1 )
+			        VAR _cmpMA =
+			            IF (
+			                ISBLANK ( _dMA ),
+			                "—",
+			                "<span style='color:" & IF ( _dMA <= 0, "#3EE08F", "#FF5A5F" ) & "'>" & IF ( _dMA <= 0, "▼ ", "▲ " ) & FORMAT ( _dMA, "+0.0%;-0.0%;0.0%", "pt-BR" ) & "</span>"
+			                    & " <span class='un'>(" & FORMAT ( [@vMA], _fmt, "pt-BR" ) & " → " & FORMAT ( _v, _fmt, "pt-BR" ) & ")</span>"
+			            )
+			        VAR _cmpAA =
+			            IF (
+			                ISBLANK ( _dAA ),
+			                "—",
+			                "<span style='color:" & IF ( _dAA <= 0, "#3EE08F", "#FF5A5F" ) & "'>" & IF ( _dAA <= 0, "▼ ", "▲ " ) & FORMAT ( _dAA, "+0.0%;-0.0%;0.0%", "pt-BR" ) & "</span>"
+			                    & " <span class='un'>(" & FORMAT ( [@vAA], _fmt, "pt-BR" ) & " → " & FORMAT ( _v, _fmt, "pt-BR" ) & ")</span>"
+			            )
+			        -- série mensal do mini gráfico (ano de referência e ano anterior)
+			        VAR S =
+			            ADDCOLUMNS (
+			                GENERATESERIES ( 1, 12, 1 ),
+			                "@a",
+			                    VAR _d = DATE ( _ano, [Value], 1 )
+			                    VAR _x = CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = _id, fato_indicadores[Data] >= _d, fato_indicadores[Data] < EDATE ( _d, 1 ) )
+			                    RETURN IF ( _x > 0, _x ),
+			                "@p",
+			                    VAR _d = DATE ( _ano - 1, [Value], 1 )
+			                    VAR _x = CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = _id, fato_indicadores[Data] >= _d, fato_indicadores[Data] < EDATE ( _d, 1 ) )
+			                    RETURN IF ( _comp && _x > 0, _x )
+			            )
+			        VAR _vals = FILTER ( UNION ( SELECTCOLUMNS ( S, "v", [@a] ), SELECTCOLUMNS ( S, "v", [@p] ), ROW ( "v", _t ) ), NOT ISBLANK ( [v] ) )
+			        VAR _lo = MINX ( _vals, [v] ) * 0.85
+			        VAR _hi = MAXX ( _vals, [v] ) * 1.08
+			        VAR _ey = IF ( _hi > _lo, 62 / ( _hi - _lo ), 0 )
+			        VAR _dx = 412 / 11
+			        VAR _ptsA = CONCATENATEX ( FILTER ( S, NOT ISBLANK ( [@a] ) ), FORMAT ( 40 + ( [Value] - 1 ) * _dx, "0.0", "en-US" ) & "," & FORMAT ( 70 - ( [@a] - _lo ) * _ey, "0.0", "en-US" ), " ", [Value], ASC )
+			        VAR _ptsP = CONCATENATEX ( FILTER ( S, NOT ISBLANK ( [@p] ) ), FORMAT ( 40 + ( [Value] - 1 ) * _dx, "0.0", "en-US" ) & "," & FORMAT ( 70 - ( [@p] - _lo ) * _ey, "0.0", "en-US" ), " ", [Value], ASC )
+			        VAR _dots =
+			            CONCATENATEX (
+			                FILTER ( S, NOT ISBLANK ( [@a] ) ),
+			                "<circle cx='" & FORMAT ( 40 + ( [Value] - 1 ) * _dx, "0.0", "en-US" ) & "' cy='" & FORMAT ( 70 - ( [@a] - _lo ) * _ey, "0.0", "en-US" ) & "' r='" & IF ( [Value] = _mes, "4.5", "2.5" ) & "' fill='#3EE08F'/>",
+			                "",
+			                [Value], ASC
+			            )
+			        VAR _yT = 70 - ( _t - _lo ) * _ey
+			        VAR _mini =
+			            "<svg width='460' height='90' viewBox='0 0 460 90' style='display:block' font-family='Segoe UI,sans-serif'>"
+			                & "<line x1='40' x2='452' y1='70' y2='70' stroke='#2A4A74'/>"
+			                & "<text x='34' y='12' text-anchor='end' font-size='10' fill='#9FB6D6'>" & FORMAT ( _hi, _fmt, "pt-BR" ) & "</text>"
+			                & "<text x='34' y='72' text-anchor='end' font-size='10' fill='#9FB6D6'>" & FORMAT ( _lo, _fmt, "pt-BR" ) & "</text>"
+			                & IF ( NOT ISBLANK ( _t ), "<line x1='40' x2='452' y1='" & FORMAT ( _yT, "0.0", "en-US" ) & "' y2='" & FORMAT ( _yT, "0.0", "en-US" ) & "' stroke='#E8F1FF' stroke-width='1' stroke-dasharray='4 3'/>" )
+			                & IF ( _comp && NOT ISBLANK ( _ptsP ), "<polyline points='" & _ptsP & "' fill='none' stroke='#3B9CFF' stroke-width='1.5' stroke-opacity='0.8'/>" )
+			                & "<polyline points='" & _ptsA & "' fill='none' stroke='#3EE08F' stroke-width='2.2'/>"
+			                & _dots
+			                & _mesesMini
+			                & "</svg>"
+			        -- painel de detalhe (oculto; o CSS mostra no hover da linha). A seta aponta para a linha.
+			        VAR _pop =
+			            "<div class='pp' style='display:none'><div class='seta' style='top:" & ( 106 + 47 * _i ) & "px'></div>"
+			                & "<div class='pph'>" & _icoP & "<span class='ppt'>Detalhe da área — " & _area & "</span>"
+			                & "<span class='chip' style='color:" & _cor & ";border-color:" & _cor & "'>" & _status & "</span></div>"
+			                & "<div class='grd'>"
+			                & _it & "Consumo específico</div><div class='vl' style='color:" & _cor & "'>" & IF ( ISBLANK ( _v ), "—", FORMAT ( _v, _fmt, "pt-BR" ) ) & " <span class='un'>kWh/m³</span></div></div>"
+			                & _it & "Target</div><div class='vl'>" & IF ( ISBLANK ( _t ), "Sem meta na base", [@tt] & " <span class='un'>kWh/m³</span>" ) & "</div></div>"
+			                & _it & "Energia consumida no mês</div><div class='vl'>" & IF ( ISBLANK ( [@kwh] ), "—", FORMAT ( [@kwh] / 1000, "#,0.0", "pt-BR" ) ) & " <span class='un'>MWh</span></div></div>"
+			                & _it & "Média diária</div><div class='vl'>" & IF ( ISBLANK ( [@kwh] ), "—", FORMAT ( DIVIDE ( [@kwh], [@dias] ), "#,0", "pt-BR" ) ) & " <span class='un'>kWh/dia</span></div></div>"
+			                & _it & "Volume de referência no mês</div><div class='vl'>" & IF ( ISBLANK ( [@m3] ), "—", FORMAT ( [@m3], "#,0", "pt-BR" ) ) & " <span class='un'>m³</span></div></div>"
+			                & _it & "Participação nas 6 áreas</div><div class='vl'>" & IF ( ISBLANK ( [@kwh] ), "—", FORMAT ( DIVIDE ( [@kwh], _kwhTot ), "0.0%", "pt-BR" ) ) & "</div></div>"
+			                & "</div>"
+			                & "<div class='grd'>"
+			                & _it & "vs. mês anterior</div><div class='cv'>" & _cmpMA & "</div></div>"
+			                & _it & "vs. mesmo mês do ano anterior</div><div class='cv'>" & _cmpAA & "</div></div>"
+			                & "</div>"
+			                & "<div class='mt'>Evolução mensal (kWh/m³) · <span style='color:#3EE08F'>●</span> " & _ano
+			                & IF ( _comp, " <span style='color:#3B9CFF'>●</span> " & ( _ano - 1 ) )
+			                & IF ( NOT ISBLANK ( _t ), " · tracejado = target" ) & "</div>"
+			                & _mini
+			                & "</div>"
+			        RETURN
+			            "<div class='ln' style='display:flex;align-items:center;height:46px;padding:0 18px;border-top:1px solid #16355F'>"
+			                & "<div style='width:120px;font-size:19px'>" & _area & "</div>"
+			                & "<div style='width:70px;text-align:right;font-size:19px;font-weight:700'>" & IF ( ISBLANK ( _v ), "—", FORMAT ( _v, "0.00", "pt-BR" ) ) & "</div>"
+			                & "<div style='flex:1;margin:0 26px'><div style='position:relative;height:18px;background:#14305A;border-radius:3px'>"
+			                & "<div style='width:" & FORMAT ( _w, "0.0", "en-US" ) & "%;height:100%;background:" & _corBarra & ";border-radius:3px'></div>"
+			                & IF ( NOT ISBLANK ( _t ), "<div style='position:absolute;left:" & FORMAT ( MIN ( _t / _esc, 1 ) * 100, "0.0", "en-US" ) & "%;top:-4px;height:26px;border-left:2px dashed #CFE0F7'></div>" )
+			                & "</div></div>"
+			                & "<div style='width:100px;text-align:center;font-size:18px;color:#CFE0F7'>" & IF ( ISBLANK ( _t ), "—", [@tt] ) & "</div>"
+			                & "<div style='width:70px;display:flex;justify-content:center'><div style='width:20px;height:20px;border-radius:50%;background:" & _cor & "'></div></div>"
+			                & _pop
+			                & "</div>",
+			        "",
+			        'Energia Área'[Ordem], ASC
+			    )
+			VAR _css =
+			    "<style>"
+			        & "@keyframes fd{from{opacity:0}to{opacity:1}}"
+			        & ".ln{cursor:default;transition:background .12s}"
+			        & ".ln:hover{background:#123A6B}"
+			        & ".pp{position:absolute;right:10px;top:8px;width:500px;height:370px;box-sizing:border-box;padding:12px 18px;background:#0B2140;border:1px solid #3B9CFF;border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.6);pointer-events:none;z-index:5;color:#E8F1FF}"
+			        & ".ln:hover .pp{display:block!important;animation:fd .15s ease-out}"
+			        & ".seta{position:absolute;left:-9px;width:16px;height:16px;background:#0B2140;border-left:1px solid #3B9CFF;border-bottom:1px solid #3B9CFF;transform:rotate(45deg)}"
+			        & ".pph{display:flex;align-items:center;height:34px;padding-bottom:6px;border-bottom:1px solid #1D4B80}"
+			        & ".ppt{margin-left:10px;font-size:18px;font-weight:700;white-space:nowrap}"
+			        & ".chip{margin-left:auto;padding:3px 12px;border:1px solid;border-radius:6px;font-size:13px;font-weight:600;white-space:nowrap}"
+			        & ".grd{display:grid;grid-template-columns:1fr 1fr;column-gap:24px;padding:6px 0;border-bottom:1px solid #1D4B80}"
+			        & ".it{height:40px;overflow:hidden}"
+			        & ".lb{font-size:12px;color:#9FB6D6;white-space:nowrap}"
+			        & ".vl{font-size:19px;font-weight:700;line-height:1.3;white-space:nowrap}"
+			        & ".un{font-size:12px;font-weight:400;color:#CFE0F7}"
+			        & ".cv{font-size:15px;font-weight:700;line-height:1.5;white-space:nowrap}"
+			        & ".cv .un{font-size:11px}"
+			        & ".mt{margin-top:6px;font-size:12px;color:#9FB6D6;white-space:nowrap}"
+			        & "</style>"
+			VAR _icone = "<svg width='26' height='30' viewBox='0 0 24 28'><path d='M14 0 L2 16 H11 L9 28 L22 10 H13 Z' fill='#3B9CFF'/></svg>"
+			RETURN
+			    _css
+			        & "<div style='position:relative;width:931px;height:388px;box-sizing:border-box;overflow:hidden;font-family:Segoe UI,sans-serif;color:#E8F1FF;background:#0A2244;border:1px solid #1D4B80;border-radius:10px'>"
+			        & "<div style='display:flex;align-items:center;height:58px;padding:0 20px;background:linear-gradient(90deg,#103463,#0B2648);border-bottom:1px solid #1D4B80'>"
+			        & _icone
+			        & "<span style='margin-left:14px;font-size:22px;font-weight:700;letter-spacing:.5px'>CONSUMO ESPECÍFICO POR ÁREA</span>"
+			        & "<span style='margin-left:10px;font-size:18px;color:#9FB6D6'>(kWh/m³)</span>"
+			        & "<span style='margin-left:auto;font-size:15px;color:#9FB6D6'>Consumo por área · " & [En Período] & "</span>"
+			        & "</div>"
+			        & "<div style='display:flex;align-items:center;height:40px;padding:0 18px;font-size:16px;font-weight:600;color:#CFE0F7'>"
+			        & "<div style='width:120px'>Área</div><div style='width:70px;text-align:right'>Atual</div><div style='flex:1;margin:0 26px'></div>"
+			        & "<div style='width:100px;text-align:center'>Target</div><div style='width:70px;text-align:center'>Status</div>"
+			        & "</div>"
+			        & Linhas
+			        & "</div>"
+		displayFolder: HTML
+		lineageTag: 14aa0092-ea65-42cd-b9df-fce32acdd033
+
+	/// Card "Perdas da unidade": valor do mês (%), barra, target e status de cada perda.
+	/// Ao passar o mouse numa linha, abre o painel de detalhe com volume perdido, volume de entrada, média diária,
+	/// parcela da perda total, comparação com o mês anterior e com o mesmo mês do ano anterior (p.p.) e a evolução dos 12 meses.
+	measure 'HTML Energia Perdas' =
+			VAR _ano = [En Ano Ref]
+			VAR _mes = [En Mês Ref]
+			VAR _comp = [En Comparar]
+			VAR _ini = DATE ( _ano, _mes, 1 )
+			VAR _fim = EDATE ( _ini, 1 )
+			VAR _iniMA = EDATE ( _ini, -1 )
+			VAR _iniAA = EDATE ( _ini, -12 )
+			-- ===== EDITAR AQUI: perdas exibidas, na ordem do card (a 1ª deve ser a Perda Total) =====
+			VAR Lista =
+			    DATATABLE (
+			        "Ordem", INTEGER,
+			        "Nome", STRING,
+			        "ID", STRING,
+			        {
+			            { 1, "Perda Total", "Perdas | Perda Total" },
+			            { 2, "Perda Filtro Disco", "Perdas | Perda Filtro Disco" },
+			            { 3, "Perda Lodo Biológico", "Perdas | Perda Lodo Biológico" },
+			            { 4, "Perda Azud", "Perdas | Perda Azud" },
+			            { 5, "Perda Concentrado", "Perdas | Perda Concentrado" },
+			            { 6, "Perda Água de Selagem", "Perdas | Perda Água de Selagem" }
+			        }
+			    )
+			VAR T =
+			    ADDCOLUMNS (
+			        Lista,
+			        "@v",
+			            VAR _id = [ID]
+			            RETURN 100 * CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = _id, fato_indicadores[Data] >= _ini, fato_indicadores[Data] < _fim ),
+			        "@vMA",
+			            VAR _id = [ID]
+			            RETURN 100 * CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = _id, fato_indicadores[Data] >= _iniMA, fato_indicadores[Data] < _ini ),
+			        "@vAA",
+			            VAR _id = [ID]
+			            RETURN 100 * CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = _id, fato_indicadores[Data] >= _iniAA, fato_indicadores[Data] < EDATE ( _iniAA, 1 ) ),
+			        "@num",
+			            VAR _id = [ID]
+			            RETURN CALCULATE ( SUM ( fato_indicadores[Numerador] ), REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = _id, fato_indicadores[Data] >= _ini, fato_indicadores[Data] < _fim ),
+			        "@den",
+			            VAR _id = [ID]
+			            RETURN CALCULATE ( SUM ( fato_indicadores[Denominador] ), REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = _id, fato_indicadores[Data] >= _ini, fato_indicadores[Data] < _fim ),
+			        "@dias",
+			            VAR _id = [ID]
+			            RETURN CALCULATE ( DISTINCTCOUNT ( fato_indicadores[Data] ), REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = _id, fato_indicadores[Data] >= _ini, fato_indicadores[Data] < _fim ),
+			        "@t", 100 * LOOKUPVALUE ( dim_indicadores[Target_Max], dim_indicadores[ID_Indicador], [ID] ),
+			        "@tt", LOOKUPVALUE ( dim_indicadores[Target], dim_indicadores[ID_Indicador], [ID] )
+			    )
+			VAR _numTot = MAXX ( FILTER ( T, [Ordem] = 1 ), [@num] )    -- volume da Perda Total (as demais são parcelas dela)
+			-- ===== daqui pra baixo é só layout =====
+			VAR _esc0 = MAXX ( T, MAX ( [@v] + 0, [@t] + 0 ) ) * 1.15
+			VAR _esc = IF ( _esc0 > 0, _esc0, 1 )
+			VAR _it = "<div class='it'><div class='lb'>"
+			VAR _icoP = "<svg width='16' height='22' viewBox='0 0 24 30'><path d='M12 1 C9 6 2 13 2 19 A10 10 0 0 0 22 19 C22 13 15 6 12 1 Z' fill='#3B9CFF'/></svg>"
+			VAR _mesesMini =
+			    CONCATENATEX (
+			        GENERATESERIES ( 1, 12, 1 ),
+			        VAR _nm = FORMAT ( DATE ( 2000, [Value], 1 ), "mmm", "pt-BR" )
+			        RETURN
+			            "<text x='" & FORMAT ( 40 + ( [Value] - 1 ) * 412 / 11, "0.0", "en-US" ) & "' y='87' text-anchor='middle' font-size='10' fill='" & IF ( [Value] = _mes, "#FFFFFF", "#9FB6D6" ) & "'>"
+			                & UPPER ( LEFT ( _nm, 1 ) ) & MID ( _nm, 2, 5 ) & "</text>",
+			        "",
+			        [Value], ASC
+			    )
+			VAR Linhas =
+			    CONCATENATEX (
+			        T,
+			        VAR _id = [ID]
+			        VAR _nome = [Nome]
+			        VAR _i = [Ordem] - 1
+			        VAR _v = [@v]
+			        VAR _t = [@t]
+			        VAR _cor =
+			            SWITCH (
+			                TRUE (),
+			                ISBLANK ( _v ) || ISBLANK ( _t ), "#5B6F8C",
+			                _v <= _t, "#3EE08F",
+			                _v <= _t * 1.1, "#F5C542",
+			                "#FF5A5F"
+			            )
+			        VAR _status = SWITCH ( TRUE (), ISBLANK ( _v ), "Sem dado", ISBLANK ( _t ), "Sem meta", _v <= _t, "Dentro da meta", _v <= _t * 1.1, "Atenção", "Fora da meta" )
+			        VAR _corBarra = IF ( ISBLANK ( _t ), "#3B9CFF", _cor )
+			        VAR _w = MAX ( 0, MIN ( ( _v + 0 ) / _esc, 1 ) ) * 100
+			        VAR _fmt = IF ( _v < 1, "0.00", "0.0" )
+			        -- comparações em pontos percentuais (menor perda é melhor)
+			        VAR _dMA = IF ( NOT ISBLANK ( _v ) && NOT ISBLANK ( [@vMA] ), _v - [@vMA] )
+			        VAR _dAA = IF ( NOT ISBLANK ( _v ) && NOT ISBLANK ( [@vAA] ), _v - [@vAA] )
+			        VAR _cmpMA =
+			            IF (
+			                ISBLANK ( _dMA ),
+			                "—",
+			                "<span style='color:" & IF ( _dMA <= 0, "#3EE08F", "#FF5A5F" ) & "'>" & IF ( _dMA <= 0, "▼ ", "▲ " ) & FORMAT ( _dMA, "+0.0;-0.0;0.0", "pt-BR" ) & " p.p.</span>"
+			                    & " <span class='un'>(" & FORMAT ( [@vMA], _fmt, "pt-BR" ) & "% → " & FORMAT ( _v, _fmt, "pt-BR" ) & "%)</span>"
+			            )
+			        VAR _cmpAA =
+			            IF (
+			                ISBLANK ( _dAA ),
+			                "—",
+			                "<span style='color:" & IF ( _dAA <= 0, "#3EE08F", "#FF5A5F" ) & "'>" & IF ( _dAA <= 0, "▼ ", "▲ " ) & FORMAT ( _dAA, "+0.0;-0.0;0.0", "pt-BR" ) & " p.p.</span>"
+			                    & " <span class='un'>(" & FORMAT ( [@vAA], _fmt, "pt-BR" ) & "% → " & FORMAT ( _v, _fmt, "pt-BR" ) & "%)</span>"
+			            )
+			        -- série mensal do mini gráfico, em %
+			        VAR S =
+			            ADDCOLUMNS (
+			                GENERATESERIES ( 1, 12, 1 ),
+			                "@a",
+			                    VAR _d = DATE ( _ano, [Value], 1 )
+			                    RETURN 100 * CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = _id, fato_indicadores[Data] >= _d, fato_indicadores[Data] < EDATE ( _d, 1 ) ),
+			                "@p",
+			                    VAR _d = DATE ( _ano - 1, [Value], 1 )
+			                    VAR _x = 100 * CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), fato_indicadores[ID_Indicador] = _id, fato_indicadores[Data] >= _d, fato_indicadores[Data] < EDATE ( _d, 1 ) )
+			                    RETURN IF ( _comp, _x )
+			            )
+			        VAR _vals = FILTER ( UNION ( SELECTCOLUMNS ( S, "v", [@a] ), SELECTCOLUMNS ( S, "v", [@p] ), ROW ( "v", _t ) ), NOT ISBLANK ( [v] ) )
+			        VAR _lo = MINX ( _vals, [v] ) * 0.85
+			        VAR _hi = MAXX ( _vals, [v] ) * 1.08
+			        VAR _ey = IF ( _hi > _lo, 62 / ( _hi - _lo ), 0 )
+			        VAR _dx = 412 / 11
+			        VAR _ptsA = CONCATENATEX ( FILTER ( S, NOT ISBLANK ( [@a] ) ), FORMAT ( 40 + ( [Value] - 1 ) * _dx, "0.0", "en-US" ) & "," & FORMAT ( 70 - ( [@a] - _lo ) * _ey, "0.0", "en-US" ), " ", [Value], ASC )
+			        VAR _ptsP = CONCATENATEX ( FILTER ( S, NOT ISBLANK ( [@p] ) ), FORMAT ( 40 + ( [Value] - 1 ) * _dx, "0.0", "en-US" ) & "," & FORMAT ( 70 - ( [@p] - _lo ) * _ey, "0.0", "en-US" ), " ", [Value], ASC )
+			        VAR _dots =
+			            CONCATENATEX (
+			                FILTER ( S, NOT ISBLANK ( [@a] ) ),
+			                "<circle cx='" & FORMAT ( 40 + ( [Value] - 1 ) * _dx, "0.0", "en-US" ) & "' cy='" & FORMAT ( 70 - ( [@a] - _lo ) * _ey, "0.0", "en-US" ) & "' r='" & IF ( [Value] = _mes, "4.5", "2.5" ) & "' fill='#3EE08F'/>",
+			                "",
+			                [Value], ASC
+			            )
+			        VAR _yT = 70 - ( _t - _lo ) * _ey
+			        VAR _mini =
+			            "<svg width='460' height='90' viewBox='0 0 460 90' style='display:block' font-family='Segoe UI,sans-serif'>"
+			                & "<line x1='40' x2='452' y1='70' y2='70' stroke='#2A4A74'/>"
+			                & "<text x='34' y='12' text-anchor='end' font-size='10' fill='#9FB6D6'>" & FORMAT ( _hi, _fmt, "pt-BR" ) & "</text>"
+			                & "<text x='34' y='72' text-anchor='end' font-size='10' fill='#9FB6D6'>" & FORMAT ( _lo, _fmt, "pt-BR" ) & "</text>"
+			                & IF ( NOT ISBLANK ( _t ), "<line x1='40' x2='452' y1='" & FORMAT ( _yT, "0.0", "en-US" ) & "' y2='" & FORMAT ( _yT, "0.0", "en-US" ) & "' stroke='#E8F1FF' stroke-width='1' stroke-dasharray='4 3'/>" )
+			                & IF ( _comp && NOT ISBLANK ( _ptsP ), "<polyline points='" & _ptsP & "' fill='none' stroke='#3B9CFF' stroke-width='1.5' stroke-opacity='0.8'/>" )
+			                & "<polyline points='" & _ptsA & "' fill='none' stroke='#3EE08F' stroke-width='2.2'/>"
+			                & _dots
+			                & _mesesMini
+			                & "</svg>"
+			        VAR _pop =
+			            "<div class='pp' style='display:none'><div class='seta' style='top:" & ( 106 + 47 * _i ) & "px'></div>"
+			                & "<div class='pph'>" & _icoP & "<span class='ppt'>" & _nome & "</span>"
+			                & "<span class='chip' style='color:" & _cor & ";border-color:" & _cor & "'>" & _status & "</span></div>"
+			                & "<div class='grd'>"
+			                & _it & "Perda no mês</div><div class='vl' style='color:" & _cor & "'>" & IF ( ISBLANK ( _v ), "—", FORMAT ( _v, _fmt, "pt-BR" ) ) & " <span class='un'>%</span></div></div>"
+			                & _it & "Target</div><div class='vl'>" & IF ( ISBLANK ( _t ), "Sem meta na base", [@tt] & " <span class='un'>%</span>" ) & "</div></div>"
+			                & _it & "Volume perdido no mês</div><div class='vl'>" & IF ( ISBLANK ( [@num] ), "—", FORMAT ( [@num], "#,0", "pt-BR" ) ) & " <span class='un'>m³</span></div></div>"
+			                & _it & "Média diária perdida</div><div class='vl'>" & IF ( ISBLANK ( [@num] ), "—", FORMAT ( DIVIDE ( [@num], [@dias] ), "#,0", "pt-BR" ) ) & " <span class='un'>m³/dia</span></div></div>"
+			                & _it & "Volume de entrada no mês</div><div class='vl'>" & IF ( ISBLANK ( [@den] ), "—", FORMAT ( [@den], "#,0", "pt-BR" ) ) & " <span class='un'>m³</span></div></div>"
+			                & _it & "Parcela da perda total</div><div class='vl'>" & IF ( ISBLANK ( [@num] ), "—", FORMAT ( DIVIDE ( [@num], _numTot ), "0.0%", "pt-BR" ) ) & "</div></div>"
+			                & "</div>"
+			                & "<div class='grd'>"
+			                & _it & "vs. mês anterior</div><div class='cv'>" & _cmpMA & "</div></div>"
+			                & _it & "vs. mesmo mês do ano anterior</div><div class='cv'>" & _cmpAA & "</div></div>"
+			                & "</div>"
+			                & "<div class='mt'>Evolução mensal (%) · <span style='color:#3EE08F'>●</span> " & _ano
+			                & IF ( _comp, " <span style='color:#3B9CFF'>●</span> " & ( _ano - 1 ) )
+			                & IF ( NOT ISBLANK ( _t ), " · tracejado = target" ) & "</div>"
+			                & _mini
+			                & "</div>"
+			        RETURN
+			            "<div class='ln' style='display:flex;align-items:center;height:46px;padding:0 18px;border-top:1px solid #16355F'>"
+			                & "<div style='width:230px;font-size:19px'>" & _nome & "</div>"
+			                & "<div style='width:60px;text-align:right;font-size:19px;font-weight:700'>" & IF ( ISBLANK ( _v ), "—", FORMAT ( _v, "0.0", "pt-BR" ) ) & "</div>"
+			                & "<div style='flex:1;margin:0 26px'><div style='position:relative;height:18px;background:#14305A;border-radius:3px'>"
+			                & "<div style='width:" & FORMAT ( _w, "0.0", "en-US" ) & "%;height:100%;background:" & _corBarra & ";border-radius:3px'></div>"
+			                & IF ( NOT ISBLANK ( _t ), "<div style='position:absolute;left:" & FORMAT ( MIN ( _t / _esc, 1 ) * 100, "0.0", "en-US" ) & "%;top:-4px;height:26px;border-left:2px dashed #CFE0F7'></div>" )
+			                & "</div></div>"
+			                & "<div style='width:90px;text-align:center;font-size:18px;color:#CFE0F7'>" & IF ( ISBLANK ( _t ), "—", [@tt] ) & "</div>"
+			                & "<div style='width:70px;display:flex;justify-content:center'><div style='width:20px;height:20px;border-radius:50%;background:" & _cor & "'></div></div>"
+			                & _pop
+			                & "</div>",
+			        "",
+			        [Ordem], ASC
+			    )
+			VAR _css =
+			    "<style>"
+			        & "@keyframes fd{from{opacity:0}to{opacity:1}}"
+			        & ".ln{cursor:default;transition:background .12s}"
+			        & ".ln:hover{background:#123A6B}"
+			        & ".pp{position:absolute;right:10px;top:8px;width:500px;height:370px;box-sizing:border-box;padding:12px 18px;background:#0B2140;border:1px solid #3B9CFF;border-radius:10px;box-shadow:0 10px 28px rgba(0,0,0,.6);pointer-events:none;z-index:5;color:#E8F1FF}"
+			        & ".ln:hover .pp{display:block!important;animation:fd .15s ease-out}"
+			        & ".seta{position:absolute;left:-9px;width:16px;height:16px;background:#0B2140;border-left:1px solid #3B9CFF;border-bottom:1px solid #3B9CFF;transform:rotate(45deg)}"
+			        & ".pph{display:flex;align-items:center;height:34px;padding-bottom:6px;border-bottom:1px solid #1D4B80}"
+			        & ".ppt{margin-left:10px;font-size:18px;font-weight:700;white-space:nowrap}"
+			        & ".chip{margin-left:auto;padding:3px 12px;border:1px solid;border-radius:6px;font-size:13px;font-weight:600;white-space:nowrap}"
+			        & ".grd{display:grid;grid-template-columns:1fr 1fr;column-gap:24px;padding:6px 0;border-bottom:1px solid #1D4B80}"
+			        & ".it{height:40px;overflow:hidden}"
+			        & ".lb{font-size:12px;color:#9FB6D6;white-space:nowrap}"
+			        & ".vl{font-size:19px;font-weight:700;line-height:1.3;white-space:nowrap}"
+			        & ".un{font-size:12px;font-weight:400;color:#CFE0F7}"
+			        & ".cv{font-size:15px;font-weight:700;line-height:1.5;white-space:nowrap}"
+			        & ".cv .un{font-size:11px}"
+			        & ".mt{margin-top:6px;font-size:12px;color:#9FB6D6;white-space:nowrap}"
+			        & "</style>"
+			VAR _icone = "<svg width='24' height='30' viewBox='0 0 24 30'><path d='M12 1 C9 6 2 13 2 19 A10 10 0 0 0 22 19 C22 13 15 6 12 1 Z' fill='#3B9CFF'/></svg>"
+			RETURN
+			    _css
+			        & "<div style='position:relative;width:931px;height:388px;box-sizing:border-box;overflow:hidden;font-family:Segoe UI,sans-serif;color:#E8F1FF;background:#0A2244;border:1px solid #1D4B80;border-radius:10px'>"
+			        & "<div style='display:flex;align-items:center;height:58px;padding:0 20px;background:linear-gradient(90deg,#103463,#0B2648);border-bottom:1px solid #1D4B80'>"
+			        & _icone
+			        & "<span style='margin-left:14px;font-size:22px;font-weight:700;letter-spacing:.5px'>PERDAS DA UNIDADE</span>"
+			        & "<span style='margin-left:10px;font-size:18px;color:#9FB6D6'>(%)</span>"
+			        & "<span style='margin-left:auto;font-size:15px;color:#9FB6D6'>Resumo operacional · " & [En Período] & "</span>"
+			        & "</div>"
+			        & "<div style='display:flex;align-items:center;height:40px;padding:0 18px;font-size:16px;font-weight:600;color:#CFE0F7'>"
+			        & "<div style='width:230px'>Parâmetro</div><div style='width:60px;text-align:right'>Atual</div><div style='flex:1;margin:0 26px'></div>"
+			        & "<div style='width:90px;text-align:center'>Target</div><div style='width:70px;text-align:center'>Status</div>"
+			        & "</div>"
+			        & Linhas
+			        & "</div>"
+		displayFolder: HTML
+		lineageTag: 5a541015-6562-4e48-b2ea-d11e51d17a83
+
+	/// Bloco "Comparativo mensal": moldura + os três gráficos SVG. As segmentações ficam por cima do cabeçalho do bloco.
+	measure 'HTML Energia Comparativo' =
+			VAR _comp = [En Comparar]
+			VAR _area = SELECTEDVALUE ( 'Energia Área'[Área] )
+			VAR _tituloLinha =
+			    IF (
+			        ISBLANK ( _area ),
+			        "Evolução do consumo unitário - Energia (kWh/m³)",
+			        "Evolução do consumo - " & _area & " (kWh/m³)"
+			    )
+			VAR _sub = IF ( _comp, "Mês selecionado vs mesmo mês do ano anterior · passe o mouse nos gráficos para ver o detalhe", "Somente o mês selecionado · passe o mouse nos gráficos para ver o detalhe" )
+			VAR _icone = "<svg width='30' height='28' viewBox='0 0 30 28'><rect x='0' y='16' width='7' height='12' rx='1' fill='#3B9CFF'/><rect x='11' y='8' width='7' height='20' rx='1' fill='#3B9CFF'/><rect x='22' y='0' width='7' height='28' rx='1' fill='#3EE08F'/></svg>"
+			VAR _sep = "<div style='width:1px;background:#1D4B80;margin:0 16px'></div>"
+			VAR _tit = "<div style='height:30px;font-size:19px;font-weight:600;white-space:nowrap'>"
+			RETURN
+			    "<div style='width:1880px;height:448px;box-sizing:border-box;overflow:hidden;font-family:Segoe UI,sans-serif;color:#E8F1FF;background:#0A2244;border:1px solid #1D4B80;border-radius:10px'>"
+			        & "<div style='display:flex;align-items:center;height:72px;padding:0 20px;background:linear-gradient(90deg,#103463,#0B2648);border-bottom:1px solid #1D4B80'>"
+			        & _icone
+			        & "<span style='margin-left:14px;font-size:22px;font-weight:700;letter-spacing:.5px'>COMPARATIVO MENSAL</span>"
+			        & "<span style='margin-left:16px;font-size:15px;color:#9FB6D6'>" & _sub & "</span>"
+			        & "</div>"
+			        & "<div style='display:flex;height:366px;padding:10px 18px 0 18px'>"
+			        & "<div style='width:760px'>" & _tit & "Consumo por área (kWh/m³)</div>" & [SVG Energia Barras] & "</div>"
+			        & _sep
+			        & "<div style='width:590px'>" & _tit & _tituloLinha & "</div>" & [SVG Energia Linha] & "</div>"
+			        & _sep
+			        & "<div style='flex:1'>" & _tit & "Participação do consumo por área (%)</div>" & [SVG Energia Rosca] & "</div>"
+			        & "</div>"
+			        & "</div>"
+		displayFolder: HTML
+		lineageTag: e8f6ea01-263d-47b7-b7b6-aebe3566c1ac
+
+	/// Rodapé da página: data dos dados, legenda de status e observação de cálculo.
+	measure 'HTML Energia Rodapé' =
+			VAR _bola = "<span style='display:inline-block;width:14px;height:14px;border-radius:50%;margin:0 6px 0 16px;background:"
+			VAR _sep = "<span style='display:inline-block;width:1px;height:24px;background:#2A5A94;margin:0 18px'></span>"
+			VAR _relogio = "<svg width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='#CFE0F7' stroke-width='2'><circle cx='12' cy='12' r='10'/><path d='M12 6 V12 L16 14'/></svg>"
+			RETURN
+			    "<div style='width:1880px;height:46px;box-sizing:border-box;display:flex;align-items:center;padding:0 18px;overflow:hidden;white-space:nowrap;font-family:Segoe UI,sans-serif;font-size:14px;color:#CFE0F7;background:#0A2244;border:1px solid #1D4B80;border-radius:8px'>"
+			        & _relogio
+			        & "<span style='margin-left:8px'>Dados de energia até <b style='color:#FFFFFF'>" & FORMAT ( [En Última Data], "dd/mm/yyyy", "pt-BR" ) & "</b></span>"
+			        & _sep
+			        & _bola & "#3EE08F'></span>Dentro da meta"
+			        & _bola & "#F5C542'></span>Atenção (até 10% acima)"
+			        & _bola & "#FF5A5F'></span>Fora da meta"
+			        & _bola & "#5B6F8C'></span>Sem meta na base"
+			        & _sep
+			        & "<span style='font-size:13px;color:#9FB6D6'>Valor do mês = soma de kWh ÷ soma de m³ no mês. Tracejado = target da dim_indicadores. Passe o mouse para ver o detalhe.</span>"
+			        & "<span style='margin-left:auto;font-weight:600;color:#E8F1FF'>Aquapolo <span style='color:#5B7FAE'>|</span> GS Inima <span style='color:#5B7FAE'>|</span> Sabesp</span>"
+			        & "</div>"
+		displayFolder: HTML
+		lineageTag: 686eb447-ba9d-493a-ba40-4a9aa1dd7bad
+
+	column Aux
+		dataType: string
+		isHidden
+		lineageTag: d14fe4b7-e343-40a8-b394-ffed62030b4b
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Aux]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Medidas Energia' = calculated
+		mode: import
+		source = ROW("Aux", BLANK())
+

@@ -25,6 +25,11 @@ ref table 'Mês do Ano'
 ref table 'Seletor Químico'
 ref table 'Comparar Ano Anterior'
 ref table 'Medidas Químicos'
+ref table 'Medidas Energia'
+ref table 'Energia Ano'
+ref table 'Energia Mês'
+ref table 'Energia Área'
+ref table 'Energia Comparar'
 
 ref cultureInfo pt-BR
 

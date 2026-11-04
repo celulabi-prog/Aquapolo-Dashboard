@@ -1,0 +1,24 @@
+/// Anos com dado de energia. Alimenta a segmentação "Ano" da página Energia (tabela desconectada).
+table 'Energia Ano'
+	lineageTag: ff1bfa13-2026-41a6-b081-ba22382c2c54
+
+	column Ano
+		dataType: int64
+		formatString: 0
+		lineageTag: 0279375d-d2eb-4776-9502-1d34a633b94c
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ano]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Energia Ano' = calculated
+		mode: import
+		source =
+				DISTINCT (
+				    SELECTCOLUMNS (
+				        FILTER ( fato_indicadores, LEFT ( fato_indicadores[ID_Indicador], 9 ) = "Energia |" ),
+				        "Ano", YEAR ( fato_indicadores[Data] )
+				    )
+				)
+
