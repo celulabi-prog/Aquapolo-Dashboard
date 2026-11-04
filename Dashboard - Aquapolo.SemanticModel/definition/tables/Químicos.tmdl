@@ -35,7 +35,7 @@ table Químicos
 
 	partition Químicos = calculated
 		mode: import
-		source = ```
+		source =
 				-- ===== EDITAR AQUI: ordem, nome na página, nome no ID_Indicador da base =====
 				DATATABLE (
 					"Ordem", INTEGER,
@@ -54,7 +54,6 @@ table Químicos
 						{ 10, "RoClean 193", "RoClean 193" }
 					}
 				)
-				```
 
 	annotation PBI_Id = 481f38a258c04effb644cd8cbf7625f0
 

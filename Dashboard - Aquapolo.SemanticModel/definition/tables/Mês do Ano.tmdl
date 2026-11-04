@@ -25,7 +25,7 @@ table 'Mês do Ano'
 
 	partition 'Mês do Ano' = calculated
 		mode: import
-		source = ```
+		source =
 				DATATABLE (
 					"Nº", INTEGER,
 					"Mês", STRING,
@@ -34,7 +34,6 @@ table 'Mês do Ano'
 						{ 7, "Jul" }, { 8, "Ago" }, { 9, "Set" }, { 10, "Out" }, { 11, "Nov" }, { 12, "Dez" }
 					}
 				)
-				```
 
 	annotation PBI_Id = b955cd033f364a459e228ef94133e9b2
 

@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Químicos.Químico",
-              "nativeQueryRef": "Químico"
+              "nativeQueryRef": "Químico",
+              "active": true
             }
           ],
           "showAll": true
@@ -82,8 +83,7 @@
             },
             "direction": "Ascending"
           }
-        ],
-        "isDefaultSort": false
+        ]
       }
     },
     "objects": {

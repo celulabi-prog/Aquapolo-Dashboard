@@ -550,7 +550,7 @@ table 'Medidas Químicos'
 		displayFolder: Visuais
 		lineageTag: 9d5c23fb-cdde-418f-9258-a9c6df445dbf
 
-	measure 'HTML Cartão Consumo' = ```
+	measure 'HTML Cartão Consumo' =
 			-- Cartão "Consumo unitário – Químicos": valor do mês, variação vs mês anterior e meta.
 			VAR Valor = [Consumo Unitário Total]
 			VAR Anterior = [Consumo Unitário Total Mês Anterior]
@@ -578,11 +578,10 @@ table 'Medidas Químicos'
 					& "<div style='font-size:30px;font-weight:700'>&lt; " & FORMAT ( Meta, "0.00", "pt-BR" ) & "</div>"
 					& "<div style='font-size:14px;color:#c9d6ea'>kg/m³</div></div>"
 					& "</div>"
-			```
 		displayFolder: Visuais
 		lineageTag: 8ad74ccb-fc78-4b85-adbb-8d412bd3ed35
 
-	measure 'HTML Cartão Menor Autonomia' = ```
+	measure 'HTML Cartão Menor Autonomia' =
 			-- Cartão "Menor autonomia": químico com menos dias de estoque e o alerta em relação ao alvo dele.
 			VAR Q = [Menor Autonomia Químico]
 			VAR V = [Menor Autonomia]
@@ -608,11 +607,10 @@ table 'Medidas Químicos'
 						& "<div style='font-size:17px;color:#f1e3e3;line-height:1.2'>" & Texto & "</div></div></div>"
 						& "</div>"
 				)
-			```
 		displayFolder: Visuais
 		lineageTag: 592834d4-7cb1-4df9-a5d4-85e623c6f326
 
-	measure 'HTML Cartão Abaixo do Alvo' = ```
+	measure 'HTML Cartão Abaixo do Alvo' =
 			-- Cartão "Químicos abaixo da autonomia alvo": quantos estão abaixo, entre os que têm dado.
 			VAR N = [Químicos Abaixo do Alvo]
 			VAR Tot = [Químicos com Autonomia]
@@ -634,22 +632,20 @@ table 'Medidas Químicos'
 					& "<div><div style='font-size:24px;font-weight:700;color:" & IF ( N > 0, "#ff7b6b", "#27e08a" ) & "'>" & Titulo & "</div>"
 					& "<div style='font-size:17px;color:#f1e3e3;line-height:1.2'>" & Texto & "</div></div></div>"
 					& "</div>"
-			```
 		displayFolder: Visuais
 		lineageTag: 50045626-45d1-4ffe-9fd5-c91f5acbf6a9
 
-	measure 'HTML Legenda Comparativo' = ```
+	measure 'HTML Legenda Comparativo' =
 			"<div style='font-family:Bahnschrift,Segoe UI,sans-serif;color:#fff;display:flex;align-items:center;height:26px;padding:0 4px;overflow:hidden'>"
 				& "<span style='font-size:19px'>Consumo unitário por químico (g/m³)</span>"
 				& "<span style='margin-left:auto;display:flex;gap:26px;font-size:16px'>"
 				& "<span><span style='display:inline-block;width:13px;height:13px;border-radius:50%;background:#2f9bff'></span> " & [Químicos Mês Ano Anterior] & "</span>"
 				& "<span><span style='display:inline-block;width:13px;height:13px;border-radius:50%;background:#27e08a'></span> " & [Químicos Mês] & "</span>"
 				& "</span></div>"
-			```
 		displayFolder: Visuais
 		lineageTag: fe24dbce-c641-47cb-9469-7b2f08fc7071
 
-	measure 'HTML Título Evolução' = ```
+	measure 'HTML Título Evolução' =
 			VAR Q = SELECTEDVALUE ( 'Seletor Químico'[Opção], "Todos" )
 			VAR Unidade = IF ( Q = "Todos", "kg/m³", "g/m³" )
 			VAR Comparar = ISFILTERED ( 'Comparar Ano Anterior'[Opção] )
@@ -666,7 +662,6 @@ table 'Medidas Químicos'
 						"<span style='margin-left:30px;color:#6f86ab'>sem meta por químico</span>"
 					)
 					& "</div></div>"
-			```
 		displayFolder: Visuais
 		lineageTag: baeb2a9c-4dce-4cc2-b187-41126f5dae04
 
@@ -676,7 +671,7 @@ table 'Medidas Químicos'
 		displayFolder: Visuais
 		lineageTag: 0484b0d6-de8f-46b0-a255-081b137ee3a6
 
-	measure 'HTML Detalhe Químico' = ```
+	measure 'HTML Detalhe Químico' =
 			-- Dica de ferramenta "Detalhe do químico": aparece ao passar o mouse nas linhas das tabelas.
 			VAR Q = SELECTEDVALUE ( 'Químicos'[Químico] )
 			VAR A = [Autonomia Atual]
@@ -734,7 +729,6 @@ table 'Medidas Químicos'
 					& "</div>"
 					& "<div style='padding:10px 18px 0;font-size:15px;color:#c9d6ea'>Evolução do consumo unitário (g/m³) – " & Q & " – " & YEAR ( [Químicos Data Fim] ) & "</div>"
 					& "</div>"
-			```
 		displayFolder: Visuais
 		lineageTag: 89383887-fd9f-4298-95fc-24ab440fab37
 
