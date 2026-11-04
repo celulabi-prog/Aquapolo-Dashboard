@@ -211,207 +211,125 @@ table 'Medidas Volumes'
 		displayFolder: Base
 		lineageTag: 75d0c217-4e21-52bf-8e30-003edeb395ef
 
-	/// Faixa do topo: identificação, título, mês em foco e data da última medição.
+	/// Faixa do topo: identificação, legenda de cores e data da última medição. O espaço entre 1412 e 1640 fica livre para o filtro de mês, que é um visual por cima.
 	measure 'HTML Vol Cabeçalho' = ```
-			VAR _m = [Vol Mês Idx]
-			VAR _rot = CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _m )
 			VAR _ult = CALCULATE ( MAX ( fato_indicadores[Data] ), ALL ( fato_indicadores ), REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
 			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ) )
-			VAR _dias = [Vol Dias do Mês]
-			VAR _parcial = _dias < 25
+			VAR _pt = "<span style='display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;background:"
 			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
-			    "<div style='font-family:Segoe UI,sans-serif;height:100%;box-sizing:border-box;padding:0 26px;background:linear-gradient(100deg,#06182e 0%,#0b2744 58%,#14416e 100%);display:flex;align-items:center;gap:22px'>"
-			        & "<div><div style='font-size:34px;font-weight:800;color:#ffffff;line-height:1;letter-spacing:-0.8px'>Aquapolo</div>"
-			        & "<div style='margin-top:4px;font-size:11.5px;color:#9dc2e6;letter-spacing:0.4px'>GS Inima &nbsp;&#124;&nbsp; Sabesp</div></div>"
-			        & "<div style='width:1px;height:52px;background:#28557f'></div>"
-			        & "<div><div style='font-size:27px;font-weight:700;color:#ffffff;line-height:1'>Painel Operacional</div>"
-			        & "<div style='margin-top:4px;font-size:15px;color:#8fb6dd'>Volumes entregues por cliente</div></div>"
-			        & "<div style='margin-left:auto;display:flex;align-items:center;gap:16px'>"
-			            & "<div style='text-align:right'><div style='font-size:11px;color:#8fb6dd'>Mês em foco</div>"
-			            & "<div style='font-size:23px;font-weight:700;color:#ffffff;line-height:1.15'>" & _rot
-			            & IF ( _parcial, "<span style='font-size:11px;font-weight:600;color:#ffd93d'> &#183; parcial, " & FORMAT ( _dias + 0, "0" ) & " dias</span>", "" )
-			            & "</div></div>"
-			            & "<div style='width:1px;height:46px;background:#28557f'></div>"
-			            & "<div style='text-align:right'><div style='font-size:11px;color:#8fb6dd'>Última medição na base</div>"
-			            & "<div style='font-size:19px;font-weight:600;color:#cfe4fa;line-height:1.2'>" & FORMAT ( _ult, "dd/mm/yyyy" ) & "</div></div>"
+			    "<div style='font-family:Segoe UI,sans-serif;position:relative;height:100%;box-sizing:border-box;background:linear-gradient(100deg,#0c2038 0%,#133053 60%,#17436f 100%);border:1px solid #1e3f66;border-radius:10px'>"
+			        & "<div style='position:absolute;left:22px;top:22px'>"
+			            & "<div style='font-size:27px;font-weight:800;color:#ffffff;line-height:1;letter-spacing:-0.6px'>Aquapolo</div>"
+			            & "<div style='margin-top:5px;font-size:10.5px;color:#9dc2e6'>GS Inima &nbsp;&#124;&nbsp; Sabesp</div>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:200px;top:24px;width:1px;height:48px;background:#2d5c8a'></div>"
+			        & "<div style='position:absolute;left:224px;top:24px'>"
+			            & "<div style='font-size:19px;font-weight:700;color:#ffffff;line-height:1.1'>Painel Operacional</div>"
+			            & "<div style='margin-top:4px;font-size:11px;color:#8fb6dd'>Indicadores de volumes por cliente</div>"
+			        & "</div>"
+			        & "<div style='position:absolute;left:880px;top:38px;font-size:11px;color:#b9d3ec'>"
+			            & _pt & "#2ee07a'></span>Dentro da meta &nbsp;&nbsp;&nbsp;" & _pt & "#fbbf24'></span>Atenção &nbsp;&nbsp;&nbsp;" & _pt & "#ff5c5c'></span>Fora da meta"
+			        & "</div>"
+			        & "<div style='position:absolute;left:1664px;top:30px;text-align:right;width:192px'>"
+			            & "<div style='font-size:10px;color:#8fb6dd'>Última atualização</div>"
+			            & "<div style='margin-top:3px;font-size:14px;font-weight:600;color:#cfe4fa'>" & FORMAT ( _ult, "dd/mm/yyyy" ) & "</div>"
 			        & "</div>"
 			    & "</div>"
 			RETURN
-			    IF ( ISBLANK ( _m ), "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#8fb0d0;font-size:13px'>Sem dados para o período selecionado</div>", _html )
+			    IF ( ISBLANK ( _ult ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
 			```
 		displayFolder: Página Volumes
 		lineageTag: c015bb1f-8640-56e4-90c2-807c9d95b9f3
 
-	/// Rodapé: legenda de cores e a regra da faixa esperada.
-	measure 'HTML Vol Rodapé' = ```
-			"<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" & VAR _pt = "<span style='display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;background:"
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;height:100%;box-sizing:border-box;display:flex;align-items:center;gap:24px;font-size:11.5px;color:#8fb0d0;padding:0 8px'>"
-			        & "<span>Meta contratual:&nbsp;&nbsp;" & _pt & "#2fe07a'></span>atingida &nbsp;&nbsp;" & _pt & "#ffd93d'></span>entre 90% e 100% &nbsp;&nbsp;" & _pt & "#ff6b6b'></span>abaixo de 90%</span>"
-			        & "<span style='color:#1d4066'>&#124;</span>"
-			        & "<span>Faixa esperada = média dos 12 meses anteriores &#177; 1 desvio padrão</span>"
-			        & "<span style='color:#1d4066'>&#124;</span>"
-			        & "<span>Volumes em média diária; meses com menos de 25 dias medidos não entram em pico, mínimo nem média</span>"
-			        & "<span style='margin-left:auto;color:#6f93b6'>Aquapolo &#183; GS Inima &#183; Sabesp</span>"
+	/// Cartão do filtro de cliente: só o rótulo e a moldura. A lista suspensa é um visual de segmentação por cima.
+	measure 'HTML Vol Cartão Cliente' = ```
+			VAR _cli = [Vol Cliente]
+			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
+			    "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;padding:13px 18px'>"
+			        & "<div style='font-size:11.5px;color:#8fa9c4;letter-spacing:0.4px'>Cliente selecionado</div>"
 			    & "</div>"
+			RETURN _html
 			```
 		displayFolder: Página Volumes
-		lineageTag: 77c6d459-8f02-5077-9a26-06cf0b426464
+		lineageTag: 49cee310-ac5d-5688-8cd3-7c4dac3f7766
 
-	/// Cartão 1: volume médio diário do mês em foco, com variação vs. mês anterior e vs. mesmo mês do ano anterior.
-	measure 'HTML Vol KPI Volume' = ```
+	/// Cartão do meio: volume do mês, vazão equivalente e variação contra o mês anterior.
+	measure 'HTML Vol Cartão Volume' = ```
 			VAR _m = [Vol Mês Idx]
 			VAR _vol = [Vol do Mês]
 			VAR _ant = [Vol Mês Anterior]
-			VAR _ano = [Vol Mesmo Mês Ano Anterior]
+			VAR _rot = CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _m )
 			VAR _rotAnt = CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _m - 1 )
-			VAR _rotAno = CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _m - 12 )
-			VAR _temMes = NOT ISBLANK ( _ant ) && _ant <> 0
-			VAR _temAno = NOT ISBLANK ( _ano ) && _ano <> 0
-			VAR _vMes = DIVIDE ( _vol - _ant, _ant )
-			VAR _vAno = DIVIDE ( _vol - _ano, _ano )
-			VAR _corMes = IF ( NOT _temMes, "#8fb0d0", IF ( _vMes >= 0, "#2fe07a", "#ff6b6b" ) )
-			VAR _corAno = IF ( NOT _temAno, "#8fb0d0", IF ( _vAno >= 0, "#2fe07a", "#ff6b6b" ) )
-			VAR _txtMes = IF ( _temMes, IF ( _vMes >= 0, "&#9650; ", "&#9660; " ) & FORMAT ( _vMes, "+0.0%;-0.0%" ), "&#8212;" )
-			VAR _txtAno = IF ( _temAno, IF ( _vAno >= 0, "&#9650; ", "&#9660; " ) & FORMAT ( _vAno, "+0.0%;-0.0%" ), "&#8212;" )
+			VAR _tem = NOT ISBLANK ( _ant ) && _ant <> 0
+			VAR _var = DIVIDE ( _vol - _ant, _ant )
+			VAR _cor = IF ( NOT _tem, "#64809c", IF ( _var >= 0, "#2ee07a", "#ff5c5c" ) )
+			VAR _seta = IF ( NOT _tem, "", IF ( _var >= 0, "&#9650;", "&#9660;" ) )
+			VAR _div = "<div style='width:1px;height:58px;background:#1e3f66'></div>"
 			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
-			    "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;padding:10px 16px'>"
-			        & "<div style='display:flex;align-items:center;gap:8px'><span style='color:#4da3ff;font-size:13px'>&#128167;</span><span style='font-size:12px;color:#8fb0d0'>Volume do mês</span></div>"
-			        & "<div style='display:flex;align-items:baseline;gap:7px;margin-top:3px'>"
-			            & "<span style='font-size:32px;font-weight:700;color:#ffffff;line-height:1'>" & FORMAT ( _vol, "#,##0" ) & "</span>"
-			            & "<span style='font-size:12px;color:#8fb0d0'>m&#179;/d</span>"
-			            & "<span style='font-size:21px;font-weight:600;color:#cfe4fa;margin-left:10px'>" & FORMAT ( DIVIDE ( _vol, 86.4 ), "#,##0" ) & "</span>"
-			            & "<span style='font-size:12px;color:#8fb0d0'>L/s</span>"
+			    "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;flex-direction:row;align-items:center;padding:0 24px;gap:26px'>"
+			        & "<div style='min-width:210px'>"
+			            & "<div style='font-size:11.5px;color:#8fa9c4'>Volume atual &#183; " & _rot & "</div>"
+			            & "<div style='display:flex;align-items:baseline;gap:7px;margin-top:2px'>"
+			                & "<span style='font-size:33px;font-weight:700;color:#ffffff;line-height:1'>" & FORMAT ( _vol, "#,##0" ) & "</span>"
+			                & "<span style='font-size:12px;color:#8fa9c4'>m&#179;/d</span>"
+			            & "</div>"
 			        & "</div>"
-			        & "<div style='display:flex;gap:16px;margin-top:8px;font-size:11px;color:#8fb0d0'>"
-			            & "<span><b style='font-size:13px;color:" & _corMes & "'>" & _txtMes & "</b> vs " & _rotAnt & "</span>"
-			            & "<span><b style='font-size:13px;color:" & _corAno & "'>" & _txtAno & "</b> vs " & _rotAno & "</span>"
+			        & _div
+			        & "<div style='min-width:130px'>"
+			            & "<div style='font-size:11.5px;color:#8fa9c4'>Vazão</div>"
+			            & "<div style='display:flex;align-items:baseline;gap:6px;margin-top:2px'>"
+			                & "<span style='font-size:26px;font-weight:700;color:#cfe4fa;line-height:1.1'>" & FORMAT ( DIVIDE ( _vol, 86.4 ), "#,##0" ) & "</span>"
+			                & "<span style='font-size:12px;color:#8fa9c4'>L/s</span>"
+			            & "</div>"
+			        & "</div>"
+			        & _div
+			        & "<div>"
+			            & "<div style='font-size:11.5px;color:#8fa9c4'>vs. " & _rotAnt & "</div>"
+			            & "<div style='font-size:24px;font-weight:700;margin-top:2px;line-height:1.1;color:" & _cor & "'>"
+			            & IF ( _tem, _seta & " " & FORMAT ( _var, "+0.0%;-0.0%" ), "&#8212;" ) & "</div>"
 			        & "</div>"
 			    & "</div>"
 			RETURN
-			    IF ( ISBLANK ( _m ) || ISBLANK ( _vol ), "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#8fb0d0;font-size:13px'>Sem dados para o período selecionado</div>", _html )
+			    IF ( ISBLANK ( _m ) || ISBLANK ( _vol ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
 			```
 		displayFolder: Página Volumes
-		lineageTag: dbefcc5d-13d0-5ef6-a095-a6634bb8b3b6
+		lineageTag: 40e328d7-4d1b-5454-9bb8-bb7c1e3423f2
 
-	/// Cartão 2: atingimento da meta contratual do cliente em foco.
-	measure 'HTML Vol KPI Meta' = ```
-			VAR _m = [Vol Mês Idx]
-			VAR _vol = [Vol do Mês]
-			VAR _meta = [Vol Meta]
-			VAR _at = DIVIDE ( _vol, _meta )
-			VAR _cor = SWITCH ( TRUE (), ISBLANK ( _at ), "#8fb0d0", _at >= 1, "#2fe07a", _at >= 0.9, "#ffd93d", "#ff6b6b" )
-			VAR _larg = MIN ( MAX ( DIVIDE ( _at, 1.3 ) * 100, 0 ), 100 )
-			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
-			    "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;padding:10px 16px'>"
-			        & "<div style='display:flex;align-items:center;gap:8px'><span style='color:#4da3ff;font-size:13px'>&#9678;</span><span style='font-size:12px;color:#8fb0d0'>Atingimento da meta</span></div>"
-			        & "<div style='display:flex;align-items:baseline;gap:10px;margin-top:3px'>"
-			            & "<span style='font-size:32px;font-weight:700;line-height:1;color:" & _cor & "'>" & IF ( ISBLANK ( _at ), "&#8212;", FORMAT ( _at, "0%" ) ) & "</span>"
-			            & "<span style='font-size:11.5px;color:#8fb0d0'>meta <b style='color:#cfe4fa'>" & FORMAT ( _meta, "#,##0" ) & "</b> m&#179;/d</span>"
-			        & "</div>"
-			        & "<div style='position:relative;height:9px;background:#15375c;border-radius:5px;margin-top:12px'>"
-			            & "<div style='width:" & FORMAT ( _larg + 0, "0" ) & "%;height:9px;background:" & _cor & ";border-radius:5px'></div>"
-			            & "<div style='position:absolute;left:77%;top:-4px;height:17px;border-left:2px dashed #cfe4fa'></div>"
-			        & "</div>"
-			    & "</div>"
-			RETURN
-			    IF ( ISBLANK ( _m ) || ISBLANK ( _vol ), "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#8fb0d0;font-size:13px'>Sem dados para o período selecionado</div>", _html )
-			```
-		displayFolder: Página Volumes
-		lineageTag: 3859d257-8a99-56c9-81f7-44dff3d6aba0
-
-	/// Cartão 3: quantos clientes ficaram abaixo da meta no mês, e quais são os piores. Não depende do cliente escolhido.
-	measure 'HTML Vol KPI Fora da Meta' = ```
-			VAR _m = [Vol Mês Idx]
-			VAR _lista = FILTER ( ALL ( Clientes[ID_Indicador], Clientes[Cliente], Clientes[Meta] ), Clientes[Cliente] <> "Todos Clientes" && NOT ISBLANK ( Clientes[ID_Indicador] ) )
-			VAR _tab =
-			    ADDCOLUMNS (
-			        _lista,
-			        "@At",
-			            VAR _i = Clientes[ID_Indicador]
-			            VAR _v =
-			                CALCULATE (
-			                    [Valor Indicador],
-			                    REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
-			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ),
-			                    dCalendario[MesIdx] = _m,
-			                    fato_indicadores[ID_Indicador] = _i
-			                )
-			            RETURN DIVIDE ( _v, Clientes[Meta] )
-			    )
-			VAR _comDado = FILTER ( _tab, NOT ISBLANK ( [@At] ) )
-			VAR _total = COUNTROWS ( _comDado ) + 0
-			VAR _abaixo = FILTER ( _comDado, [@At] < 1 )
-			VAR _fora = COUNTROWS ( _abaixo ) + 0
-			VAR _graves = COUNTROWS ( FILTER ( _comDado, [@At] < 0.9 ) ) + 0
-			VAR _cor = SWITCH ( TRUE (), _graves > 0, "#ff6b6b", _fora > 0, "#ffd93d", "#2fe07a" )
-			VAR _piores =
-			    CONCATENATEX (
-			        TOPN ( 3, _abaixo, [@At], ASC ),
-			        Clientes[Cliente] & " <b style='color:#cfe4fa'>" & FORMAT ( [@At], "0%" ) & "</b>",
-			        " &#183; ",
-			        [@At], ASC
-			    )
-			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
-			    "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;padding:10px 16px'>"
-			        & "<div style='display:flex;align-items:center;gap:8px'><span style='color:#4da3ff;font-size:13px'>&#9888;</span><span style='font-size:12px;color:#8fb0d0'>Clientes abaixo da meta</span></div>"
-			        & "<div style='display:flex;align-items:baseline;gap:8px;margin-top:3px'>"
-			            & "<span style='font-size:32px;font-weight:700;line-height:1;color:" & _cor & "'>" & FORMAT ( _fora, "0" ) & "</span>"
-			            & "<span style='font-size:12px;color:#8fb0d0'>de " & FORMAT ( _total, "0" ) & " clientes</span>"
-			            & IF ( _graves > 0, "<span style='font-size:11px;font-weight:700;color:#ff6b6b;border:1px solid #ff6b6b;border-radius:20px;padding:1px 8px;margin-left:6px'>" & FORMAT ( _graves, "0" ) & " abaixo de 90%</span>", "" )
-			        & "</div>"
-			        & "<div style='margin-top:8px;font-size:11px;color:#8fb0d0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>" & IF ( _fora = 0, "Todos dentro da meta contratual", _piores ) & "</div>"
-			    & "</div>"
-			RETURN
-			    IF ( ISBLANK ( _m ), "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#8fb0d0;font-size:13px'>Sem dados para o período selecionado</div>", _html )
-			```
-		displayFolder: Página Volumes
-		lineageTag: e00ef8b2-8fe4-54bf-a422-a4a35d5241fe
-
-	/// Cartão 4: compara o volume do mês com a faixa esperada (média dos 12 meses anteriores ± 1 desvio padrão).
-	measure 'HTML Vol KPI Situação' = ```
+	/// Cartão da direita: compara o volume do mês com a faixa esperada (média dos 12 meses anteriores ± 1 desvio padrão).
+	measure 'HTML Vol Cartão Situação' = ```
 			VAR _m = [Vol Mês Idx]
 			VAR _vol = [Vol do Mês]
 			VAR _med = [Vol Média 12m]
 			VAR _dp = [Vol Desvio 12m]
 			VAR _tem = NOT ISBLANK ( _vol ) && NOT ISBLANK ( _med )
 			VAR _dist = ABS ( _vol - _med )
-			VAR _cor = SWITCH ( TRUE (), NOT _tem, "#8fb0d0", _dist <= _dp, "#2fe07a", _dist <= 2 * _dp, "#ffd93d", "#ff6b6b" )
-			VAR _txt =
-			    SWITCH (
-			        TRUE (),
-			        NOT _tem, "Sem referência",
-			        _dist <= _dp, "Consumo estável",
-			        _vol > _med, "Acima do esperado",
-			        "Abaixo do esperado"
-			    )
-			VAR _icone = IF ( _dist <= _dp && _tem, "&#10003;", "&#33;" )
-			VAR _desv = DIVIDE ( _vol - _med, _med )
+			VAR _cor = SWITCH ( TRUE (), NOT _tem, "#64809c", _dist <= _dp, "#2ee07a", _dist <= 2 * _dp, "#fbbf24", "#ff5c5c" )
+			VAR _txt = SWITCH ( TRUE (), NOT _tem, "Sem referência", _dist <= _dp, "Consumo estável", _vol > _med, "Consumo acima do esperado", "Consumo abaixo do esperado" )
+			VAR _sub = IF ( _tem, "Faixa esperada " & FORMAT ( _med - _dp, "#,##0" ) & " &#8211; " & FORMAT ( _med + _dp, "#,##0" ) & " m&#179;/d", "Sem histórico suficiente" )
+			VAR _ic = IF ( _tem && _dist <= _dp, "&#10003;", "&#33;" )
 			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
-			    "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;padding:10px 16px'>"
-			        & "<div style='display:flex;align-items:center;gap:8px'><span style='color:#4da3ff;font-size:13px'>&#9711;</span><span style='font-size:12px;color:#8fb0d0'>Situação do consumo</span></div>"
-			        & "<div style='display:flex;align-items:center;gap:10px;margin-top:4px'>"
-			            & "<span style='width:26px;height:26px;flex:none;border-radius:50%;border:2px solid " & _cor & ";color:" & _cor & ";font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center'>" & _icone & "</span>"
-			            & "<span style='font-size:21px;font-weight:700;line-height:1.1;color:" & _cor & "'>" & _txt & "</span>"
-			            & IF ( _tem, "<span style='font-size:13px;font-weight:700;color:" & _cor & "'>" & FORMAT ( _desv, "+0.0%;-0.0%" ) & "</span>", "" )
+			    "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;flex-direction:row;align-items:center;padding:0 24px;gap:18px'>"
+			        & "<div style='width:46px;height:46px;flex:none;border-radius:50%;border:2px solid " & _cor & ";color:" & _cor & ";font-size:23px;font-weight:700;display:flex;align-items:center;justify-content:center'>" & _ic & "</div>"
+			        & "<div>"
+			            & "<div style='font-size:11.5px;color:#8fa9c4'>Situação</div>"
+			            & "<div style='font-size:23px;font-weight:700;line-height:1.2;color:" & _cor & "'>" & _txt & "</div>"
+			            & "<div style='font-size:11px;color:#8fa9c4;margin-top:2px'>" & _sub & "</div>"
 			        & "</div>"
-			        & "<div style='margin-top:8px;font-size:11px;color:#8fb0d0'>Faixa esperada <b style='color:#cfe4fa'>" & FORMAT ( _med - _dp, "#,##0" ) & " &#8211; " & FORMAT ( _med + _dp, "#,##0" ) & "</b> m&#179;/d &#183; média 12m <b style='color:#cfe4fa'>" & FORMAT ( _med, "#,##0" ) & "</b></div>"
 			    & "</div>"
 			RETURN
-			    IF ( ISBLANK ( _m ), "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#8fb0d0;font-size:13px'>Sem dados para o período selecionado</div>", _html )
+			    IF ( ISBLANK ( _m ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
 			```
 		displayFolder: Página Volumes
-		lineageTag: cb9af17f-d9ef-5249-861f-a70722b73476
+		lineageTag: fc07a8e0-035d-5329-88a3-b8893a3cf517
 
-	/// Tabela de clientes com mini-gráfico de 13 meses, atingimento da meta e variações. Passar o mouse numa linha abre o pop-up de detalhe daquele cliente, por isso o visual precisa ser largo: o pop-up é desenhado dentro do mesmo retângulo.
+	/// Tabela de clientes do mês em foco. Passar o mouse numa linha abre o detalhe daquele cliente; por isso o visual é mais largo que o cartão: o pop-up é desenhado dentro do mesmo retângulo, à direita.
 	measure 'HTML Vol Resumo Clientes' = ```
 			VAR _m = [Vol Mês Idx]
 			VAR _idSel = [Vol ID Cliente]
 			VAR _rot = CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _m )
 			VAR _rotAnt = CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _m - 1 )
 			VAR _rotAno = CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _m - 12 )
-			VAR _ultGeral =
-			    CALCULATE ( MAX ( fato_indicadores[Data] ), REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
+			VAR _ultGeral = CALCULATE ( MAX ( fato_indicadores[Data] ), REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
 			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), dCalendario[MesIdx] = _m, dim_indicadores[Etapa] = "Volumes" )
 			VAR _lista = FILTER ( ALL ( Clientes[ID_Indicador], Clientes[Cliente], Clientes[Meta], Clientes[Ordem] ), NOT ISBLANK ( Clientes[ID_Indicador] ) )
 			VAR _meses = FILTER ( ALL ( dCalendario[MesIdx] ), dCalendario[MesIdx] >= _m - 12 && dCalendario[MesIdx] <= _m )
@@ -421,14 +339,8 @@ table 'Medidas Volumes'
 			        "@V",
 			            VAR _i = Clientes[ID_Indicador]
 			            VAR _k = dCalendario[MesIdx]
-			            RETURN
-			                CALCULATE (
-			                    [Valor Indicador],
-			                    REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
-			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ),
-			                    dCalendario[MesIdx] = _k,
-			                    fato_indicadores[ID_Indicador] = _i
-			                )
+			            RETURN CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
+			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), dCalendario[MesIdx] = _k, fato_indicadores[ID_Indicador] = _i )
 			    )
 			VAR _tab =
 			    ADDCOLUMNS (
@@ -440,36 +352,16 @@ table 'Medidas Volumes'
 			        "@Dp", VAR _i = Clientes[ID_Indicador] RETURN STDEVX.P ( FILTER ( _grade, Clientes[ID_Indicador] = _i && dCalendario[MesIdx] < _m ), [@V] ),
 			        "@Dias",
 			            VAR _i = Clientes[ID_Indicador]
-			            RETURN
-			                CALCULATE (
-			                    DISTINCTCOUNT ( fato_indicadores[Data] ),
-			                    REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
-			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ),
-			                    dCalendario[MesIdx] = _m,
-			                    fato_indicadores[ID_Indicador] = _i
-			                ),
+			            RETURN CALCULATE ( DISTINCTCOUNT ( fato_indicadores[Data] ), REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
+			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), dCalendario[MesIdx] = _m, fato_indicadores[ID_Indicador] = _i ),
 			        "@M7",
 			            VAR _i = Clientes[ID_Indicador]
-			            RETURN
-			                CALCULATE (
-			                    [Valor Indicador],
-			                    REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
-			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ),
-			                    fato_indicadores[Data] > _ultGeral - 7,
-			                    fato_indicadores[Data] <= _ultGeral,
-			                    fato_indicadores[ID_Indicador] = _i
-			                ),
+			            RETURN CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
+			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), fato_indicadores[Data] > _ultGeral - 7, fato_indicadores[Data] <= _ultGeral, fato_indicadores[ID_Indicador] = _i ),
 			        "@M30",
 			            VAR _i = Clientes[ID_Indicador]
-			            RETURN
-			                CALCULATE (
-			                    [Valor Indicador],
-			                    REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
-			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ),
-			                    fato_indicadores[Data] > _ultGeral - 30,
-			                    fato_indicadores[Data] <= _ultGeral,
-			                    fato_indicadores[ID_Indicador] = _i
-			                )
+			            RETURN CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
+			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), fato_indicadores[Data] > _ultGeral - 30, fato_indicadores[Data] <= _ultGeral, fato_indicadores[ID_Indicador] = _i )
 			    )
 
 			VAR _linhas =
@@ -479,293 +371,174 @@ table 'Medidas Volumes'
 			        VAR _v = [@Vol]
 			        VAR _meta = Clientes[Meta]
 			        VAR _at = DIVIDE ( _v, _meta )
-			        VAR _cor = SWITCH ( TRUE (), ISBLANK ( _at ), "#8fb0d0", _at >= 1, "#2fe07a", _at >= 0.9, "#ffd93d", "#ff6b6b" )
+			        VAR _cor = SWITCH ( TRUE (), ISBLANK ( _at ), "#64809c", _at >= 1, "#2ee07a", _at >= 0.9, "#fbbf24", "#ff5c5c" )
 			        VAR _larg = MIN ( MAX ( DIVIDE ( _at, 1.3 ) * 100, 0 ), 100 )
 			        VAR _temMes = NOT ISBLANK ( [@Ant] ) && [@Ant] <> 0
 			        VAR _temAno = NOT ISBLANK ( [@Ano] ) && [@Ano] <> 0
 			        VAR _vMes = DIVIDE ( _v - [@Ant], [@Ant] )
 			        VAR _vAno = DIVIDE ( _v - [@Ano], [@Ano] )
-			        VAR _corMes = IF ( NOT _temMes, "#8fb0d0", IF ( _vMes >= 0, "#2fe07a", "#ff6b6b" ) )
-			        VAR _corAno = IF ( NOT _temAno, "#8fb0d0", IF ( _vAno >= 0, "#2fe07a", "#ff6b6b" ) )
-			        VAR _txtMes = IF ( _temMes, FORMAT ( _vMes, "+0.0%;-0.0%" ), "&#8212;" )
-			        VAR _txtAno = IF ( _temAno, FORMAT ( _vAno, "+0.0%;-0.0%" ), "&#8212;" )
+			        VAR _corMes = IF ( NOT _temMes, "#64809c", IF ( _vMes >= 0, "#2ee07a", "#ff5c5c" ) )
+			        VAR _corAno = IF ( NOT _temAno, "#64809c", IF ( _vAno >= 0, "#2ee07a", "#ff5c5c" ) )
 			        VAR _sel = Clientes[ID_Indicador] = _idSel
 			        VAR _o = Clientes[Ordem]
 			        VAR _pos = COUNTROWS ( FILTER ( _tab, Clientes[Ordem] <= _o ) )
-			        VAR _topo = MIN ( MAX ( 76 + ( _pos - 1 ) * 56 - 26, 6 ), 430 )
+			        VAR _topo = MIN ( MAX ( 66 + ( _pos - 1 ) * 39 - 30, 6 ), 254 )
 			        VAR _idl = Clientes[ID_Indicador]
 			        VAR _serie = FILTER ( _grade, Clientes[ID_Indicador] = _idl && NOT ISBLANK ( [@V] ) )
 			        VAR _lo = MINX ( _serie, [@V] )
-			        VAR _hi = MAXX ( _serie, [@V] )
-			        VAR _amp = MAX ( _hi - _lo, 0.0001 )
+			        VAR _amp = MAX ( MAXX ( _serie, [@V] ) - _lo, 0.0001 )
 			        VAR _spark =
-			            CONCATENATEX (
-			                _serie,
-			                FORMAT ( 2 + ( dCalendario[MesIdx] - _m + 12 ) * 7.17 + 0, "0" ) & "," & FORMAT ( 22 - DIVIDE ( [@V] - _lo, _amp ) * 18 + 0, "0" ),
-			                " ", dCalendario[MesIdx], ASC
-			            )
-			        VAR _sparkPop =
-			            CONCATENATEX (
-			                _serie,
-			                FORMAT ( 8 + ( dCalendario[MesIdx] - _m + 12 ) * 31.7 + 0, "0" ) & "," & FORMAT ( 46 - DIVIDE ( [@V] - _lo, _amp ) * 36 + 0, "0" ),
-			                " ", dCalendario[MesIdx], ASC
-			            )
+			            CONCATENATEX ( _serie,
+			                FORMAT ( 8 + ( dCalendario[MesIdx] - _m + 12 ) * 31.7 + 0, "0" ) & "," & FORMAT ( 44 - DIVIDE ( [@V] - _lo, _amp ) * 34 + 0, "0" ),
+			                " ", dCalendario[MesIdx], ASC )
 			        VAR _dist = ABS ( _v - [@Med] )
 			        VAR _temRef = NOT ISBLANK ( [@Med] ) && NOT ISBLANK ( _v )
-			        VAR _corSit = SWITCH ( TRUE (), NOT _temRef, "#8fb0d0", _dist <= [@Dp], "#2fe07a", _dist <= 2 * [@Dp], "#ffd93d", "#ff6b6b" )
+			        VAR _corSit = SWITCH ( TRUE (), NOT _temRef, "#64809c", _dist <= [@Dp], "#2ee07a", _dist <= 2 * [@Dp], "#fbbf24", "#ff5c5c" )
 			        VAR _txtSit = SWITCH ( TRUE (), NOT _temRef, "sem referência", _dist <= [@Dp], "estável", _v > [@Med], "acima do esperado", "abaixo do esperado" )
-			        VAR _rot1 = "<div style='font-size:10px;color:#8fb0d0'>"
-			        VAR _rot2 = "</div><div style='font-size:15px;font-weight:700;color:#ffffff;margin-top:1px'>"
-			        VAR _u = "<span style='font-size:9.5px;color:#8fb0d0;font-weight:400'>"
+			        VAR _r1 = "<div style='font-size:9.5px;color:#8fa9c4'>"
+			        VAR _r2 = "</div><div style='font-size:14px;font-weight:700;color:#ffffff;margin-top:1px'>"
+			        VAR _u = "<span style='font-size:9px;color:#8fa9c4;font-weight:400'>"
 
 			        VAR _pop =
 			            "<div class='vpop' style='top:" & FORMAT ( _topo + 0, "0" ) & "px'>"
-			                & "<div style='padding:8px 13px;background:#13365a;border-bottom:1px solid #1d4066;display:flex;align-items:center;gap:8px'>"
-			                    & "<span style='font-size:13.5px;font-weight:700;color:#ffffff'>" & _nome & "</span>"
-			                    & "<span style='margin-left:auto;font-size:10px;font-weight:700;color:" & _corSit & ";border:1px solid " & _corSit & ";border-radius:20px;padding:1px 8px'>" & _txtSit & "</span>"
+			                & "<div style='padding:7px 12px;background:#16304e;border-bottom:1px solid #1e3f66;display:flex;align-items:center;gap:8px'>"
+			                    & "<span style='font-size:13px;font-weight:700;color:#ffffff;letter-spacing:0.5px'>" & _nome & "</span>"
+			                    & "<span style='margin-left:auto;font-size:9.5px;font-weight:700;color:" & _corSit & ";border:1px solid " & _corSit & ";border-radius:20px;padding:1px 8px'>" & _txtSit & "</span>"
 			                & "</div>"
-			                & "<div style='padding:2px 6px'><table style='width:100%;border-collapse:collapse'>"
-			                & "<tr><td style='padding:5px 7px;width:50%'>" & _rot1 & "Volume de " & _rot & _rot2 & FORMAT ( _v, "#,##0" ) & _u & " m&#179;/d &#183; " & FORMAT ( DIVIDE ( _v, 86.4 ), "#,##0" ) & " L/s</span></div></td>"
-			                & "<td style='padding:5px 7px;width:50%'>" & _rot1 & "Meta contratual" & _rot2 & FORMAT ( _meta, "#,##0" ) & _u & " m&#179;/d</span> <span style='font-size:13px;font-weight:700;color:" & _cor & "'>" & IF ( ISBLANK ( _at ), "&#8212;", FORMAT ( _at, "0%" ) ) & "</span></div></td></tr>"
-			                & "<tr><td style='padding:5px 7px'>" & _rot1 & "Média últimos 7 dias" & _rot2 & FORMAT ( [@M7], "#,##0" ) & _u & " m&#179;/d</span></div></td>"
-			                & "<td style='padding:5px 7px'>" & _rot1 & "Média últimos 30 dias" & _rot2 & FORMAT ( [@M30], "#,##0" ) & _u & " m&#179;/d</span></div></td></tr>"
-			                & "<tr><td style='padding:5px 7px'>" & _rot1 & "vs. " & _rotAnt & "</div><div style='font-size:15px;font-weight:700;margin-top:1px;color:" & _corMes & "'>" & _txtMes & _u & " " & IF ( _temMes, FORMAT ( [@Ant], "#,##0" ) & " &#8594; " & FORMAT ( _v, "#,##0" ), "sem mês anterior" ) & "</span></div></td>"
-			                & "<td style='padding:5px 7px'>" & _rot1 & "vs. " & _rotAno & "</div><div style='font-size:15px;font-weight:700;margin-top:1px;color:" & _corAno & "'>" & _txtAno & _u & " " & IF ( _temAno, FORMAT ( [@Ano], "#,##0" ) & " &#8594; " & FORMAT ( _v, "#,##0" ), "sem ano anterior" ) & "</span></div></td></tr>"
+			                & "<table style='width:100%;border-collapse:collapse'>"
+			                & "<tr><td style='padding:5px 12px;width:50%'>" & _r1 & "Volume de " & _rot & _r2 & FORMAT ( _v, "#,##0" ) & _u & " m&#179;/d &#183; " & FORMAT ( DIVIDE ( _v, 86.4 ), "#,##0" ) & " L/s</span></div></td>"
+			                & "<td style='padding:5px 12px;width:50%'>" & _r1 & "Meta contratual" & _r2 & FORMAT ( _meta, "#,##0" ) & _u & " m&#179;/d</span> <span style='font-size:12px;font-weight:700;color:" & _cor & "'>" & IF ( ISBLANK ( _at ), "&#8212;", FORMAT ( _at, "0%" ) ) & "</span></div></td></tr>"
+			                & "<tr><td style='padding:5px 12px'>" & _r1 & "Média últimos 7 dias" & _r2 & FORMAT ( [@M7], "#,##0" ) & _u & " m&#179;/d</span></div></td>"
+			                & "<td style='padding:5px 12px'>" & _r1 & "Média últimos 30 dias" & _r2 & FORMAT ( [@M30], "#,##0" ) & _u & " m&#179;/d</span></div></td></tr>"
+			                & "<tr><td style='padding:5px 12px'>" & _r1 & "vs. " & _rotAnt & "</div><div style='font-size:14px;font-weight:700;margin-top:1px;color:" & _corMes & "'>" & IF ( _temMes, FORMAT ( _vMes, "+0.0%;-0.0%" ), "&#8212;" ) & _u & " " & IF ( _temMes, FORMAT ( [@Ant], "#,##0" ) & " &#8594; " & FORMAT ( _v, "#,##0" ), "sem base" ) & "</span></div></td>"
+			                & "<td style='padding:5px 12px'>" & _r1 & "vs. " & _rotAno & "</div><div style='font-size:14px;font-weight:700;margin-top:1px;color:" & _corAno & "'>" & IF ( _temAno, FORMAT ( _vAno, "+0.0%;-0.0%" ), "&#8212;" ) & _u & " " & IF ( _temAno, FORMAT ( [@Ano], "#,##0" ) & " &#8594; " & FORMAT ( _v, "#,##0" ), "sem base" ) & "</span></div></td></tr>"
 			                & "</table>"
-			                & "<div style='margin:2px 7px 0 7px;font-size:10px;color:#8fb0d0'>" & FORMAT ( [@Dias] + 0, "0" ) & " dias medidos no mês"
+			                & "<div style='margin:0 12px;font-size:9.5px;color:#8fa9c4'>" & FORMAT ( [@Dias] + 0, "0" ) & " dias medidos"
 			                    & IF ( _temRef, " &#183; faixa esperada <b style='color:#cfe4fa'>" & FORMAT ( [@Med] - [@Dp], "#,##0" ) & " &#8211; " & FORMAT ( [@Med] + [@Dp], "#,##0" ) & "</b> m&#179;/d", "" ) & "</div>"
-			                & "<div style='margin:5px 7px 7px 7px;padding:5px 6px 2px 6px;background:#0b2340;border:1px solid #1d4066;border-radius:7px'>"
-			                    & "<div style='font-size:10px;color:#8fb0d0'>Últimos 13 meses (m&#179;/d)</div>"
-			                    & "<svg viewBox='0 0 396 52' style='width:100%;height:46px'><polyline points='" & _sparkPop & "' fill='none' stroke='#6ab0f3' stroke-width='2'/></svg>"
-			                & "</div></div>"
+			                & "<div style='margin:6px 12px 10px 12px;padding:4px 7px 0 7px;background:#0b1e35;border:1px solid #1e3f66;border-radius:6px'>"
+			                    & "<div style='font-size:9.5px;color:#8fa9c4'>Últimos 13 meses (m&#179;/d)</div>"
+			                    & "<svg viewBox='0 0 396 50' style='width:100%;height:44px'><polyline points='" & _spark & "' fill='none' stroke='#6ab0f3' stroke-width='2'/></svg>"
+			                & "</div>"
 			            & "</div>"
 			        RETURN
-			            "<tr class='vrow' style='background:" & IF ( _sel, "#17406e", "transparent" ) & "'>"
-			                & "<td style='padding:0 6px 0 11px;border-left:3px solid " & IF ( _sel, "#4da3ff", "transparent" ) & ";color:" & IF ( _sel, "#ffffff", "#cfe4fa" ) & ";font-weight:" & IF ( _sel, "700", "400" ) & "'>" & _nome & "</td>"
-			                & "<td style='padding:0 4px'><svg viewBox='0 0 92 26' style='width:92px;height:26px'><polyline points='" & _spark & "' fill='none' stroke='#5aa9f0' stroke-width='1.6'/></svg></td>"
-			                & "<td style='padding:0 6px;text-align:right;color:#ffffff;font-weight:600;font-size:13px'>" & FORMAT ( _v, "#,##0" ) & "</td>"
-			                & "<td style='padding:0 6px;text-align:right;color:#8fb0d0'>" & FORMAT ( _meta, "#,##0" ) & "</td>"
-			                & "<td style='padding:0 6px;width:84px'><div style='height:8px;background:#15375c;border-radius:4px'><div style='width:" & FORMAT ( _larg + 0, "0" ) & "%;height:8px;background:" & _cor & ";border-radius:4px'></div></div></td>"
-			                & "<td style='padding:0 4px;text-align:right;font-weight:700;color:" & _cor & "'>" & IF ( ISBLANK ( _at ), "&#8212;", FORMAT ( _at, "0%" ) ) & "</td>"
-			                & "<td style='padding:0 6px;text-align:right;color:" & _corMes & "'>" & _txtMes & "</td>"
-			                & "<td style='padding:0 6px;text-align:right;color:" & _corAno & "'>" & _txtAno & "</td>"
-			                & "<td style='padding:0 8px 0 4px;text-align:center'><span style='display:inline-block;width:9px;height:9px;border-radius:50%;background:" & _corSit & "'></span>" & _pop & "</td>"
+			            "<tr class='vrow'>"
+			                & "<td class='c1' style='border-left:3px solid " & IF ( _sel, "#4a9eff", "transparent" ) & ";color:" & IF ( _sel, "#ffffff", "#cfe4fa" ) & ";font-weight:" & IF ( _sel, "700", "400" ) & "'>" & _nome & "</td>"
+			                & "<td class='cn'>" & FORMAT ( _v, "#,##0" ) & "</td>"
+			                & "<td style='padding:0 8px'><div style='position:relative;height:9px;background:#15304d;border-radius:5px'>"
+			                    & "<div style='width:" & FORMAT ( _larg + 0, "0" ) & "%;height:9px;background:" & _cor & ";border-radius:5px'></div>"
+			                    & "<div style='position:absolute;left:77%;top:-3px;height:15px;border-left:1px dashed #9fc0e0'></div></div></td>"
+			                & "<td class='cp' style='color:" & _cor & "'>" & IF ( ISBLANK ( _at ), "&#8212;", FORMAT ( _at, "0%" ) ) & "</td>"
+			                & "<td style='padding:0 10px 0 2px;text-align:center'><span style='display:inline-block;width:9px;height:9px;border-radius:50%;background:" & _corSit & "'></span>" & _pop & "</td>"
 			            & "</tr>",
 			        "",
 			        Clientes[Ordem], ASC
 			    )
 
 			VAR _css =
-			    "<style>"
+			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}"
 			    & ".vwrap{position:relative;height:100%;font-family:Segoe UI,sans-serif;pointer-events:none}"
-			    & ".vcard{position:absolute;left:0;top:0;width:700px;height:100%;box-sizing:border-box;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;pointer-events:auto}"
-			    & ".vhead{padding:11px 16px;background:#13365a;border-bottom:1px solid #1d4066;border-radius:11px 11px 0 0;display:flex;align-items:center;gap:10px}"
-			    & "table.vt{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}"
-			    & "table.vt th{font-size:10.5px;color:#8fb0d0;font-weight:600;text-align:right;padding:6px}"
-			    & "table.vt th.l{text-align:left;padding-left:14px}"
-			    & "tr.vrow{height:56px;border-top:1px solid #153354}"
-			    & "tr.vrow:hover{background:#17406e}"
-			    & ".vpop{display:none;position:absolute;left:712px;width:420px;background:#0f2a47;border:1px solid #2d5c8a;border-radius:11px;box-shadow:0 12px 30px rgba(0,0,0,0.6);text-align:left;pointer-events:none}"
-			    & "tr.vrow:hover .vpop{display:block}"
-			    & "</style>"
+			    & ".vcard{position:absolute;left:0;top:0;width:500px;height:100%;display:flex;flex-direction:column;"
+			    & "background:#10243c;border:1px solid #1e3f66;border-radius:10px;pointer-events:auto}"
+			    & "table.vt{width:100%;border-collapse:collapse;font-size:11.5px;table-layout:fixed}"
+			    & "table.vt th{font-size:9.5px;color:#8fa9c4;font-weight:600;padding:5px 6px;text-align:right;letter-spacing:0.3px}"
+			    & "table.vt th.l{text-align:left;padding-left:16px}"
+			    & "tr.vrow{height:39px;border-top:1px solid #15304d}"
+			    & "tr.vrow:hover{background:#19406b}"
+			    & "td.c1{padding:0 6px 0 13px}"
+			    & "td.cn{text-align:right;padding:0 6px;color:#ffffff;font-weight:600;font-size:12.5px}"
+			    & "td.cp{text-align:right;padding:0 4px;font-weight:700;font-size:11.5px}"
+			    & ".vpop{display:none;position:absolute;left:512px;width:420px;background:#10243c;border:1px solid #2d5c8a;"
+			    & "border-radius:10px;box-shadow:0 14px 34px rgba(0,0,0,0.65);text-align:left;pointer-events:none}"
+			    & "tr.vrow:hover .vpop{display:block}</style>"
 			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
-			    _css
-			    & "<div class='vwrap'><div class='vcard'>"
-			        & "<div class='vhead'><span style='color:#4da3ff;font-size:16px'>&#9638;</span>"
-			        & "<span style='font-size:15px;font-weight:700;color:#ffffff;letter-spacing:0.8px'>CLIENTES &#8212; " & _rot & "</span>"
-			        & "<span style='margin-left:auto;font-size:10.5px;color:#6f93b6'>volume médio diário &#183; passe o mouse numa linha para ver o detalhe</span></div>"
+			    _css & "<div class='vwrap'><div class='vcard'>"
+			        & "<div style='padding:11px 16px;background:#16304e;border-bottom:1px solid #1e3f66;display:flex;align-items:center;gap:9px;flex:none'>" & "<span style='color:#4a9eff;font-size:13px'>&#9632;</span>" & "<span style='font-size:13.5px;font-weight:700;color:#ffffff;letter-spacing:0.7px'>" & "RESUMO POR CLIENTE" & "</span>" & "<span style='margin-left:auto;font-size:10.5px;color:#5f7d9c'>" & _rot & "</span>" & "</div>"
 			        & "<table class='vt'>"
-			        & "<colgroup><col style='width:150px'><col style='width:100px'><col style='width:86px'><col style='width:72px'><col style='width:92px'><col style='width:48px'><col style='width:66px'><col style='width:66px'><col style='width:20px'></colgroup>"
-			        & "<tr><th class='l'>Cliente</th><th>13 meses</th><th>Atual</th><th>Meta</th><th colspan='2'>Atingimento</th><th>vs " & _rotAnt & "</th><th>vs " & _rotAno & "</th><th></th></tr>"
+			        & "<colgroup><col style='width:158px'><col style='width:88px'><col style='width:150px'><col style='width:48px'><col style='width:28px'></colgroup>"
+			        & "<tr><th class='l'>CLIENTE</th><th>ATUAL m&#179;/d</th><th colspan='2'>ATING. META</th><th></th></tr>"
 			        & _linhas
 			        & "</table>"
 			    & "</div></div>"
 			RETURN
-			    IF ( ISBLANK ( _m ), "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#8fb0d0;font-size:13px'>Sem dados para o período selecionado</div>", _html )
+			    IF ( ISBLANK ( _m ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
 			```
 		displayFolder: Página Volumes
 		lineageTag: 41c46d25-3479-50c5-925f-658e424df94c
 
-	/// Gráfico do dia a dia: últimos 90 dias de medição, com média móvel de 7 dias e a meta contratual. Sem filtro de período mostra até a última data da base (inclusive o mês corrente incompleto).
-	measure 'HTML Vol Evolução Diária' = ```
+	/// Painel do meio: os 13 meses até o mês em foco, com barra de dados, vazão, dias medidos e variação. Média, mínimo e máximo do rodapé só consideram meses com 25 dias ou mais.
+	measure 'HTML Vol Histórico' = ```
 			VAR _m = [Vol Mês Idx]
 			VAR _id = [Vol ID Cliente]
 			VAR _cli = SUBSTITUTE ( SUBSTITUTE ( [Vol Cliente], "&", "&amp;" ), "<", "&lt;" )
-			VAR _meta = [Vol Meta]
-			VAR _escolhido = ISFILTERED ( dCalendario[Ano] ) || ISFILTERED ( dCalendario[Mês] ) || ISFILTERED ( dCalendario[Mês/Ano] ) || ISFILTERED ( dCalendario[Data] )
-			VAR _fimBase = CALCULATE ( MAX ( fato_indicadores[Data] ), REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
-			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), fato_indicadores[ID_Indicador] = _id )
-			VAR _fimMes = CALCULATE ( MAX ( fato_indicadores[Data] ), REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
-			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), dCalendario[MesIdx] = _m, fato_indicadores[ID_Indicador] = _id )
-			VAR _fim = IF ( _escolhido, _fimMes, _fimBase )
-			VAR _dias = FILTER ( ALL ( dCalendario[Data] ), dCalendario[Data] > _fim - 90 && dCalendario[Data] <= _fim )
-			VAR _serie =
-			    FILTER (
-			        ADDCOLUMNS (
-			            _dias,
-			            "@V",
-			                VAR _d = dCalendario[Data]
-			                RETURN
-			                    CALCULATE (
-			                        [Valor Indicador],
-			                        REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
-			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ),
-			                        fato_indicadores[Data] = _d,
-			                        fato_indicadores[ID_Indicador] = _id
-			                    )
-			        ),
-			        NOT ISBLANK ( [@V] )
-			    )
-			VAR _n = COUNTROWS ( _serie )
-			VAR _comIdx = ADDCOLUMNS ( _serie, "@i", VAR _d = dCalendario[Data] RETURN COUNTROWS ( FILTER ( _serie, dCalendario[Data] <= _d ) ) )
-			VAR _comMM =
-			    ADDCOLUMNS (
-			        _comIdx,
-			        "@MM", VAR _d = dCalendario[Data] RETURN AVERAGEX ( FILTER ( _comIdx, dCalendario[Data] <= _d && dCalendario[Data] > _d - 7 ), [@V] )
-			    )
-			VAR _temMeta = NOT ISBLANK ( _meta ) && _meta > 0
-			VAR _lo0 = MINX ( _comMM, [@V] )
-			VAR _hi0 = MAXX ( _comMM, [@V] )
-			VAR _lo1 = IF ( _temMeta, MIN ( _lo0, _meta ), _lo0 )
-			VAR _hi1 = IF ( _temMeta, MAX ( _hi0, _meta ), _hi0 )
-			VAR _pad = ( _hi1 - _lo1 ) * 0.12 + 1
-			VAR _ymin = _lo1 - _pad
-			VAR _ymax = _hi1 + _pad
-			VAR _esc = DIVIDE ( 276, _ymax - _ymin )
-			VAR _passo = IF ( _n > 1, DIVIDE ( 680, _n - 1 ), 0 )
-			VAR _pts = CONCATENATEX ( _comMM, FORMAT ( 56 + ( [@i] - 1 ) * _passo + 0, "0" ) & "," & FORMAT ( 300 - ( [@V] - _ymin ) * _esc + 0, "0" ), " ", dCalendario[Data], ASC )
-			VAR _ptsMM = CONCATENATEX ( _comMM, FORMAT ( 56 + ( [@i] - 1 ) * _passo + 0, "0" ) & "," & FORMAT ( 300 - ( [@MM] - _ymin ) * _esc + 0, "0" ), " ", dCalendario[Data], ASC )
-			VAR _yMeta = 300 - ( _meta - _ymin ) * _esc
-			VAR _eixoY =
-			    CONCATENATEX (
-			        GENERATESERIES ( 0, 3, 1 ),
-			        VAR _v = _ymin + ( _ymax - _ymin ) * DIVIDE ( [Value], 3 )
-			        VAR _y = 300 - ( _v - _ymin ) * _esc
-			        RETURN
-			            "<line x1='56' y1='" & FORMAT ( _y + 0, "0" ) & "' x2='736' y2='" & FORMAT ( _y + 0, "0" ) & "' stroke='#15375c' stroke-width='1'/>"
-			                & "<text x='48' y='" & FORMAT ( _y + 4, "0" ) & "' fill='#8fb0d0' font-size='10' text-anchor='end'>" & FORMAT ( _v, "#,##0" ) & "</text>",
-			        ""
-			    )
-			VAR _rotX =
-			    CONCATENATEX (
-			        FILTER ( _comMM, MOD ( [@i] - 1, 15 ) = 0 || [@i] = _n ),
-			        "<text x='" & FORMAT ( 56 + ( [@i] - 1 ) * _passo + 0, "0" ) & "' y='322' fill='#8fb0d0' font-size='10' text-anchor='middle'>" & FORMAT ( dCalendario[Data], "dd/mm" ) & "</text>",
-			        "", dCalendario[Data], ASC
-			    )
-
-			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
-			    "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;padding:10px 12px 4px 12px;border-radius:12px 12px 0 0;border-bottom:0'>"
-			        & "<div style='display:flex;align-items:center;gap:14px;padding:0 5px 5px 5px'>"
-			            & "<span style='font-size:14px;font-weight:700;color:#ffffff;letter-spacing:0.8px'>DIA A DIA &#8212; " & _cli & "</span>"
-			            & "<span style='font-size:10.5px;color:#6f93b6'>últimos " & FORMAT ( _n + 0, "0" ) & " dias até " & FORMAT ( _fim, "dd/mm/yyyy" ) & "</span>"
-			            & "<span style='margin-left:auto;font-size:10.5px;color:#8fb0d0'><span style='color:#3c6c9c'>&#9679;</span> diário &nbsp; <span style='color:#6ab0f3'>&#9679;</span> média móvel 7 dias"
-			            & IF ( _temMeta, " &nbsp; <span style='color:#ffd93d'>&#9476;</span> meta " & FORMAT ( _meta, "#,##0" ), "" ) & "</span>"
-			        & "</div>"
-			        & "<div style='flex:1;min-height:0'><svg viewBox='0 0 744 356' style='width:100%;height:100%;display:block' font-family='Segoe UI,sans-serif'>"
-			            & _eixoY
-			            & IF ( _temMeta, "<line x1='56' y1='" & FORMAT ( _yMeta + 0, "0" ) & "' x2='736' y2='" & FORMAT ( _yMeta + 0, "0" ) & "' stroke='#ffd93d' stroke-width='1.6' stroke-dasharray='8 5'/>", "" )
-			            & "<polyline points='" & _pts & "' fill='none' stroke='#3c6c9c' stroke-width='1.4'/>"
-			            & "<polyline points='" & _ptsMM & "' fill='none' stroke='#6ab0f3' stroke-width='2.6' stroke-linejoin='round'/>"
-			            & _rotX
-			        & "</svg></div>"
-			    & "</div>"
-			RETURN
-			    IF ( ISBLANK ( _m ) || _n = 0, "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#8fb0d0;font-size:13px'>Sem dados para o período selecionado</div>", _html )
-			```
-		displayFolder: Página Volumes
-		lineageTag: b1ee546c-1fd1-52f4-9dbd-22ca5ba88e0a
-
-	/// Gráfico mês a mês dos últimos 13 meses, com a faixa esperada e a meta. Mês com menos de 25 dias medidos aparece tracejado e marcado como parcial.
-	measure 'HTML Vol Evolução Mensal' = ```
-			VAR _m = [Vol Mês Idx]
-			VAR _id = [Vol ID Cliente]
-			VAR _cli = SUBSTITUTE ( SUBSTITUTE ( [Vol Cliente], "&", "&amp;" ), "<", "&lt;" )
-			VAR _meta = [Vol Meta]
-			VAR _temMeta = NOT ISBLANK ( _meta ) && _meta > 0
 			VAR _meses = FILTER ( ALL ( dCalendario[MesIdx] ), dCalendario[MesIdx] >= _m - 12 && dCalendario[MesIdx] <= _m )
-			VAR _serie =
-			    FILTER (
-			        ADDCOLUMNS (
-			            _meses,
-			            "@Rot", VAR _k = dCalendario[MesIdx] RETURN CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _k ),
-			            "@V",
-			                VAR _k = dCalendario[MesIdx]
-			                RETURN
-			                    CALCULATE (
-			                        [Valor Indicador],
-			                        REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
-			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ),
-			                        dCalendario[MesIdx] = _k,
-			                        fato_indicadores[ID_Indicador] = _id
-			                    ),
-			            "@D",
-			                VAR _k = dCalendario[MesIdx]
-			                RETURN
-			                    CALCULATE (
-			                        DISTINCTCOUNT ( fato_indicadores[Data] ),
-			                        REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
-			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ),
-			                        dCalendario[MesIdx] = _k,
-			                        fato_indicadores[ID_Indicador] = _id
-			                    )
-			        ),
-			        NOT ISBLANK ( [@V] )
+			VAR _hist =
+			    ADDCOLUMNS (
+			        _meses,
+			        "@Rot", VAR _k = dCalendario[MesIdx] RETURN CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _k ),
+			        "@V", VAR _k = dCalendario[MesIdx] RETURN CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
+			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), dCalendario[MesIdx] = _k, fato_indicadores[ID_Indicador] = _id ),
+			        "@A", VAR _k = dCalendario[MesIdx] - 1 RETURN CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
+			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), dCalendario[MesIdx] = _k, fato_indicadores[ID_Indicador] = _id ),
+			        "@D", VAR _k = dCalendario[MesIdx] RETURN CALCULATE ( DISTINCTCOUNT ( fato_indicadores[Data] ), REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
+			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), dCalendario[MesIdx] = _k, fato_indicadores[ID_Indicador] = _id )
 			    )
-			VAR _n = COUNTROWS ( _serie )
-			VAR _comIdx = ADDCOLUMNS ( _serie, "@i", VAR _k = dCalendario[MesIdx] RETURN COUNTROWS ( FILTER ( _serie, dCalendario[MesIdx] <= _k ) ) )
-			VAR _completos = FILTER ( _comIdx, [@D] >= 25 )
-			VAR _med = AVERAGEX ( FILTER ( _completos, dCalendario[MesIdx] < _m ), [@V] )
-			VAR _dp = STDEVX.P ( FILTER ( _completos, dCalendario[MesIdx] < _m ), [@V] )
-			VAR _hi = MAX ( MAXX ( _comIdx, [@V] ), IF ( _temMeta, _meta, 0 ) ) * 1.14
-			VAR _esc = DIVIDE ( 250, _hi )
-			VAR _lg = DIVIDE ( 680, _n )
-
-			VAR _barras =
+			VAR _max = MAXX ( _hist, [@V] )
+			VAR _cheios = FILTER ( _hist, [@D] >= 25 )
+			VAR _med = AVERAGEX ( _cheios, [@V] )
+			VAR _min = MINX ( _cheios, [@V] )
+			VAR _pico = MAXX ( _cheios, [@V] )
+			VAR _mMin = MAXX ( TOPN ( 1, FILTER ( _cheios, [@V] = _min ), dCalendario[MesIdx], DESC ), [@Rot] )
+			VAR _mMax = MAXX ( TOPN ( 1, FILTER ( _cheios, [@V] = _pico ), dCalendario[MesIdx], DESC ), [@Rot] )
+			VAR _linhas =
 			    CONCATENATEX (
-			        _comIdx,
-			        VAR _cx = 56 + ( [@i] - 0.5 ) * _lg
-			        VAR _w = MIN ( _lg * 0.62, 42 )
-			        VAR _h = MAX ( [@V] * _esc, 1 )
-			        VAR _y = 296 - _h
+			        _hist,
+			        VAR _v = [@V]
+			        VAR _tem = NOT ISBLANK ( [@A] ) && [@A] <> 0 && NOT ISBLANK ( _v )
+			        VAR _d = DIVIDE ( _v - [@A], [@A] )
+			        VAR _c = IF ( NOT _tem, "#64809c", IF ( _d >= 0, "#2ee07a", "#ff5c5c" ) )
+			        VAR _seta = IF ( NOT _tem, "", IF ( _d >= 0, "&#9650;", "&#9660;" ) )
+			        VAR _larg = MIN ( MAX ( DIVIDE ( _v, _max ) * 100, 0 ), 100 )
 			        VAR _foco = dCalendario[MesIdx] = _m
 			        VAR _parcial = [@D] < 25
-			        VAR _cor = IF ( _foco, "#6ab0f3", "#3c6c9c" )
 			        RETURN
-			            "<rect x='" & FORMAT ( _cx - _w / 2 + 0, "0" ) & "' y='" & FORMAT ( _y + 0, "0" ) & "' width='" & FORMAT ( _w + 0, "0" ) & "' height='" & FORMAT ( _h + 0, "0" ) & "' rx='3' fill='" & _cor & "'"
-			                & IF ( _parcial, " fill-opacity='0.45' stroke='#6ab0f3' stroke-width='1' stroke-dasharray='3 2'", "" ) & "/>"
-			                & "<text x='" & FORMAT ( _cx + 0, "0" ) & "' y='" & FORMAT ( _y - 6 + 0, "0" ) & "' fill='" & IF ( _foco, "#ffffff", "#8fb0d0" ) & "' font-size='9.5' font-weight='" & IF ( _foco, "700", "400" ) & "' text-anchor='middle'>" & FORMAT ( [@V], "#,##0" ) & "</text>"
-			                & "<text x='" & FORMAT ( _cx + 0, "0" ) & "' y='314' fill='" & IF ( _foco, "#cfe4fa", "#8fb0d0" ) & "' font-size='10' text-anchor='middle'>" & [@Rot] & "</text>"
-			                & IF ( _parcial, "<text x='" & FORMAT ( _cx + 0, "0" ) & "' y='328' fill='#ffd93d' font-size='8.5' text-anchor='middle'>parcial</text>", "" ),
+			            "<tr style='height:31px;border-top:1px solid #15304d" & IF ( _foco, ";background:#19406b", "" ) & "'>"
+			                & "<td style='padding:0 8px 0 16px;color:" & IF ( _foco, "#ffffff", "#8fa9c4" ) & "'>" & [@Rot] & "</td>"
+			                & "<td style='padding:0 8px'><div style='height:11px;background:#15304d;border-radius:3px'><div style='width:" & FORMAT ( _larg + 0, "0" ) & "%;height:11px;background:#3b82f6;border-radius:3px'></div></div></td>"
+			                & "<td style='padding:0 8px;text-align:right;color:#ffffff;font-weight:600'>" & FORMAT ( _v, "#,##0" ) & "</td>"
+			                & "<td style='padding:0 8px;text-align:right;color:#cfe4fa'>" & FORMAT ( DIVIDE ( _v, 86.4 ), "#,##0" ) & "</td>"
+			                & "<td style='padding:0 8px;text-align:right;color:" & IF ( _parcial, "#fbbf24", "#8fa9c4" ) & "'>" & FORMAT ( [@D] + 0, "0" ) & "</td>"
+			                & "<td style='padding:0 16px 0 8px;text-align:right;font-weight:600;color:" & _c & "'>" & IF ( _tem, _seta & " " & FORMAT ( _d, "+0.0%;-0.0%" ), "&#8212;" ) & "</td>"
+			            & "</tr>",
 			        "",
-			        dCalendario[MesIdx], ASC
+			        dCalendario[MesIdx], DESC
 			    )
-			VAR _yTopo = 296 - ( _med + _dp ) * _esc
-			VAR _yBase = 296 - ( _med - _dp ) * _esc
-			VAR _yMeta = 296 - _meta * _esc
-			VAR _temRef = NOT ISBLANK ( _med )
 			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
-			    "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;padding:8px 12px 4px 12px;border-radius:0 0 12px 12px'>"
-			        & "<div style='display:flex;align-items:center;gap:14px;padding:0 5px 5px 5px'>"
-			            & "<span style='font-size:14px;font-weight:700;color:#ffffff;letter-spacing:0.8px'>MÊS A MÊS &#8212; " & _cli & "</span>"
-			            & "<span style='font-size:10.5px;color:#6f93b6'>média diária de cada mês (m&#179;/d)</span>"
-			            & "<span style='margin-left:auto;font-size:10.5px;color:#8fb0d0'><span style='color:#6ab0f3'>&#9632;</span> mês em foco &nbsp; <span style='color:#2d5f93'>&#9632;</span> faixa esperada"
-			            & IF ( _temMeta, " &nbsp; <span style='color:#ffd93d'>&#9476;</span> meta", "" ) & "</span>"
+			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>"
+			    & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px'>"
+			        & "<div style='padding:11px 16px;background:#16304e;border-bottom:1px solid #1e3f66;display:flex;align-items:center;gap:9px;flex:none'>" & "<span style='color:#4a9eff;font-size:13px'>&#9632;</span>" & "<span style='font-size:13.5px;font-weight:700;color:#ffffff;letter-spacing:0.7px'>" & "HISTÓRICO DE MEDIÇÃO &#8212; " & _cli & "</span>" & "<span style='margin-left:auto;font-size:10.5px;color:#5f7d9c'>" & "13 meses &#183; média diária" & "</span>" & "</div>"
+			        & "<table style='width:100%;border-collapse:collapse;font-size:11.5px;table-layout:fixed'>"
+			        & "<colgroup><col style='width:78px'><col style='width:232px'><col style='width:104px'><col style='width:70px'><col style='width:58px'><col style='width:124px'></colgroup>"
+			        & "<tr style='font-size:9.5px;color:#8fa9c4'><th style='padding:5px 8px 5px 16px;text-align:left;font-weight:600'>MÊS/ANO</th><th></th>"
+			        & "<th style='padding:5px 8px;text-align:right;font-weight:600'>VOLUME m&#179;/d</th>"
+			        & "<th style='padding:5px 8px;text-align:right;font-weight:600'>L/s</th>"
+			        & "<th style='padding:5px 8px;text-align:right;font-weight:600'>DIAS</th>"
+			        & "<th style='padding:5px 16px 5px 8px;text-align:right;font-weight:600'>VS. MÊS ANT.</th></tr>"
+			        & _linhas
+			        & "</table>"
+			        & "<div style='margin-top:auto;padding:9px 16px;background:#16304e;border-top:1px solid #1e3f66;display:flex;gap:22px;font-size:11px;color:#8fa9c4'>"
+			            & "<span>Média 13m <b style='color:#ffffff;font-size:12.5px'>" & FORMAT ( _med, "#,##0" ) & "</b> &#183; " & FORMAT ( DIVIDE ( _med, 86.4 ), "#,##0" ) & " L/s</span>"
+			            & "<span style='margin-left:auto'>Mín <b style='color:#ffffff'>" & FORMAT ( _min, "#,##0" ) & "</b> (" & _mMin & ")</span>"
+			            & "<span>Máx <b style='color:#ffffff'>" & FORMAT ( _pico, "#,##0" ) & "</b> (" & _mMax & ")</span>"
 			        & "</div>"
-			        & "<div style='flex:1;min-height:0'><svg viewBox='0 0 744 354' style='width:100%;height:100%;display:block' font-family='Segoe UI,sans-serif'>"
-			            & IF ( _temRef, "<rect x='56' y='" & FORMAT ( _yTopo + 0, "0" ) & "' width='680' height='" & FORMAT ( MAX ( _yBase - _yTopo, 0 ) + 0, "0" ) & "' fill='#2d5f93' fill-opacity='0.30'/>", "" )
-			            & "<line x1='56' y1='296' x2='736' y2='296' stroke='#1d4066' stroke-width='1'/>"
-			            & IF ( _temMeta, "<line x1='56' y1='" & FORMAT ( _yMeta + 0, "0" ) & "' x2='736' y2='" & FORMAT ( _yMeta + 0, "0" ) & "' stroke='#ffd93d' stroke-width='1.6' stroke-dasharray='8 5'/>", "" )
-			            & _barras
-			        & "</svg></div>"
 			    & "</div>"
 			RETURN
-			    IF ( ISBLANK ( _m ) || _n = 0, "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#8fb0d0;font-size:13px'>Sem dados para o período selecionado</div>", _html )
+			    IF ( ISBLANK ( _m ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
 			```
 		displayFolder: Página Volumes
-		lineageTag: cc047bbf-b798-52b5-bbf9-ade0c63cc1bd
+		lineageTag: 7fecf9ac-2ca8-5d88-9f8a-0d98d0f7fa23
 
-	/// Coluna da direita: os números de contexto do cliente em foco (meta, faixa esperada, desvios, pico e menor histórico) e a lista dos 13 meses.
-	measure 'HTML Vol Ficha Cliente' = ```
+	/// Painel da direita: meta, média de referência, desvios, pico e menor consumo histórico do cliente em foco.
+	measure 'HTML Vol Diagnóstico' = ```
 			VAR _m = [Vol Mês Idx]
 			VAR _id = [Vol ID Cliente]
 			VAR _cli = SUBSTITUTE ( SUBSTITUTE ( [Vol Cliente], "&", "&amp;" ), "<", "&lt;" )
@@ -774,8 +547,7 @@ table 'Medidas Volumes'
 			VAR _med = [Vol Média 12m]
 			VAR _dp = [Vol Desvio 12m]
 			VAR _ano = [Vol Mesmo Mês Ano Anterior]
-			VAR _m7 = [Vol Média 7d]
-			VAR _m30 = [Vol Média 30d]
+			VAR _rotAno = CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _m - 12 )
 			VAR _dMed = DIVIDE ( _vol - _med, _med )
 			VAR _dAno = DIVIDE ( _vol - _ano, _ano )
 			VAR _temAno = NOT ISBLANK ( _ano ) && _ano <> 0
@@ -785,13 +557,9 @@ table 'Medidas Volumes'
 			        ADDCOLUMNS (
 			            ALL ( dCalendario[MesIdx] ),
 			            "@Rot", VAR _k = dCalendario[MesIdx] RETURN CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _k ),
-			            "@V",
-			                VAR _k = dCalendario[MesIdx]
-			                RETURN CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
+			            "@V", VAR _k = dCalendario[MesIdx] RETURN CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
 			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), dCalendario[MesIdx] = _k, fato_indicadores[ID_Indicador] = _id ),
-			            "@D",
-			                VAR _k = dCalendario[MesIdx]
-			                RETURN CALCULATE ( DISTINCTCOUNT ( fato_indicadores[Data] ), REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
+			            "@D", VAR _k = dCalendario[MesIdx] RETURN CALCULATE ( DISTINCTCOUNT ( fato_indicadores[Data] ), REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
 			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), dCalendario[MesIdx] = _k, fato_indicadores[ID_Indicador] = _id )
 			        ),
 			        [@D] >= 25
@@ -800,72 +568,106 @@ table 'Medidas Volumes'
 			VAR _vale = MINX ( _todos, [@V] )
 			VAR _mPico = MAXX ( TOPN ( 1, FILTER ( _todos, [@V] = _pico ), dCalendario[MesIdx], DESC ), [@Rot] )
 			VAR _mVale = MAXX ( TOPN ( 1, FILTER ( _todos, [@V] = _vale ), dCalendario[MesIdx], DESC ), [@Rot] )
-			VAR _dot = "<span style='display:inline-block;width:9px;height:9px;border-radius:50%;margin-left:6px;background:"
-			VAR _ab = "<tr style='border-bottom:1px solid #153354'><td style='padding:7px 2px;color:#8fb0d0;font-size:11.5px'>"
-			VAR _mid = "</td><td style='padding:7px 2px;text-align:right;color:#ffffff;font-weight:700;font-size:14px;white-space:nowrap'>"
-			VAR _fim2 = "</td></tr>"
-			VAR _un = "<span style='font-size:10px;color:#8fb0d0;font-weight:400'> m&#179;/d</span>"
-			VAR _corMed = IF ( NOT _temRef, "#8fb0d0", SWITCH ( TRUE (), ABS ( _dMed ) <= 0.1, "#2fe07a", ABS ( _dMed ) <= 0.2, "#ffd93d", "#ff6b6b" ) )
-			VAR _corAno = IF ( NOT _temAno, "#8fb0d0", SWITCH ( TRUE (), ABS ( _dAno ) <= 0.1, "#2fe07a", ABS ( _dAno ) <= 0.2, "#ffd93d", "#ff6b6b" ) )
-			VAR _meses13 = FILTER ( ALL ( dCalendario[MesIdx] ), dCalendario[MesIdx] >= _m - 12 && dCalendario[MesIdx] <= _m )
-			VAR _hist =
-			    ADDCOLUMNS (
-			        _meses13,
-			        "@Rot", VAR _k = dCalendario[MesIdx] RETURN CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _k ),
-			        "@V", VAR _k = dCalendario[MesIdx] RETURN CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
-			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), dCalendario[MesIdx] = _k, fato_indicadores[ID_Indicador] = _id ),
-			        "@A", VAR _k = dCalendario[MesIdx] - 1 RETURN CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
-			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), dCalendario[MesIdx] = _k, fato_indicadores[ID_Indicador] = _id ),
-			        "@D", VAR _k = dCalendario[MesIdx] RETURN CALCULATE ( DISTINCTCOUNT ( fato_indicadores[Data] ), REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
-			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), dCalendario[MesIdx] = _k, fato_indicadores[ID_Indicador] = _id )
-			    )
-			VAR _linhasHist =
-			    CONCATENATEX (
-			        _hist,
-			        VAR _d = DIVIDE ( [@V] - [@A], [@A] )
-			        VAR _tem = NOT ISBLANK ( [@A] ) && [@A] <> 0 && NOT ISBLANK ( [@V] )
-			        VAR _c = IF ( NOT _tem, "#8fb0d0", IF ( _d >= 0, "#2fe07a", "#ff6b6b" ) )
-			        VAR _foco = dCalendario[MesIdx] = _m
-			        RETURN
-			            "<tr style='background:" & IF ( _foco, "#17406e", "transparent" ) & "'>"
-			                & "<td style='padding:4px 6px;color:" & IF ( _foco, "#ffffff", "#8fb0d0" ) & ";font-size:11px'>" & [@Rot] & IF ( [@D] < 25, " <span style='color:#ffd93d;font-size:9px'>parcial</span>", "" ) & "</td>"
-			                & "<td style='padding:4px 6px;text-align:right;color:#ffffff;font-size:11.5px;font-weight:600'>" & FORMAT ( [@V], "#,##0" ) & "</td>"
-			                & "<td style='padding:4px 6px;text-align:right;color:" & _c & ";font-size:11px'>" & IF ( _tem, FORMAT ( _d, "+0.0%;-0.0%" ), "&#8212;" ) & "</td>"
-			            & "</tr>",
-			        "",
-			        dCalendario[MesIdx], DESC
-			    )
-
+			VAR _corMed = IF ( NOT _temRef, "#64809c", SWITCH ( TRUE (), ABS ( _dMed ) <= 0.1, "#2ee07a", ABS ( _dMed ) <= 0.2, "#fbbf24", "#ff5c5c" ) )
+			VAR _corAno = IF ( NOT _temAno, "#64809c", SWITCH ( TRUE (), ABS ( _dAno ) <= 0.1, "#2ee07a", ABS ( _dAno ) <= 0.2, "#fbbf24", "#ff5c5c" ) )
+			VAR _a = "<tr style='border-bottom:1px solid #15304d'><td style='padding:11px 16px;color:#8fa9c4;font-size:11.5px'>"
+			VAR _b = "</td><td style='padding:11px 10px;text-align:right;color:#ffffff;font-weight:700;font-size:19px;white-space:nowrap'>"
+			VAR _c = "</td><td style='padding:11px 16px 11px 4px;text-align:right;color:#8fa9c4;font-size:11.5px;white-space:nowrap'>"
+			VAR _f = "</td></tr>"
+			VAR _u = "<span style='font-size:11px;color:#8fa9c4;font-weight:400'> m&#179;/d</span>"
+			VAR _sub = "<div style='font-size:9.5px;color:#5f7d9c;margin-top:1px'>"
+			VAR _seta = "<span style='font-size:13px'>"
 			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
-			    "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;overflow:hidden;display:flex;flex-direction:column'>"
-			        & "<div style='padding:12px 14px;background:#13365a;border-bottom:1px solid #1d4066;display:flex;align-items:center;gap:9px'>"
-			            & "<span style='color:#4da3ff;font-size:15px'>&#9776;</span>"
-			            & "<span style='font-size:14px;font-weight:700;color:#ffffff;letter-spacing:0.8px'>FICHA &#8212; " & _cli & "</span>"
-			        & "</div>"
-			        & "<div style='padding:2px 14px'><table style='width:100%;border-collapse:collapse'>"
-			            & _ab & "Meta contratual" & _mid & FORMAT ( _meta, "#,##0" ) & _un & _fim2
-			            & _ab & "Média 12 meses anteriores" & _mid & FORMAT ( _med, "#,##0" ) & _un & _fim2
-			            & _ab & "Faixa esperada" & _mid & "<span style='font-size:12px'>" & FORMAT ( _med - _dp, "#,##0" ) & " &#8211; " & FORMAT ( _med + _dp, "#,##0" ) & "</span>" & _un & _fim2
-			            & _ab & "Desvio vs. média 12m" & "</td><td style='padding:7px 2px;text-align:right;font-weight:700;font-size:14px;color:" & _corMed & ";white-space:nowrap'>" & IF ( _temRef, FORMAT ( _dMed, "+0.0%;-0.0%" ), "&#8212;" ) & _dot & _corMed & "'></span>" & _fim2
-			            & _ab & "Desvio vs. mesmo mês do ano anterior" & "</td><td style='padding:7px 2px;text-align:right;font-weight:700;font-size:14px;color:" & _corAno & ";white-space:nowrap'>" & IF ( _temAno, FORMAT ( _dAno, "+0.0%;-0.0%" ), "&#8212;" ) & _dot & _corAno & "'></span>" & _fim2
-			            & _ab & "Média últimos 7 dias" & _mid & FORMAT ( _m7, "#,##0" ) & _un & _fim2
-			            & _ab & "Média últimos 30 dias" & _mid & FORMAT ( _m30, "#,##0" ) & _un & _fim2
-			            & _ab & "Pico histórico <span style='font-size:10px'>(" & _mPico & ")</span>" & _mid & FORMAT ( _pico, "#,##0" ) & _un & _fim2
-			            & _ab & "Menor histórico <span style='font-size:10px'>(" & _mVale & ")</span>" & _mid & FORMAT ( _vale, "#,##0" ) & _un & _fim2
-			        & "</table></div>"
-			        & "<div style='margin:9px 10px 10px 10px;background:#0b2340;border:1px solid #1d4066;border-radius:8px;overflow:hidden;flex:1'>"
-			            & "<div style='padding:6px 10px;font-size:11px;color:#8fb0d0;border-bottom:1px solid #153354'>Últimos 13 meses</div>"
-			            & "<table style='width:100%;border-collapse:collapse'>"
-			            & "<tr style='color:#6f93b6;font-size:9.5px'><th style='padding:3px 6px;text-align:left;font-weight:600'>Mês</th><th style='padding:3px 6px;text-align:right;font-weight:600'>m&#179;/d</th><th style='padding:3px 6px;text-align:right;font-weight:600'>vs. mês ant.</th></tr>"
-			            & _linhasHist
-			            & "</table>"
+			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>"
+			    & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px'>"
+			        & "<div style='padding:11px 16px;background:#16304e;border-bottom:1px solid #1e3f66;display:flex;align-items:center;gap:9px;flex:none'>" & "<span style='color:#4a9eff;font-size:13px'>&#9632;</span>" & "<span style='font-size:13.5px;font-weight:700;color:#ffffff;letter-spacing:0.7px'>" & "DIAGNÓSTICO &#8212; " & _cli & "</span>" & "<span style='margin-left:auto;font-size:10.5px;color:#5f7d9c'>" & "mês em foco vs. histórico" & "</span>" & "</div>"
+			        & "<table style='width:100%;border-collapse:collapse'>"
+			            & _a & "Meta contratual" & _b & FORMAT ( _meta, "#,##0" ) & _u & _c & FORMAT ( DIVIDE ( _meta, 86.4 ), "#,##0" ) & " L/s" & _f
+			            & _a & "Média 12 meses anteriores" & _b & FORMAT ( _med, "#,##0" ) & _u & _c & FORMAT ( DIVIDE ( _med, 86.4 ), "#,##0" ) & " L/s" & _f
+			            & _a & "Desvio vs. média 12 meses" & "</td><td style='padding:11px 10px;text-align:right;font-weight:700;font-size:19px;white-space:nowrap;color:" & _corMed & "'>"
+			                & IF ( _temRef, _seta & IF ( _dMed >= 0, "&#9650;", "&#9660;" ) & "</span> " & FORMAT ( _dMed, "+0.0%;-0.0%" ), "&#8212;" ) & _c & "" & _f
+			            & _a & "Desvio vs. mesmo mês do ano anterior" & _sub & _rotAno & "</div>"
+			                & "</td><td style='padding:11px 10px;text-align:right;font-weight:700;font-size:19px;white-space:nowrap;color:" & _corAno & "'>"
+			                & IF ( _temAno, _seta & IF ( _dAno >= 0, "&#9650;", "&#9660;" ) & "</span> " & FORMAT ( _dAno, "+0.0%;-0.0%" ), "&#8212;" ) & _c & "" & _f
+			            & _a & "Pico histórico" & _sub & _mPico & "</div>" & _b & FORMAT ( _pico, "#,##0" ) & _u & _c & FORMAT ( DIVIDE ( _pico, 86.4 ), "#,##0" ) & " L/s" & _f
+			            & _a & "Menor consumo histórico" & _sub & _mVale & "</div>" & _b & FORMAT ( _vale, "#,##0" ) & _u & _c & FORMAT ( DIVIDE ( _vale, 86.4 ), "#,##0" ) & " L/s" & _f
+			        & "</table>"
+			        & "<div style='margin:14px 16px;padding:12px 14px;background:rgba(74,158,255,0.09);border:1px solid #27527d;border-radius:8px;display:flex;gap:10px'>"
+			            & "<span style='color:#4a9eff;font-size:15px'>&#9432;</span>"
+			            & "<span style='font-size:11.5px;color:#b9d3ec;line-height:1.5'>O volume atual está <b style='color:#ffffff'>"
+			            & IF ( _temRef, FORMAT ( ABS ( _dMed ), "0.0%" ) & IF ( _dMed >= 0, " acima", " abaixo" ), "sem referência" )
+			            & "</b> da média dos 12 meses anteriores e "
+			            & IF ( _temRef && ABS ( _vol - _med ) <= _dp, "<b style='color:#2ee07a'>dentro</b>", "<b style='color:#fbbf24'>fora</b>" )
+			            & " da faixa esperada para o período.</span>"
 			        & "</div>"
 			    & "</div>"
 			RETURN
-			    IF ( ISBLANK ( _m ), "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#0f2a47;border:1px solid #1d4066;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#8fb0d0;font-size:13px'>Sem dados para o período selecionado</div>", _html )
+			    IF ( ISBLANK ( _m ), "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
 			```
 		displayFolder: Página Volumes
-		lineageTag: fc0edf5a-0355-5307-9b8a-6ed25e23abf6
+		lineageTag: 14992e3f-9369-5e00-a4bc-ac9baef448a1
+
+	/// Faixa de baixo: variação percentual de cada cliente contra o mesmo mês do ano anterior, em ordem decrescente. Verde sobe, vermelho cai; o cliente selecionado fica contornado.
+	measure 'HTML Vol Variação Ano' = ```
+			VAR _m = [Vol Mês Idx]
+			VAR _idSel = [Vol ID Cliente]
+			VAR _rot = CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _m )
+			VAR _rotAno = CALCULATE ( MAX ( dCalendario[Mês/Ano] ), REMOVEFILTERS ( dCalendario ), dCalendario[MesIdx] = _m - 12 )
+			VAR _lista = FILTER ( ALL ( Clientes[ID_Indicador], Clientes[Cliente] ), Clientes[Cliente] <> "Todos Clientes" && NOT ISBLANK ( Clientes[ID_Indicador] ) )
+			VAR _base =
+			    ADDCOLUMNS (
+			        _lista,
+			        "@At", VAR _i = Clientes[ID_Indicador] RETURN CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
+			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), dCalendario[MesIdx] = _m, fato_indicadores[ID_Indicador] = _i ),
+			        "@An", VAR _i = Clientes[ID_Indicador] RETURN CALCULATE ( [Valor Indicador], REMOVEFILTERS ( dim_indicadores ), REMOVEFILTERS ( Clientes ),
+			        REMOVEFILTERS ( dCalendario ), REMOVEFILTERS ( 'LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a' ), dCalendario[MesIdx] = _m - 12, fato_indicadores[ID_Indicador] = _i )
+			    )
+			VAR _tab = ADDCOLUMNS ( FILTER ( _base, NOT ISBLANK ( [@At] ) && NOT ISBLANK ( [@An] ) && [@An] <> 0 ), "@Var", DIVIDE ( [@At] - [@An], [@An] ) )
+			VAR _n = COUNTROWS ( _tab )
+			VAR _maxP = MAX ( MAXX ( _tab, [@Var] ), 0 )
+			VAR _maxN = MAX ( - MINX ( _tab, [@Var] ), 0 )
+			VAR _tot = MAX ( _maxP + _maxN, 0.01 )
+			VAR _y0 = 18 + 124 * DIVIDE ( _maxP, _tot )
+			VAR _gw = DIVIDE ( 1840, _n )
+			VAR _barras =
+			    CONCATENATEX (
+			        _tab,
+			        VAR _vv = [@Var]
+			        VAR _pos = COUNTROWS ( FILTER ( _tab, [@Var] > _vv ) ) + 1
+			        VAR _cx = 8 + ( _pos - 0.5 ) * _gw
+			        VAR _h = MAX ( ABS ( _vv ) / _tot * 124, 1 )
+			        VAR _sel = Clientes[ID_Indicador] = _idSel
+			        VAR _sobe = _vv >= 0
+			        VAR _cor = IF ( _sobe, "#2ee07a", "#ff5c5c" )
+			        VAR _y = IF ( _sobe, _y0 - _h, _y0 )
+			        VAR _yr = IF ( _sobe, _y0 - _h - 7, _y0 + _h + 14 )
+			        VAR _nome = SUBSTITUTE ( SUBSTITUTE ( Clientes[Cliente], "&", "&amp;" ), "<", "&lt;" )
+			        VAR _bw = MIN ( _gw * 0.46, 78 )
+			        RETURN
+			            "<rect x='" & FORMAT ( _cx - _bw / 2 + 0, "0" ) & "' y='" & FORMAT ( _y + 0, "0" ) & "' width='" & FORMAT ( _bw + 0, "0" )
+			                & "' height='" & FORMAT ( _h + 0, "0" ) & "' rx='3' fill='" & _cor & "' fill-opacity='" & IF ( _sel, "1", "0.82" ) & "'"
+			                & IF ( _sel, " stroke='#ffffff' stroke-width='1.6'", "" ) & "/>"
+			                & "<text x='" & FORMAT ( _cx + 0, "0" ) & "' y='" & FORMAT ( _yr + 0, "0" ) & "' fill='" & _cor & "' font-size='12' font-weight='700' text-anchor='middle'>" & FORMAT ( _vv, "+0.0%;-0.0%" ) & "</text>"
+			                & "<text x='" & FORMAT ( _cx + 0, "0" ) & "' y='166' fill='" & IF ( _sel, "#ffffff", "#8fa9c4" ) & "' font-size='11.5' font-weight='" & IF ( _sel, "700", "400" ) & "' text-anchor='middle'>" & _nome & "</text>",
+			        "",
+			        [@Var], DESC
+			    )
+			VAR _html = "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>" &
+			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style>"
+			    & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px'>"
+			        & "<div style='padding:11px 16px;background:#16304e;border-bottom:1px solid #1e3f66;display:flex;align-items:center;gap:9px;flex:none'>" & "<span style='color:#4a9eff;font-size:13px'>&#9632;</span>" & "<span style='font-size:13.5px;font-weight:700;color:#ffffff;letter-spacing:0.7px'>" & "VARIAÇÃO VS. MESMO MÊS DO ANO ANTERIOR" & "</span>" & "<span style='margin-left:auto;font-size:10.5px;color:#5f7d9c'>" & _rot & " vs. " & _rotAno & " &#183; todos os clientes, ordenado" & "</span>" & "</div>"
+			        & "<div style='flex:1;min-height:0;padding:4px 12px 6px 12px'>"
+			            & "<svg viewBox='0 0 1856 176' style='width:100%;height:100%;display:block' font-family='Segoe UI,sans-serif'>"
+			                & "<line x1='8' y1='" & FORMAT ( _y0 + 0, "0" ) & "' x2='1848' y2='" & FORMAT ( _y0 + 0, "0" ) & "' stroke='#2a4d75' stroke-width='1'/>"
+			                & _barras
+			            & "</svg>"
+			        & "</div>"
+			    & "</div>"
+			RETURN
+			    IF ( ISBLANK ( _m ) || _n = 0, "<style>html,body{margin:0;padding:0;height:100%}</style>" & "<div style='font-family:Segoe UI,sans-serif;height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;flex-direction:column;background:#10243c;border:1px solid #1e3f66;border-radius:10px;align-items:center;justify-content:center;color:#8fa9c4;font-size:13px'>Sem dados para o período selecionado</div>", _html )
+			```
+		displayFolder: Página Volumes
+		lineageTag: 1670bcc0-d063-5b5f-909e-300abf927dcc
 
 	column Aux
 		dataType: string

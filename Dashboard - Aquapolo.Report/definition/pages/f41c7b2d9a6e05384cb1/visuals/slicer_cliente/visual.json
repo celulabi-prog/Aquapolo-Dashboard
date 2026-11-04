@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "slicer_cliente",
   "position": {
-    "x": 1430,
-    "y": 22,
-    "z": 30,
-    "height": 60,
-    "width": 268,
-    "tabOrder": 10
+    "x": 38,
+    "y": 164,
+    "z": 31,
+    "height": 56,
+    "width": 464,
+    "tabOrder": 9
   },
   "visual": {
     "visualType": "slicer",
@@ -113,7 +113,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "false"
                 }
               }
             },

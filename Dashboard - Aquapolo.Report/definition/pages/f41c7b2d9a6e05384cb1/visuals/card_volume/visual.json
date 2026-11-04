@@ -1,12 +1,12 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
-  "name": "html_kpi_meta",
+  "name": "card_volume",
   "position": {
-    "x": 373,
-    "y": 116,
-    "z": 3,
-    "height": 100,
-    "width": 344,
+    "x": 536,
+    "y": 124,
+    "z": 2,
+    "height": 112,
+    "width": 740,
     "tabOrder": 2
   },
   "visual": {
@@ -23,11 +23,11 @@
                       "Entity": "Medidas Volumes"
                     }
                   },
-                  "Property": "HTML Vol KPI Meta"
+                  "Property": "HTML Vol Cartão Volume"
                 }
               },
-              "queryRef": "Medidas Volumes.HTML Vol KPI Meta",
-              "nativeQueryRef": "HTML Vol KPI Meta"
+              "queryRef": "Medidas Volumes.HTML Vol Cartão Volume",
+              "nativeQueryRef": "HTML Vol Cartão Volume"
             }
           ]
         }
@@ -42,7 +42,7 @@
                     "Entity": "Medidas Volumes"
                   }
                 },
-                "Property": "HTML Vol KPI Meta"
+                "Property": "HTML Vol Cartão Volume"
               }
             },
             "direction": "Descending"

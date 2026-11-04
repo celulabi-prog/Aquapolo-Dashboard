@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
-  "name": "html_kpi_volume",
+  "name": "resumo",
   "position": {
-    "x": 17,
-    "y": 116,
-    "z": 2,
-    "height": 100,
-    "width": 344,
-    "tabOrder": 1
+    "x": 20,
+    "y": 248,
+    "z": 20,
+    "height": 564,
+    "width": 960,
+    "tabOrder": 7
   },
   "visual": {
     "visualType": "htmlContent443BE3AD55E043BF878BED274D3A6855",
@@ -23,11 +23,11 @@
                       "Entity": "Medidas Volumes"
                     }
                   },
-                  "Property": "HTML Vol KPI Volume"
+                  "Property": "HTML Vol Resumo Clientes"
                 }
               },
-              "queryRef": "Medidas Volumes.HTML Vol KPI Volume",
-              "nativeQueryRef": "HTML Vol KPI Volume"
+              "queryRef": "Medidas Volumes.HTML Vol Resumo Clientes",
+              "nativeQueryRef": "HTML Vol Resumo Clientes"
             }
           ]
         }
@@ -42,7 +42,7 @@
                     "Entity": "Medidas Volumes"
                   }
                 },
-                "Property": "HTML Vol KPI Volume"
+                "Property": "HTML Vol Resumo Clientes"
               }
             },
             "direction": "Descending"

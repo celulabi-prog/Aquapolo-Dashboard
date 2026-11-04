@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
-  "name": "html_rodape",
+  "name": "diagnostico",
   "position": {
-    "x": 17,
-    "y": 1034,
-    "z": 9,
-    "height": 30,
-    "width": 1885,
-    "tabOrder": 8
+    "x": 1292,
+    "y": 248,
+    "z": 5,
+    "height": 564,
+    "width": 608,
+    "tabOrder": 5
   },
   "visual": {
     "visualType": "htmlContent443BE3AD55E043BF878BED274D3A6855",
@@ -23,11 +23,11 @@
                       "Entity": "Medidas Volumes"
                     }
                   },
-                  "Property": "HTML Vol Rodapé"
+                  "Property": "HTML Vol Diagnóstico"
                 }
               },
-              "queryRef": "Medidas Volumes.HTML Vol Rodapé",
-              "nativeQueryRef": "HTML Vol Rodapé"
+              "queryRef": "Medidas Volumes.HTML Vol Diagnóstico",
+              "nativeQueryRef": "HTML Vol Diagnóstico"
             }
           ]
         }
@@ -42,7 +42,7 @@
                     "Entity": "Medidas Volumes"
                   }
                 },
-                "Property": "HTML Vol Rodapé"
+                "Property": "HTML Vol Diagnóstico"
               }
             },
             "direction": "Descending"

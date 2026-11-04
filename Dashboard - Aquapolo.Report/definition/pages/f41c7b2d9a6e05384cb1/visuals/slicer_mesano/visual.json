@@ -2,12 +2,12 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "slicer_mesano",
   "position": {
-    "x": 1710,
-    "y": 22,
-    "z": 31,
-    "height": 60,
-    "width": 192,
-    "tabOrder": 11
+    "x": 1432,
+    "y": 32,
+    "z": 30,
+    "height": 64,
+    "width": 214,
+    "tabOrder": 8
   },
   "visual": {
     "visualType": "slicer",
@@ -28,7 +28,7 @@
               },
               "queryRef": "dCalendario.Mês/Ano",
               "nativeQueryRef": "Mês/Ano",
-              "displayName": "Mês",
+              "displayName": "Mês de referência",
               "active": true
             }
           ]

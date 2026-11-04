@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
-  "name": "html_resumo",
+  "name": "card_situacao",
   "position": {
-    "x": 17,
-    "y": 232,
-    "z": 20,
-    "height": 790,
-    "width": 1472,
-    "tabOrder": 9
+    "x": 1292,
+    "y": 124,
+    "z": 3,
+    "height": 112,
+    "width": 608,
+    "tabOrder": 3
   },
   "visual": {
     "visualType": "htmlContent443BE3AD55E043BF878BED274D3A6855",
@@ -23,11 +23,11 @@
                       "Entity": "Medidas Volumes"
                     }
                   },
-                  "Property": "HTML Vol Resumo Clientes"
+                  "Property": "HTML Vol Cartão Situação"
                 }
               },
-              "queryRef": "Medidas Volumes.HTML Vol Resumo Clientes",
-              "nativeQueryRef": "HTML Vol Resumo Clientes"
+              "queryRef": "Medidas Volumes.HTML Vol Cartão Situação",
+              "nativeQueryRef": "HTML Vol Cartão Situação"
             }
           ]
         }
@@ -42,7 +42,7 @@
                     "Entity": "Medidas Volumes"
                   }
                 },
-                "Property": "HTML Vol Resumo Clientes"
+                "Property": "HTML Vol Cartão Situação"
               }
             },
             "direction": "Descending"

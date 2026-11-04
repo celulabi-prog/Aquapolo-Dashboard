@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
-  "name": "html_ficha",
+  "name": "historico",
   "position": {
-    "x": 1501,
-    "y": 232,
-    "z": 8,
-    "height": 790,
-    "width": 401,
-    "tabOrder": 7
+    "x": 536,
+    "y": 248,
+    "z": 4,
+    "height": 564,
+    "width": 740,
+    "tabOrder": 4
   },
   "visual": {
     "visualType": "htmlContent443BE3AD55E043BF878BED274D3A6855",
@@ -23,11 +23,11 @@
                       "Entity": "Medidas Volumes"
                     }
                   },
-                  "Property": "HTML Vol Ficha Cliente"
+                  "Property": "HTML Vol Histórico"
                 }
               },
-              "queryRef": "Medidas Volumes.HTML Vol Ficha Cliente",
-              "nativeQueryRef": "HTML Vol Ficha Cliente"
+              "queryRef": "Medidas Volumes.HTML Vol Histórico",
+              "nativeQueryRef": "HTML Vol Histórico"
             }
           ]
         }
@@ -42,7 +42,7 @@
                     "Entity": "Medidas Volumes"
                   }
                 },
-                "Property": "HTML Vol Ficha Cliente"
+                "Property": "HTML Vol Histórico"
               }
             },
             "direction": "Descending"
