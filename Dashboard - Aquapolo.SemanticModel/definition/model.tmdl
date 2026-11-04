@@ -20,7 +20,6 @@ ref table dim_indicadores
 ref table 'Medidas HTML'
 ref table dCalendario
 ref table Clientes
-ref table Unidade
 ref table 'Medidas Volumes'
 
 ref cultureInfo pt-BR

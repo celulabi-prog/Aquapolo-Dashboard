@@ -1,12 +1,12 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
-  "name": "html_historico",
+  "name": "html_kpi_meta",
   "position": {
-    "x": 532,
-    "y": 274,
-    "z": 5,
-    "height": 518,
-    "width": 878,
+    "x": 492,
+    "y": 180,
+    "z": 3,
+    "height": 108,
+    "width": 460,
     "tabOrder": 3
   },
   "visual": {
@@ -23,11 +23,11 @@
                       "Entity": "Medidas Volumes"
                     }
                   },
-                  "Property": "HTML Vol Histórico"
+                  "Property": "HTML Vol KPI Meta"
                 }
               },
-              "queryRef": "Medidas Volumes.HTML Vol Histórico",
-              "nativeQueryRef": "HTML Vol Histórico"
+              "queryRef": "Medidas Volumes.HTML Vol KPI Meta",
+              "nativeQueryRef": "HTML Vol KPI Meta"
             }
           ]
         }
@@ -42,7 +42,7 @@
                     "Entity": "Medidas Volumes"
                   }
                 },
-                "Property": "HTML Vol Histórico"
+                "Property": "HTML Vol KPI Meta"
               }
             },
             "direction": "Descending"

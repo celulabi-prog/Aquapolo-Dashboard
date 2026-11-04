@@ -1,12 +1,12 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
-  "name": "html_comparacao",
+  "name": "html_evolucao_mes",
   "position": {
-    "x": 1038,
-    "y": 866,
-    "z": 12,
-    "height": 166,
-    "width": 864,
+    "x": 729,
+    "y": 676,
+    "z": 7,
+    "height": 354,
+    "width": 760,
     "tabOrder": 7
   },
   "visual": {
@@ -23,11 +23,11 @@
                       "Entity": "Medidas Volumes"
                     }
                   },
-                  "Property": "HTML Vol Comparação Ano"
+                  "Property": "HTML Vol Evolução Mensal"
                 }
               },
-              "queryRef": "Medidas Volumes.HTML Vol Comparação Ano",
-              "nativeQueryRef": "HTML Vol Comparação Ano"
+              "queryRef": "Medidas Volumes.HTML Vol Evolução Mensal",
+              "nativeQueryRef": "HTML Vol Evolução Mensal"
             }
           ]
         }
@@ -42,7 +42,7 @@
                     "Entity": "Medidas Volumes"
                   }
                 },
-                "Property": "HTML Vol Comparação Ano"
+                "Property": "HTML Vol Evolução Mensal"
               }
             },
             "direction": "Descending"

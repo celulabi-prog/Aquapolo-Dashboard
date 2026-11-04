@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
-  "name": "html_comparativos",
+  "name": "html_evolucao_dia",
   "position": {
-    "x": 532,
-    "y": 802,
-    "z": 7,
-    "height": 56,
-    "width": 1370,
-    "tabOrder": 5
+    "x": 729,
+    "y": 300,
+    "z": 6,
+    "height": 364,
+    "width": 760,
+    "tabOrder": 6
   },
   "visual": {
     "visualType": "htmlContent443BE3AD55E043BF878BED274D3A6855",
@@ -23,11 +23,11 @@
                       "Entity": "Medidas Volumes"
                     }
                   },
-                  "Property": "HTML Vol Comparativos"
+                  "Property": "HTML Vol Evolução Diária"
                 }
               },
-              "queryRef": "Medidas Volumes.HTML Vol Comparativos",
-              "nativeQueryRef": "HTML Vol Comparativos"
+              "queryRef": "Medidas Volumes.HTML Vol Evolução Diária",
+              "nativeQueryRef": "HTML Vol Evolução Diária"
             }
           ]
         }
@@ -42,7 +42,7 @@
                     "Entity": "Medidas Volumes"
                   }
                 },
-                "Property": "HTML Vol Comparativos"
+                "Property": "HTML Vol Evolução Diária"
               }
             },
             "direction": "Descending"
