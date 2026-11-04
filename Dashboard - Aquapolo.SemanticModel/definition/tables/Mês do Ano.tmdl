@@ -1,0 +1,40 @@
+/// Eixo Jan–Dez dos gráficos de evolução da página Indicadores Químicos.
+table 'Mês do Ano'
+	lineageTag: 51c5325a-60a7-4e0f-ba47-8520803c3a25
+
+	column Nº
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 2e566c46-7086-49df-b71c-e0ce0c6e2313
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Nº]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mês
+		dataType: string
+		lineageTag: 38b9e111-a459-487a-af09-966a08c96ea4
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Mês]
+		sortByColumn: Nº
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Mês do Ano' = calculated
+		mode: import
+		source = ```
+				DATATABLE (
+					"Nº", INTEGER,
+					"Mês", STRING,
+					{
+						{ 1, "Jan" }, { 2, "Fev" }, { 3, "Mar" }, { 4, "Abr" }, { 5, "Mai" }, { 6, "Jun" },
+						{ 7, "Jul" }, { 8, "Ago" }, { 9, "Set" }, { 10, "Out" }, { 11, "Nov" }, { 12, "Dez" }
+					}
+				)
+				```
+
+	annotation PBI_Id = b955cd033f364a459e228ef94133e9b2
+
