@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "html_dp_skid_3",
   "position": {
-    "x": 1564,
-    "y": 896,
+    "x": 1563.75,
+    "y": 900,
     "z": 23,
-    "height": 48,
-    "width": 308,
+    "height": 47.5,
+    "width": 308.75,
     "tabOrder": 23
   },
   "visual": {
