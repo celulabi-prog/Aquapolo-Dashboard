@@ -11,7 +11,7 @@
         {
           "location": {
             "x": 334,
-            "y": -50
+            "y": -38.5
           },
           "nodeIndex": "dim_indicadores",
           "nodeLineageTag": "b207cc99-c866-46d2-a655-d1a9142f2261",
@@ -24,7 +24,7 @@
         {
           "location": {
             "x": 43,
-            "y": 5
+            "y": 16.5
           },
           "nodeIndex": "fato_indicadores",
           "nodeLineageTag": "904aee07-ce9f-475e-a05b-9aae993c46aa",
@@ -33,6 +33,19 @@
             "width": 234
           },
           "zIndex": 2
+        },
+        {
+          "location": {
+            "x": 575,
+            "y": 25
+          },
+          "nodeIndex": "Medidas HTML",
+          "nodeLineageTag": "af935ac6-adea-4710-8879-f9f7682c9e9d",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
         }
       ],
       "name": "Todas as tabelas",
