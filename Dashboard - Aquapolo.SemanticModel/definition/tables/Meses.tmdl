@@ -36,7 +36,7 @@ table Meses
 
 	partition Meses = calculated
 		mode: import
-		source = ```
+		source =
 				VAR _ult = CALCULATE ( MAX ( fato_indicadores[Data] ), fato_indicadores[Etapa] = "Químicos - Autonomia" )
 				VAR _ini = CALCULATE ( MIN ( fato_indicadores[Data] ), fato_indicadores[Etapa] = "Químicos - Autonomia" )
 				VAR _ultMes = DATE ( YEAR ( _ult ), MONTH ( _ult ), 1 )
@@ -48,7 +48,6 @@ table Meses
 						"Período", IF ( [Início] = _ultMes, "Último mês", FORMAT ( [Início], "mmm/yyyy", "pt-BR" ) ),
 						"Mês", FORMAT ( [Início], "mmm/yyyy", "pt-BR" )
 					)
-				```
 
 	annotation PBI_Id = 8f4fdf33c442404e9c479590cb0d8386
 

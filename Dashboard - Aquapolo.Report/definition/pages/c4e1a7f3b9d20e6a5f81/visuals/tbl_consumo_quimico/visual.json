@@ -93,8 +93,7 @@
             },
             "direction": "Ascending"
           }
-        ],
-        "isDefaultSort": false
+        ]
       }
     },
     "objects": {
@@ -134,13 +133,6 @@
               "expr": {
                 "Literal": {
                   "Value": "'Bahnschrift, ''Segoe UI'', sans-serif'"
-                }
-              }
-            },
-            "outline": {
-              "expr": {
-                "Literal": {
-                  "Value": "'None'"
                 }
               }
             },
@@ -212,13 +204,6 @@
               "expr": {
                 "Literal": {
                   "Value": "'Bahnschrift, ''Segoe UI'', sans-serif'"
-                }
-              }
-            },
-            "outline": {
-              "expr": {
-                "Literal": {
-                  "Value": "'None'"
                 }
               }
             },

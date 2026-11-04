@@ -25,7 +25,7 @@ table 'Seletor Químico'
 
 	partition 'Seletor Químico' = calculated
 		mode: import
-		source = ```
+		source =
 				UNION (
 					ROW ( "Ordem", 0, "Opção", "Todos" ),
 					FILTER (
@@ -33,7 +33,6 @@ table 'Seletor Químico'
 						[Opção] IN VALUES ( 'Químicos Diário'[Químico] )
 					)
 				)
-				```
 
 	annotation PBI_Id = 91fc08ec04cb4e9ea125e12de374439a
 

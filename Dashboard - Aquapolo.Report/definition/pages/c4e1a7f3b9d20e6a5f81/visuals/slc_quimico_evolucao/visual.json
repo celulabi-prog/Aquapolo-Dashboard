@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Seletor Químico.Opção",
-              "nativeQueryRef": "Opção"
+              "nativeQueryRef": "Opção",
+              "active": true
             }
           ]
         }
@@ -47,8 +48,7 @@
             },
             "direction": "Ascending"
           }
-        ],
-        "isDefaultSort": false
+        ]
       }
     },
     "objects": {
@@ -134,13 +134,6 @@
               "expr": {
                 "Literal": {
                   "Value": "'Bahnschrift, ''Segoe UI'', sans-serif'"
-                }
-              }
-            },
-            "outline": {
-              "expr": {
-                "Literal": {
-                  "Value": "'None'"
                 }
               }
             }
