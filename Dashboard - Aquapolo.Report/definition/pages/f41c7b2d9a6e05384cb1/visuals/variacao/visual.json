@@ -3,11 +3,11 @@
   "name": "variacao",
   "position": {
     "x": 24,
-    "y": 798,
-    "z": 6,
-    "height": 262,
+    "y": 802,
+    "z": 7,
+    "height": 256,
     "width": 1872,
-    "tabOrder": 6
+    "tabOrder": 7
   },
   "visual": {
     "visualType": "htmlContent443BE3AD55E043BF878BED274D3A6855",

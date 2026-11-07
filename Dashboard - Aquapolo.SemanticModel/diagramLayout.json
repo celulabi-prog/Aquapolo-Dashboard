@@ -10,33 +10,7 @@
       "nodes": [
         {
           "location": {
-            "x": 334,
-            "y": -38.5
-          },
-          "nodeIndex": "dim_indicadores",
-          "nodeLineageTag": "b207cc99-c866-46d2-a655-d1a9142f2261",
-          "size": {
-            "height": 272,
-            "width": 234
-          },
-          "zIndex": 1
-        },
-        {
-          "location": {
-            "x": 43,
-            "y": 16.5
-          },
-          "nodeIndex": "fato_indicadores",
-          "nodeLineageTag": "904aee07-ce9f-475e-a05b-9aae993c46aa",
-          "size": {
-            "height": 272,
-            "width": 234
-          },
-          "zIndex": 2
-        },
-        {
-          "location": {
-            "x": 575,
+            "x": 852.38305001469337,
             "y": 25
           },
           "nodeIndex": "Medidas HTML",
@@ -49,8 +23,8 @@
         },
         {
           "location": {
-            "x": 816,
-            "y": 31.75
+            "x": 1136.3830500146933,
+            "y": 25
           },
           "nodeIndex": "Medidas Volumes",
           "nodeLineageTag": "2d58c591-b413-4b63-948a-6661d2370c83",
@@ -62,8 +36,8 @@
         },
         {
           "location": {
-            "x": 1100,
-            "y": 93.75
+            "x": 1420.3830500146933,
+            "y": 87
           },
           "nodeIndex": "Clientes",
           "nodeLineageTag": "6e1129de-f7cc-4e01-ada5-0f94968a9e22",
@@ -75,13 +49,39 @@
         },
         {
           "location": {
-            "x": 1384,
-            "y": 69.75
+            "x": 618.38305001469348,
+            "y": -18.414904369722407
           },
           "nodeIndex": "dCalendario",
           "nodeLineageTag": "5910a543-2926-44eb-8039-a1e4474e4b76",
           "size": {
             "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": -26.429793590122671
+          },
+          "nodeIndex": "dim_indicadores",
+          "nodeLineageTag": "b207cc99-c866-46d2-a655-d1a9142f2261",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 334.20156119318506,
+            "y": -23.570206409877329
+          },
+          "nodeIndex": "fato_indicadores",
+          "nodeLineageTag": "904aee07-ce9f-475e-a05b-9aae993c46aa",
+          "size": {
+            "height": 300,
             "width": 234
           },
           "zIndex": 0

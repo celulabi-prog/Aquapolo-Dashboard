@@ -36,7 +36,7 @@ cultureInfo pt-BR
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "Mês": {
+			          "Mês de referência": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",

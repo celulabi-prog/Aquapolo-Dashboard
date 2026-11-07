@@ -3,11 +3,11 @@
   "name": "resumo",
   "position": {
     "x": 24,
-    "y": 278,
-    "z": 20,
-    "height": 490,
-    "width": 963,
-    "tabOrder": 7
+    "y": 272,
+    "z": 4,
+    "height": 500,
+    "width": 531,
+    "tabOrder": 4
   },
   "visual": {
     "visualType": "htmlContent443BE3AD55E043BF878BED274D3A6855",

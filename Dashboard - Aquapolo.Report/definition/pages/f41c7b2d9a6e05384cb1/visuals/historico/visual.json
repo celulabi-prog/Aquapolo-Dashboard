@@ -3,11 +3,11 @@
   "name": "historico",
   "position": {
     "x": 581,
-    "y": 278,
-    "z": 4,
-    "height": 490,
+    "y": 272,
+    "z": 5,
+    "height": 500,
     "width": 720,
-    "tabOrder": 4
+    "tabOrder": 5
   },
   "visual": {
     "visualType": "htmlContent443BE3AD55E043BF878BED274D3A6855",
