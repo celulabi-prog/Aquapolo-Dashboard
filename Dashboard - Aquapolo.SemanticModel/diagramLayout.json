@@ -10,29 +10,81 @@
       "nodes": [
         {
           "location": {
-            "x": 334,
-            "y": -50
+            "x": 852.38305001469337,
+            "y": 25
+          },
+          "nodeIndex": "Medidas HTML",
+          "nodeLineageTag": "af935ac6-adea-4710-8879-f9f7682c9e9d",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1136.3830500146933,
+            "y": 25
+          },
+          "nodeIndex": "Medidas Volumes",
+          "nodeLineageTag": "2d58c591-b413-4b63-948a-6661d2370c83",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1420.3830500146933,
+            "y": 87
+          },
+          "nodeIndex": "Clientes",
+          "nodeLineageTag": "6e1129de-f7cc-4e01-ada5-0f94968a9e22",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 618.38305001469348,
+            "y": -18.414904369722407
+          },
+          "nodeIndex": "dCalendario",
+          "nodeLineageTag": "5910a543-2926-44eb-8039-a1e4474e4b76",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": -26.429793590122671
           },
           "nodeIndex": "dim_indicadores",
           "nodeLineageTag": "b207cc99-c866-46d2-a655-d1a9142f2261",
           "size": {
-            "height": 272,
+            "height": 300,
             "width": 234
           },
-          "zIndex": 1
+          "zIndex": 0
         },
         {
           "location": {
-            "x": 43,
-            "y": 5
+            "x": 334.20156119318506,
+            "y": -23.570206409877329
           },
           "nodeIndex": "fato_indicadores",
           "nodeLineageTag": "904aee07-ce9f-475e-a05b-9aae993c46aa",
           "size": {
-            "height": 272,
+            "height": 300,
             "width": 234
           },
-          "zIndex": 2
+          "zIndex": 0
         }
       ],
       "name": "Todas as tabelas",

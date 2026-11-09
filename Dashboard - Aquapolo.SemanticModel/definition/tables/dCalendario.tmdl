@@ -1,0 +1,86 @@
+table dCalendario
+	lineageTag: 5910a543-2926-44eb-8039-a1e4474e4b76
+
+	column Data
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 7439a035-2127-43e4-a042-8fe1dd4d042e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Data]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ano
+		dataType: int64
+		formatString: 0
+		lineageTag: 3ab7ce8d-19cc-4107-b78c-a58bd303a62e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ano]
+
+		annotation SummarizationSetBy = Automatic
+
+	column MesNum
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 081f6ecb-ffde-40bd-9fda-9b8353b5584f
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [MesNum]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mês
+		dataType: string
+		lineageTag: a4952bee-99a0-4ee9-9473-816b5eced596
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Mês]
+		sortByColumn: MesNum
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mês/Ano
+		dataType: string
+		lineageTag: a75445d7-2017-4db6-9001-6fec8733434e
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Mês/Ano]
+		sortByColumn: MesIdx
+
+		annotation SummarizationSetBy = Automatic
+
+	column MesIdx
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 76aea875-c66b-40c9-8312-95465e8785d1
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [MesIdx]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition dCalendario = calculated
+		mode: import
+		source =
+				-- Calendário mensal da base: do 1º dia do mês mais antigo ao último dia do mês mais novo.
+				VAR _ini = CALCULATE ( MIN ( fato_indicadores[Data] ), ALL ( fato_indicadores ) )
+				VAR _fim = CALCULATE ( MAX ( fato_indicadores[Data] ), ALL ( fato_indicadores ) )
+				RETURN
+				    ADDCOLUMNS (
+				        SELECTCOLUMNS (
+				            CALENDAR ( DATE ( YEAR ( _ini ), MONTH ( _ini ), 1 ), EOMONTH ( _fim, 0 ) ),
+				            "Data", [Date]
+				        ),
+				        "Ano", YEAR ( [Data] ),
+				        "MesNum", MONTH ( [Data] ),
+				        "Mês", FORMAT ( [Data], "mmmm" ),
+				        "Mês/Ano", FORMAT ( [Data], "mmm/yy" ),
+				        "MesIdx", YEAR ( [Data] ) * 12 + MONTH ( [Data] )
+				    )
+
+	annotation PBI_Id = dCalendario
+

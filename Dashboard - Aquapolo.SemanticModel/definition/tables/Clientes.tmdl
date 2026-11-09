@@ -1,0 +1,78 @@
+table Clientes
+	lineageTag: 6e1129de-f7cc-4e01-ada5-0f94968a9e22
+
+	column ID_Indicador
+		dataType: string
+		isHidden
+		lineageTag: f0079193-1602-472e-97e7-5db6462b38e3
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ID_Indicador]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cliente
+		dataType: string
+		lineageTag: f26cb311-22e8-4dc0-8de4-d2b2c8863677
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Cliente]
+		sortByColumn: Ordem
+
+		annotation SummarizationSetBy = Automatic
+
+	column Meta
+		dataType: double
+		isHidden
+		formatString: #,0
+		lineageTag: 8215f11f-418d-421e-a589-4be27f23d6a8
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Meta]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ordem
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 37e640c0-ece0-4232-a3b4-9c53b033c646
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ordem]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Clientes = calculated
+		mode: import
+		source =
+				-- Clientes de volume: os indicadores da etapa "Volumes" da dim_indicadores.
+				-- Meta = Target_Min (meta contratual, m³/d). Ordem = ordem de exibição do painel.
+				ADDCOLUMNS (
+				    SELECTCOLUMNS (
+				        FILTER ( dim_indicadores, dim_indicadores[Etapa] = "Volumes" ),
+				        "ID_Indicador", dim_indicadores[ID_Indicador],
+				        "Cliente", dim_indicadores[Indicador],
+				        "Meta", dim_indicadores[Target_Min]
+				    ),
+				    "Ordem",
+				        SWITCH (
+				            [Cliente],
+				            "Todos Clientes", 1,
+				            "Q3 ABC", 2,
+				            "PE7 ABC", 3,
+				            "UNIB3 ABC", 4,
+				            "PP4 BRK", 5,
+				            "Oxicap", 6,
+				            "Cabot", 7,
+				            "Oxiteno P.", 8,
+				            "Paranapanema", 9,
+				            "Bridgestone", 10,
+				            "Hydro Extrusion", 11,
+				            "Vitopel", 12,
+				            99
+				        )
+				)
+
+	annotation PBI_Id = Clientes
+

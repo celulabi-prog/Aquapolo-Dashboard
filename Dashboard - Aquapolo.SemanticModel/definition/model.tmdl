@@ -25,6 +25,9 @@ ref table 'Mês do Ano'
 ref table 'Seletor Químico'
 ref table 'Comparar Ano Anterior'
 ref table 'Medidas Químicos'
+ref table dCalendario
+ref table Clientes
+ref table 'Medidas Volumes'
 
 ref cultureInfo pt-BR
 

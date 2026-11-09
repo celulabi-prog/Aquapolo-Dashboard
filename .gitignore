@@ -11,3 +11,8 @@ Base_PowerBI/
 
 # Arquivo de exemplo do visual HTML Content (de terceiros, não faz parte do projeto)
 HTML-Content-Data-Model-Walkthrough-*.pbix
+
+# Saída do preview (imagem gerada, não versionar)
+ferramentas/preview/preview.png
+ferramentas/preview/preview.html
+ferramentas/preview/__pycache__/
