@@ -5,6 +5,300 @@ cultureInfo pt-BR
 			  "Version": "2.0.0",
 			  "Language": "en-US",
 			  "Entities": {
+			    "medidas_químicos.consumo_unitário_químico_ano_anterior": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Químicos",
+			          "ConceptualProperty": "Consumo Unitário Químico Ano Anterior"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Mesmo mês do ano anterior": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_químicos.consumo_unitário_químico": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Químicos",
+			          "ConceptualProperty": "Consumo Unitário Químico"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Mês selecionado": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_químicos.evolução_ano_anterior": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Químicos",
+			          "ConceptualProperty": "Evolução Ano Anterior"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Ano anterior": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_químicos.evolução_ano_selecionado": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Químicos",
+			          "ConceptualProperty": "Evolução Ano Selecionado"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Ano selecionado": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_químicos.evolução_meta": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Químicos",
+			          "ConceptualProperty": "Evolução Meta"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Target": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_químicos.autonomia_atual_texto": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Químicos",
+			          "ConceptualProperty": "Autonomia Atual Texto"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Atual": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_químicos.svg_barra_autonomia": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Químicos",
+			          "ConceptualProperty": "SVG Barra Autonomia"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Autonomia (dias)": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_químicos.autonomia_alvo_texto": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Químicos",
+			          "ConceptualProperty": "Autonomia Alvo Texto"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Target (dias)": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_químicos.status_autonomia_ícone": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Químicos",
+			          "ConceptualProperty": "Status Autonomia Ícone"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Status": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_químicos.consumo_unitário_químico_texto": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Químicos",
+			          "ConceptualProperty": "Consumo Unitário Químico Texto"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Consumo": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_químicos.svg_barra_consumo": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Químicos",
+			          "ConceptualProperty": "SVG Barra Consumo"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Consumo unitário (g/m³)": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_químicos.status_consumo_ícone": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Químicos",
+			          "ConceptualProperty": "Status Consumo Ícone"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Status": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "medidas_químicos.evolução_químico": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Medidas Químicos",
+			          "ConceptualProperty": "Evolução Químico"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Consumo unitário (g/m³)": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "químicos.químico": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Químicos",
+			          "ConceptualProperty": "Químico"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Químico": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
 			    "clientes.cliente": {
 			      "Definition": {
 			        "Binding": {

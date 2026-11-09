@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "html_cabecalho",
   "position": {
-    "x": 24,
-    "y": 22,
+    "x": 23.76,
+    "y": 21.6,
     "z": 0,
-    "height": 92,
-    "width": 1872,
+    "height": 136.08,
+    "width": 1872.72,
     "tabOrder": 0
   },
   "visual": {

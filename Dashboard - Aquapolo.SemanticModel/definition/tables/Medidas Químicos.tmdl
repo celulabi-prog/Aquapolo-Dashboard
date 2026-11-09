@@ -1,0 +1,750 @@
+/// Medidas da página Indicadores Químicos. Período = mês escolhido no seletor (padrão: último mês com dado).
+table 'Medidas Químicos'
+	lineageTag: c913bcc8-282e-48e5-bb16-56c9ae9da463
+
+	/// Última data com leitura de químicos na base (autonomia).
+	measure 'Químicos Última Data' =
+			CALCULATE (
+				MAX ( fato_indicadores[Data] ),
+				REMOVEFILTERS ( fato_indicadores ),
+				REMOVEFILTERS ( dim_indicadores ),
+				fato_indicadores[Etapa] = "Químicos - Autonomia"
+			)
+		formatString: dd/mm/yyyy
+		displayFolder: Base
+		lineageTag: 9a916052-1ecb-4c2b-8908-1c231cdfdc21
+
+	/// Último dia do mês escolhido em Período, ou a última leitura se ela for antes disso.
+	measure 'Químicos Data Fim' =
+			VAR _ult = [Químicos Última Data]
+			VAR _sel = SELECTEDVALUE ( Meses[Início] )
+			RETURN
+				IF ( ISBLANK ( _sel ), _ult, MIN ( EOMONTH ( _sel, 0 ), _ult ) )
+		formatString: dd/mm/yyyy
+		displayFolder: Base
+		lineageTag: b3878b65-03da-482e-a181-fd662a77fc80
+
+	measure 'Químicos Data Início' =
+			VAR _f = [Químicos Data Fim]
+			RETURN
+				DATE ( YEAR ( _f ), MONTH ( _f ), 1 )
+		formatString: dd/mm/yyyy
+		displayFolder: Base
+		lineageTag: 9d50d9bf-45b8-4693-987e-abdfb5543e48
+
+	measure 'Químicos Mês' = FORMAT ( [Químicos Data Início], "mmm/yyyy", "pt-BR" )
+		displayFolder: Base
+		lineageTag: 5ddfc52d-2175-4418-a212-cc46d638268e
+
+	measure 'Químicos Mês Ano Anterior' = FORMAT ( EDATE ( [Químicos Data Início], -12 ), "mmm/yyyy", "pt-BR" )
+		displayFolder: Base
+		lineageTag: dabeb7af-cd97-4b5c-b244-e823a006a71f
+
+	/// Consumo unitário de todos os químicos no mês (kg/m³), da base: soma dos consumos / soma do volume de clientes.
+	measure 'Consumo Unitário Total' =
+			VAR _ini = [Químicos Data Início]
+			VAR _fim = [Químicos Data Fim]
+			RETURN
+				CALCULATE (
+					[Valor Indicador],
+					REMOVEFILTERS ( dim_indicadores ),
+					fato_indicadores[ID_Indicador] = "Químicos | Consumo Unitário - Químicos",
+					fato_indicadores[Data] >= _ini,
+					fato_indicadores[Data] <= _fim
+				)
+		formatString: 0.000
+		displayFolder: Consumo
+		lineageTag: 2b4bcf99-bf75-422d-82cb-04e443bc02fd
+
+	measure 'Consumo Unitário Total Mês Anterior' =
+			VAR _ini = EDATE ( [Químicos Data Início], -1 )
+			VAR _fim = EOMONTH ( _ini, 0 )
+			RETURN
+				CALCULATE (
+					[Valor Indicador],
+					REMOVEFILTERS ( dim_indicadores ),
+					fato_indicadores[ID_Indicador] = "Químicos | Consumo Unitário - Químicos",
+					fato_indicadores[Data] >= _ini,
+					fato_indicadores[Data] <= _fim
+				)
+		formatString: 0.000
+		displayFolder: Consumo
+		lineageTag: 2c579fc7-bddc-426c-a777-4ce2030188dd
+
+	/// Meta do consumo unitário total (Target_Max da dim_indicadores).
+	measure 'Meta Consumo Unitário Total' =
+			CALCULATE (
+				MAX ( dim_indicadores[Target_Max] ),
+				REMOVEFILTERS ( dim_indicadores ),
+				dim_indicadores[ID_Indicador] = "Químicos | Consumo Unitário - Químicos"
+			)
+		formatString: 0.00
+		displayFolder: Consumo
+		lineageTag: 8d860932-e4e6-42b6-8861-d7ed3e607989
+
+	/// Consumo unitário do químico no mês: consumo (kg) x 1000 / volume de clientes (m³) = g/m³.
+	measure 'Consumo Unitário Químico' =
+			VAR _ini = [Químicos Data Início]
+			VAR _fim = [Químicos Data Fim]
+			VAR _kg =
+				CALCULATE (
+					SUM ( 'Químicos Diário'[Consumo kg] ),
+					TREATAS ( VALUES ( 'Químicos'[Químico] ), 'Químicos Diário'[Químico] ),
+					'Químicos Diário'[Data] >= _ini,
+					'Químicos Diário'[Data] <= _fim
+				)
+			VAR _vol =
+				CALCULATE (
+					SUM ( fato_indicadores[Valor] ),
+					REMOVEFILTERS ( dim_indicadores ),
+					fato_indicadores[ID_Indicador] = "Volumes | Todos Clientes",
+					fato_indicadores[Data] >= _ini,
+					fato_indicadores[Data] <= _fim
+				)
+			RETURN
+				IF ( HASONEVALUE ( 'Químicos'[Químico] ), DIVIDE ( _kg * 1000, _vol ) )
+		formatString: 0.0
+		displayFolder: Consumo
+		lineageTag: e54955c4-39ce-47e3-a5ad-72739202b025
+
+	measure 'Consumo Unitário Químico Mês Anterior' =
+			VAR _ini = EDATE ( [Químicos Data Início], -1 )
+			VAR _fim = EOMONTH ( _ini, 0 )
+			VAR _kg =
+				CALCULATE (
+					SUM ( 'Químicos Diário'[Consumo kg] ),
+					TREATAS ( VALUES ( 'Químicos'[Químico] ), 'Químicos Diário'[Químico] ),
+					'Químicos Diário'[Data] >= _ini,
+					'Químicos Diário'[Data] <= _fim
+				)
+			VAR _vol =
+				CALCULATE (
+					SUM ( fato_indicadores[Valor] ),
+					REMOVEFILTERS ( dim_indicadores ),
+					fato_indicadores[ID_Indicador] = "Volumes | Todos Clientes",
+					fato_indicadores[Data] >= _ini,
+					fato_indicadores[Data] <= _fim
+				)
+			RETURN
+				IF ( HASONEVALUE ( 'Químicos'[Químico] ), DIVIDE ( _kg * 1000, _vol ) )
+		formatString: 0.0
+		displayFolder: Consumo
+		lineageTag: 2f5c3b33-e5cb-48ee-ad48-50917f26220d
+
+	measure 'Consumo Unitário Químico Ano Anterior' =
+			VAR _ini = EDATE ( [Químicos Data Início], -12 )
+			VAR _fim = EOMONTH ( _ini, 0 )
+			VAR _kg =
+				CALCULATE (
+					SUM ( 'Químicos Diário'[Consumo kg] ),
+					TREATAS ( VALUES ( 'Químicos'[Químico] ), 'Químicos Diário'[Químico] ),
+					'Químicos Diário'[Data] >= _ini,
+					'Químicos Diário'[Data] <= _fim
+				)
+			VAR _vol =
+				CALCULATE (
+					SUM ( fato_indicadores[Valor] ),
+					REMOVEFILTERS ( dim_indicadores ),
+					fato_indicadores[ID_Indicador] = "Volumes | Todos Clientes",
+					fato_indicadores[Data] >= _ini,
+					fato_indicadores[Data] <= _fim
+				)
+			RETURN
+				IF ( HASONEVALUE ( 'Químicos'[Químico] ), DIVIDE ( _kg * 1000, _vol ) )
+		formatString: 0.0
+		displayFolder: Consumo
+		lineageTag: 935df134-1614-4fd1-8202-f78b88796128
+
+	measure 'Consumo Unitário Químico Texto' =
+			VAR _v = [Consumo Unitário Químico]
+			RETURN
+				IF ( HASONEVALUE ( 'Químicos'[Químico] ), IF ( ISBLANK ( _v ), "—", FORMAT ( _v, "#,0.0", "pt-BR" ) ) )
+		displayFolder: Consumo
+		lineageTag: 7710d7c3-6a87-4df6-9e69-21491d61fcd0
+
+	/// Meta de consumo por químico (Target_Max da dim_indicadores). Hoje a base não tem; quando tiver, o status acende sozinho.
+	measure 'Meta Consumo Químico' =
+			VAR _id = "Químicos | " & SELECTEDVALUE ( 'Químicos'[Nome Base] )
+			RETURN
+				IF (
+					HASONEVALUE ( 'Químicos'[Químico] ),
+					CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = _id )
+				)
+		formatString: 0.0
+		displayFolder: Consumo
+		lineageTag: 5baf9589-61b7-4399-945e-920560c9d75c
+
+	/// 3 = dentro da meta, 2 = atenção (até 10% acima), 1 = fora da meta, 0 = sem meta ou sem dado.
+	measure 'Status Consumo Químico' =
+			VAR _v = [Consumo Unitário Químico]
+			VAR _m = [Meta Consumo Químico]
+			VAR Tolerancia = 0.10
+			RETURN
+				SWITCH ( TRUE (), ISBLANK ( _v ) || ISBLANK ( _m ), 0, _v <= _m, 3, _v <= _m * ( 1 + Tolerancia ), 2, 1 )
+		formatString: 0
+		displayFolder: Consumo
+		lineageTag: 07bdd5ae-2fb1-4b05-9954-076b3ef48bb6
+
+	/// Média de consumo (kg/dia) dos 7 dias que terminam na última leitura do período.
+	measure 'Consumo Médio 7 Dias' =
+			VAR _fim = [Químicos Data Fim]
+			VAR _filtro = TREATAS ( VALUES ( 'Químicos'[Químico] ), 'Químicos Diário'[Químico] )
+			VAR _d =
+				CALCULATE ( MAX ( 'Químicos Diário'[Data] ), _filtro, 'Químicos Diário'[Data] <= _fim, NOT ISBLANK ( 'Químicos Diário'[Consumo kg] ) )
+			RETURN
+				IF (
+					HASONEVALUE ( 'Químicos'[Químico] ) && NOT ISBLANK ( _d ),
+					DIVIDE ( CALCULATE ( SUM ( 'Químicos Diário'[Consumo kg] ), _filtro, 'Químicos Diário'[Data] > _d - 7, 'Químicos Diário'[Data] <= _d ), 7 )
+				)
+		formatString: #,0
+		displayFolder: Consumo
+		lineageTag: de24b62b-c51a-4896-8d2b-f0441edcab2e
+
+	/// Média de consumo (kg/dia) dos 30 dias que terminam na última leitura do período.
+	measure 'Consumo Médio 30 Dias' =
+			VAR _fim = [Químicos Data Fim]
+			VAR _filtro = TREATAS ( VALUES ( 'Químicos'[Químico] ), 'Químicos Diário'[Químico] )
+			VAR _d =
+				CALCULATE ( MAX ( 'Químicos Diário'[Data] ), _filtro, 'Químicos Diário'[Data] <= _fim, NOT ISBLANK ( 'Químicos Diário'[Consumo kg] ) )
+			RETURN
+				IF (
+					HASONEVALUE ( 'Químicos'[Químico] ) && NOT ISBLANK ( _d ),
+					DIVIDE ( CALCULATE ( SUM ( 'Químicos Diário'[Consumo kg] ), _filtro, 'Químicos Diário'[Data] > _d - 30, 'Químicos Diário'[Data] <= _d ), 30 )
+				)
+		formatString: #,0
+		displayFolder: Consumo
+		lineageTag: 02d93a33-c55c-462a-ae50-869675acf4a3
+
+	/// Estoque (kg) na última leitura do período: estoque em litros x densidade.
+	measure 'Estoque Atual' =
+			VAR _fim = [Químicos Data Fim]
+			VAR _filtro = TREATAS ( VALUES ( 'Químicos'[Químico] ), 'Químicos Diário'[Químico] )
+			VAR _d =
+				CALCULATE ( MAX ( 'Químicos Diário'[Data] ), _filtro, 'Químicos Diário'[Data] <= _fim, NOT ISBLANK ( 'Químicos Diário'[Estoque L] ) )
+			RETURN
+				IF (
+					HASONEVALUE ( 'Químicos'[Químico] ) && NOT ISBLANK ( _d ),
+					CALCULATE ( SUMX ( 'Químicos Diário', 'Químicos Diário'[Estoque L] * 'Químicos Diário'[Densidade] ), _filtro, 'Químicos Diário'[Data] = _d )
+				)
+		formatString: #,0
+		displayFolder: Consumo
+		lineageTag: 5073ed46-0b8e-406f-a225-eb7d06413db8
+
+	/// Data da última leitura de autonomia do químico dentro do período.
+	measure 'Autonomia Data' =
+			VAR _fim = [Químicos Data Fim]
+			VAR _id = "Químicos - Autonomia | " & SELECTEDVALUE ( 'Químicos'[Nome Base] )
+			RETURN
+				IF (
+					HASONEVALUE ( 'Químicos'[Químico] ),
+					CALCULATE (
+						MAX ( fato_indicadores[Data] ),
+						REMOVEFILTERS ( dim_indicadores ),
+						fato_indicadores[ID_Indicador] = _id,
+						fato_indicadores[Data] <= _fim
+					)
+				)
+		formatString: dd/mm/yyyy
+		displayFolder: Autonomia
+		lineageTag: 1785547b-82df-4928-bef6-d88fb3e5e467
+
+	/// Autonomia (dias) na última leitura do período.
+	measure 'Autonomia Atual' =
+			VAR _d = [Autonomia Data]
+			VAR _id = "Químicos - Autonomia | " & SELECTEDVALUE ( 'Químicos'[Nome Base] )
+			RETURN
+				IF (
+					NOT ISBLANK ( _d ),
+					CALCULATE (
+						AVERAGE ( fato_indicadores[Valor] ),
+						REMOVEFILTERS ( dim_indicadores ),
+						fato_indicadores[ID_Indicador] = _id,
+						fato_indicadores[Data] = _d
+					)
+				)
+		formatString: 0.0
+		displayFolder: Autonomia
+		lineageTag: fb4c3ecc-4746-4f4b-8dec-4dcc14e9fbfe
+
+	/// Autonomia mínima do químico (Target_Min da dim_indicadores).
+	measure 'Autonomia Alvo' =
+			VAR _id = "Químicos - Autonomia | " & SELECTEDVALUE ( 'Químicos'[Nome Base] )
+			RETURN
+				IF (
+					HASONEVALUE ( 'Químicos'[Químico] ),
+					CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), dim_indicadores[ID_Indicador] = _id )
+				)
+		formatString: 0
+		displayFolder: Autonomia
+		lineageTag: b740db05-1e3c-4025-a198-d2f8e8c3989a
+
+	/// 3 = dentro da meta, 2 = atenção (até 10% abaixo do alvo, como na Visão Geral), 1 = crítico, 0 = sem dado.
+	measure 'Autonomia Status' =
+			VAR _a = [Autonomia Atual]
+			VAR _t = [Autonomia Alvo]
+			VAR Tolerancia = 0.10
+			RETURN
+				SWITCH ( TRUE (), ISBLANK ( _a ) || ISBLANK ( _t ), 0, _a >= _t, 3, _a >= _t * ( 1 - Tolerancia ), 2, 1 )
+		formatString: 0
+		displayFolder: Autonomia
+		lineageTag: 998cfc83-4b35-4bdc-8a87-cb7df9fd55bf
+
+	measure 'Autonomia Atual Texto' =
+			VAR _a = [Autonomia Atual]
+			RETURN
+				IF ( HASONEVALUE ( 'Químicos'[Químico] ), IF ( ISBLANK ( _a ), "—", FORMAT ( _a, "#,0.0", "pt-BR" ) ) )
+		displayFolder: Autonomia
+		lineageTag: cbce6b90-7a2a-4c2d-abc2-bc7abe3323aa
+
+	measure 'Autonomia Alvo Texto' =
+			VAR _t = [Autonomia Alvo]
+			RETURN
+				IF ( NOT ISBLANK ( _t ), "> " & FORMAT ( _t, "0", "pt-BR" ) )
+		displayFolder: Autonomia
+		lineageTag: ef495bd6-ddb9-49e9-827a-07fe7df6a5be
+
+	/// Data da última leitura + autonomia (dias).
+	measure 'Previsão de Término' =
+			VAR _d = [Autonomia Data]
+			VAR _a = [Autonomia Atual]
+			RETURN
+				IF ( NOT ISBLANK ( _a ), _d + _a )
+		formatString: dd/mm/yyyy
+		displayFolder: Autonomia
+		lineageTag: 33452169-438a-4e04-85ea-0648c30daa73
+
+	/// Químico com a menor autonomia entre os que têm dado.
+	measure 'Menor Autonomia Químico' =
+			VAR _t =
+				FILTER (
+					ADDCOLUMNS ( ALL ( 'Químicos' ), "@a", [Autonomia Atual] ),
+					NOT ISBLANK ( [@a] )
+				)
+			RETURN
+				MAXX ( TOPN ( 1, _t, [@a], ASC ), 'Químicos'[Químico] )
+		displayFolder: Autonomia
+		lineageTag: e8041501-5e14-4a36-8b67-56ff23f7580a
+
+	measure 'Menor Autonomia' =
+			MINX (
+				FILTER (
+					ADDCOLUMNS ( ALL ( 'Químicos' ), "@a", [Autonomia Atual] ),
+					NOT ISBLANK ( [@a] )
+				),
+				[@a]
+			)
+		formatString: 0.0
+		displayFolder: Autonomia
+		lineageTag: f03940f1-aa4d-4cf0-a7b8-a6cea9d2e11e
+
+	measure 'Menor Autonomia Alvo' =
+			VAR _q = [Menor Autonomia Químico]
+			RETURN
+				CALCULATE ( [Autonomia Alvo], 'Químicos'[Químico] = _q )
+		formatString: 0
+		displayFolder: Autonomia
+		lineageTag: ce5f3291-285f-446d-9b0d-2105223e0f88
+
+	measure 'Menor Autonomia Status' =
+			VAR _q = [Menor Autonomia Químico]
+			RETURN
+				CALCULATE ( [Autonomia Status], 'Químicos'[Químico] = _q )
+		formatString: 0
+		displayFolder: Autonomia
+		lineageTag: 48612d8d-4b12-4c1a-baba-83d212b12736
+
+	measure 'Químicos Abaixo do Alvo' =
+			COUNTROWS (
+				FILTER (
+					ADDCOLUMNS ( ALL ( 'Químicos' ), "@a", [Autonomia Atual], "@t", [Autonomia Alvo] ),
+					NOT ISBLANK ( [@a] ) && [@a] < [@t]
+				)
+			) + 0
+		formatString: 0
+		displayFolder: Autonomia
+		lineageTag: 8edc64ef-fe53-4204-8da4-25dbb2a84848
+
+	measure 'Químicos com Autonomia' =
+			COUNTROWS (
+				FILTER (
+					ADDCOLUMNS ( ALL ( 'Químicos' ), "@a", [Autonomia Atual] ),
+					NOT ISBLANK ( [@a] )
+				)
+			) + 0
+		formatString: 0
+		displayFolder: Autonomia
+		lineageTag: 55d1ce0a-d242-4fa9-abaa-62d1c7804d38
+
+	measure 'Químicos sem Autonomia' = COUNTROWS ( ALL ( 'Químicos' ) ) - [Químicos com Autonomia]
+		formatString: 0
+		displayFolder: Autonomia
+		lineageTag: 3a60b61f-1028-47d1-9c3b-fdd5fcc9fa9a
+
+	/// Mês a mês (eixo Jan–Dez) do ano do período. "Todos" = consumo total (kg/m³); um químico = g/m³.
+	measure 'Evolução Ano Selecionado' =
+			VAR _ult = [Químicos Última Data]
+			VAR _ano = YEAR ( [Químicos Data Fim] )
+			VAR _m = SELECTEDVALUE ( 'Mês do Ano'[Nº] )
+			VAR _ini = DATE ( _ano, _m, 1 )
+			VAR _fim = MIN ( EOMONTH ( _ini, 0 ), _ult )
+			VAR _q = SELECTEDVALUE ( 'Seletor Químico'[Opção], "Todos" )
+			VAR _total =
+				CALCULATE (
+					[Valor Indicador],
+					REMOVEFILTERS ( dim_indicadores ),
+					fato_indicadores[ID_Indicador] = "Químicos | Consumo Unitário - Químicos",
+					fato_indicadores[Data] >= _ini,
+					fato_indicadores[Data] <= _fim
+				)
+			VAR _kg =
+				CALCULATE ( SUM ( 'Químicos Diário'[Consumo kg] ), 'Químicos Diário'[Químico] = _q, 'Químicos Diário'[Data] >= _ini, 'Químicos Diário'[Data] <= _fim )
+			VAR _vol =
+				CALCULATE (
+					SUM ( fato_indicadores[Valor] ),
+					REMOVEFILTERS ( dim_indicadores ),
+					fato_indicadores[ID_Indicador] = "Volumes | Todos Clientes",
+					fato_indicadores[Data] >= _ini,
+					fato_indicadores[Data] <= _fim
+				)
+			RETURN
+				IF ( NOT ISBLANK ( _m ) && _ini <= _ult, IF ( _q = "Todos", _total, DIVIDE ( _kg * 1000, _vol ) ) )
+		formatString: 0.000
+		displayFolder: Evolução
+		lineageTag: e2b87d1b-ee3d-44ec-94d4-cf8f9e77d799
+
+	/// Igual a Evolução Ano Selecionado, um ano antes. Só aparece com a caixa "Comparar com mesmo mês do ano anterior" marcada.
+	measure 'Evolução Ano Anterior' =
+			VAR _ult = [Químicos Última Data]
+			VAR _ano = YEAR ( [Químicos Data Fim] ) - 1
+			VAR _m = SELECTEDVALUE ( 'Mês do Ano'[Nº] )
+			VAR _ini = DATE ( _ano, _m, 1 )
+			VAR _fim = MIN ( EOMONTH ( _ini, 0 ), _ult )
+			VAR _q = SELECTEDVALUE ( 'Seletor Químico'[Opção], "Todos" )
+			VAR _total =
+				CALCULATE (
+					[Valor Indicador],
+					REMOVEFILTERS ( dim_indicadores ),
+					fato_indicadores[ID_Indicador] = "Químicos | Consumo Unitário - Químicos",
+					fato_indicadores[Data] >= _ini,
+					fato_indicadores[Data] <= _fim
+				)
+			VAR _kg =
+				CALCULATE ( SUM ( 'Químicos Diário'[Consumo kg] ), 'Químicos Diário'[Químico] = _q, 'Químicos Diário'[Data] >= _ini, 'Químicos Diário'[Data] <= _fim )
+			VAR _vol =
+				CALCULATE (
+					SUM ( fato_indicadores[Valor] ),
+					REMOVEFILTERS ( dim_indicadores ),
+					fato_indicadores[ID_Indicador] = "Volumes | Todos Clientes",
+					fato_indicadores[Data] >= _ini,
+					fato_indicadores[Data] <= _fim
+				)
+			RETURN
+				IF (
+					ISFILTERED ( 'Comparar Ano Anterior'[Opção] ) && NOT ISBLANK ( _m ) && _ini <= _ult,
+					IF ( _q = "Todos", _total, DIVIDE ( _kg * 1000, _vol ) )
+				)
+		formatString: 0.000
+		displayFolder: Evolução
+		lineageTag: 52bab804-9d6f-4df5-82ed-d7a43737d899
+
+	/// Linha da meta no gráfico de evolução (só para "Todos", porque não há meta por químico).
+	measure 'Evolução Meta' =
+			VAR _q = SELECTEDVALUE ( 'Seletor Químico'[Opção], "Todos" )
+			RETURN
+				IF ( _q = "Todos" && HASONEVALUE ( 'Mês do Ano'[Nº] ), [Meta Consumo Unitário Total] )
+		formatString: 0.000
+		displayFolder: Evolução
+		lineageTag: b636a66b-e72e-44fc-b803-4e395dcb170d
+
+	/// Mês a mês do ano do período para o químico da dica de ferramenta (g/m³).
+	measure 'Evolução Químico' =
+			VAR _ult = [Químicos Última Data]
+			VAR _ano = YEAR ( [Químicos Data Fim] )
+			VAR _m = SELECTEDVALUE ( 'Mês do Ano'[Nº] )
+			VAR _ini = DATE ( _ano, _m, 1 )
+			VAR _fim = MIN ( EOMONTH ( _ini, 0 ), _ult )
+			VAR _kg =
+				CALCULATE (
+					SUM ( 'Químicos Diário'[Consumo kg] ),
+					TREATAS ( VALUES ( 'Químicos'[Químico] ), 'Químicos Diário'[Químico] ),
+					'Químicos Diário'[Data] >= _ini,
+					'Químicos Diário'[Data] <= _fim
+				)
+			VAR _vol =
+				CALCULATE (
+					SUM ( fato_indicadores[Valor] ),
+					REMOVEFILTERS ( dim_indicadores ),
+					fato_indicadores[ID_Indicador] = "Volumes | Todos Clientes",
+					fato_indicadores[Data] >= _ini,
+					fato_indicadores[Data] <= _fim
+				)
+			RETURN
+				IF ( HASONEVALUE ( 'Químicos'[Químico] ) && NOT ISBLANK ( _m ) && _ini <= _ult, DIVIDE ( _kg * 1000, _vol ) )
+		formatString: 0.0
+		displayFolder: Evolução
+		lineageTag: 25ba6b73-951f-460d-84b1-14858844c60f
+
+	/// Barra da tabela de consumo (imagem SVG). Tamanho proporcional ao maior consumo do mês.
+	measure 'SVG Barra Consumo' =
+			VAR _v = [Consumo Unitário Químico]
+			VAR _max = MAXX ( ALL ( 'Químicos' ), [Consumo Unitário Químico] )
+			VAR _cor = SWITCH ( [Status Consumo Químico], 3, "%2327e08a", 2, "%23f6cf2f", 1, "%23ff4b4b", "%2338bdf8" )
+			VAR _w = 430
+			VAR _larg = IF ( _max > 0, MAX ( 0, _v ) / _max * _w, 0 )
+			VAR _conteudo =
+				IF (
+					ISBLANK ( _v ),
+					"<text x='2' y='13' font-family='Segoe UI' font-size='13' font-style='italic' fill='%236f86ab'>sem fonte na base</text>",
+					"<rect width='" & _w & "' height='16' rx='3' fill='%2310305f'/><rect width='"
+						& FORMAT ( _larg, "0.0", "en-US" ) & "' height='16' rx='3' fill='" & _cor & "'/>"
+				)
+			RETURN
+				IF (
+					HASONEVALUE ( 'Químicos'[Químico] ),
+					"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='" & _w & "' height='16' viewBox='0 0 " & _w & " 16'>"
+						& _conteudo & "</svg>"
+				)
+		displayFolder: Visuais
+		lineageTag: f5b05225-e1f8-4dd5-92ca-ba3ee40557a3
+		dataCategory: ImageUrl
+
+	/// Bolinha de status da tabela de consumo. A cor vem de [Cor Status Consumo] (formatação condicional da cor da fonte).
+	measure 'Status Consumo Ícone' = IF ( HASONEVALUE ( 'Químicos'[Químico] ), "⬤" )
+		displayFolder: Visuais
+		lineageTag: e29f0969-eb72-44f2-afc7-bd2c29037c20
+
+	measure 'Cor Status Consumo' = SWITCH ( [Status Consumo Químico], 3, "#27e08a", 2, "#f6cf2f", 1, "#ff4b4b", "#5d6f8f" )
+		displayFolder: Visuais
+		lineageTag: e3e347cb-abd9-4eac-b6e7-e05fb50889b9
+
+	/// Barra da tabela de autonomia (imagem SVG), na cor do status. Tamanho proporcional à maior autonomia.
+	measure 'SVG Barra Autonomia' =
+			VAR _a = [Autonomia Atual]
+			VAR _max = MAXX ( ALL ( 'Químicos' ), [Autonomia Atual] )
+			VAR _cor = SWITCH ( [Autonomia Status], 3, "%2327e08a", 2, "%23f6cf2f", 1, "%23ff4b4b", "%235d6f8f" )
+			VAR _w = 400
+			VAR _larg = IF ( _max > 0, MAX ( 0, _a ) / _max * _w, 0 )
+			VAR _conteudo =
+				IF (
+					ISBLANK ( _a ),
+					"<text x='2' y='13' font-family='Segoe UI' font-size='13' font-style='italic' fill='%236f86ab'>sem dado na base</text>",
+					"<rect width='" & _w & "' height='16' rx='3' fill='%2310305f'/><rect width='"
+						& FORMAT ( _larg, "0.0", "en-US" ) & "' height='16' rx='3' fill='" & _cor & "'/>"
+				)
+			RETURN
+				IF (
+					HASONEVALUE ( 'Químicos'[Químico] ),
+					"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='" & _w & "' height='16' viewBox='0 0 " & _w & " 16'>"
+						& _conteudo & "</svg>"
+				)
+		displayFolder: Visuais
+		lineageTag: 31e8e882-38e4-46d8-a0b0-1078277d863c
+		dataCategory: ImageUrl
+
+	/// Bolinha de status da tabela de autonomia. A cor vem de [Cor Status Autonomia] (formatação condicional da cor da fonte).
+	measure 'Status Autonomia Ícone' = IF ( HASONEVALUE ( 'Químicos'[Químico] ), "⬤" )
+		displayFolder: Visuais
+		lineageTag: db3608be-b8d8-40bd-bc82-9ee808cf0640
+
+	measure 'Cor Status Autonomia' = SWITCH ( [Autonomia Status], 3, "#27e08a", 2, "#f6cf2f", 1, "#ff4b4b", "#5d6f8f" )
+		displayFolder: Visuais
+		lineageTag: 9d5c23fb-cdde-418f-9258-a9c6df445dbf
+
+	measure 'HTML Cartão Consumo' =
+			-- Cartão "Consumo unitário – Químicos": valor do mês, variação vs mês anterior e meta.
+			VAR Valor = [Consumo Unitário Total]
+			VAR Anterior = [Consumo Unitário Total Mês Anterior]
+			VAR Meta = [Meta Consumo Unitário Total]
+			VAR Tolerancia = 0.10
+			VAR VarPer = DIVIDE ( Valor - Anterior, Anterior )
+			VAR CorValor =
+				SWITCH ( TRUE (), ISBLANK ( Valor ), "#9db2d3", Valor <= Meta, "#ffffff", Valor <= Meta * ( 1 + Tolerancia ), "#f6cf2f", "#ff4b4b" )
+			VAR CorVar = IF ( VarPer <= 0, "#27e08a", "#ff4b4b" )
+			VAR Seta = IF ( VarPer > 0, "▲", "▼" )
+			VAR BlocoVar =
+				IF (
+					NOT ISBLANK ( VarPer ),
+					"<span style='font-size:26px;line-height:36px;color:" & CorVar & "'>" & Seta & "</span>"
+						& "<div><div style='font-size:30px;font-weight:700;line-height:36px;color:" & CorVar & "'>" & FORMAT ( VarPer, "+0.0%;-0.0%;0.0%", "pt-BR" ) & "</div>"
+						& "<div style='font-size:14px;color:#c9d6ea;line-height:1.2'>vs. mês anterior<br>(" & FORMAT ( Anterior, "0.000", "pt-BR" ) & ")</div></div>"
+				)
+			RETURN
+				"<div style='font-family:Bahnschrift,Segoe UI,sans-serif;color:#fff;display:flex;align-items:center;height:96px;padding:0 14px;overflow:hidden'>"
+					& "<div style='font-size:78px;font-weight:700;line-height:1;letter-spacing:-1px;min-width:226px;color:" & CorValor & "'>"
+					& IF ( ISBLANK ( Valor ), "—", FORMAT ( Valor, "0.000", "pt-BR" ) ) & "</div>"
+					& "<div style='display:flex;align-items:flex-start;gap:8px;margin-left:6px;min-width:190px'>" & BlocoVar & "</div>"
+					& "<div style='width:2px;height:76px;background:#143a72;margin:0 18px'></div>"
+					& "<div style='line-height:1.1'><div style='font-size:16px;color:#d7e2f4'>Target</div>"
+					& "<div style='font-size:30px;font-weight:700'>&lt; " & FORMAT ( Meta, "0.00", "pt-BR" ) & "</div>"
+					& "<div style='font-size:14px;color:#c9d6ea'>kg/m³</div></div>"
+					& "</div>"
+		displayFolder: Visuais
+		lineageTag: 8ad74ccb-fc78-4b85-adbb-8d412bd3ed35
+
+	measure 'HTML Cartão Menor Autonomia' =
+			-- Cartão "Menor autonomia": químico com menos dias de estoque e o alerta em relação ao alvo dele.
+			VAR Q = [Menor Autonomia Químico]
+			VAR V = [Menor Autonomia]
+			VAR Alvo = [Menor Autonomia Alvo]
+			VAR St = [Menor Autonomia Status]
+			VAR Cor = SWITCH ( St, 3, "#27e08a", 2, "#f6cf2f", 1, "#ff4b4b", "#9db2d3" )
+			VAR Borda = SWITCH ( St, 3, "#1f9e67", 2, "#b89b1d", "#c93b3b" )
+			VAR Fundo = SWITCH ( St, 3, "rgba(10,90,60,.35)", 2, "rgba(120,100,10,.35)", "rgba(120,20,30,.35)" )
+			VAR CorTitulo = SWITCH ( St, 3, "#27e08a", 2, "#f6cf2f", "#ff7b6b" )
+			VAR Titulo = IF ( St = 3, "Dentro da meta", "Atenção" )
+			VAR Texto = IF ( St = 3, "Acima do alvo", "Abaixo do alvo" ) & "<br>(&gt; " & FORMAT ( Alvo, "0", "pt-BR" ) & " dias)"
+			RETURN
+				IF (
+					ISBLANK ( V ),
+					"<div style='font-family:Bahnschrift,Segoe UI,sans-serif;color:#9db2d3;font-size:20px;padding:30px 20px'>Sem dado de autonomia no período</div>",
+					"<div style='font-family:Bahnschrift,Segoe UI,sans-serif;color:#fff;display:flex;align-items:center;height:96px;padding:0 18px;overflow:hidden'>"
+						& "<div style='min-width:226px'><div style='font-size:20px;line-height:24px;color:#d7e2f4'>" & Q & "</div>"
+						& "<div style='font-size:64px;font-weight:700;line-height:66px;color:" & Cor & "'>" & FORMAT ( V, "0.0", "pt-BR" ) & "</div></div>"
+						& "<div style='width:2px;height:76px;background:#143a72;margin:0 18px'></div>"
+						& "<div style='display:flex;align-items:center;gap:16px;width:282px;height:84px;padding:0 18px;border-radius:10px;border:1.5px solid " & Borda & ";background:" & Fundo & "'>"
+						& "<div style='width:44px;height:44px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;background:" & Cor & "'>" & IF ( St = 3, "✓", "!" ) & "</div>"
+						& "<div><div style='font-size:24px;font-weight:700;color:" & CorTitulo & "'>" & Titulo & "</div>"
+						& "<div style='font-size:17px;color:#f1e3e3;line-height:1.2'>" & Texto & "</div></div></div>"
+						& "</div>"
+				)
+		displayFolder: Visuais
+		lineageTag: 592834d4-7cb1-4df9-a5d4-85e623c6f326
+
+	measure 'HTML Cartão Abaixo do Alvo' =
+			-- Cartão "Químicos abaixo da autonomia alvo": quantos estão abaixo, entre os que têm dado.
+			VAR N = [Químicos Abaixo do Alvo]
+			VAR Tot = [Químicos com Autonomia]
+			VAR Sem = [Químicos sem Autonomia]
+			VAR Cor = IF ( N > 0, "#ff4b4b", "#27e08a" )
+			VAR Borda = IF ( N > 0, "#c93b3b", "#1f9e67" )
+			VAR Fundo = IF ( N > 0, "rgba(120,20,30,.35)", "rgba(10,90,60,.35)" )
+			VAR Titulo = IF ( N > 0, "Atenção", "Dentro da meta" )
+			VAR Texto = IF ( N > 0, "Químicos abaixo<br>da autonomia alvo", "Todos acima<br>da autonomia alvo" )
+			RETURN
+				"<div style='font-family:Bahnschrift,Segoe UI,sans-serif;color:#fff;display:flex;align-items:center;height:96px;padding:0 22px;overflow:hidden'>"
+					& "<div style='font-size:78px;font-weight:700;line-height:1;color:" & Cor & "'>" & N & "</div>"
+					& "<div style='margin-left:20px;min-width:180px'><div style='font-size:26px'>de <b>" & Tot & "</b> químicos</div>"
+					& IF ( Sem > 0, "<div style='font-size:15px;color:#9db2d3'>(" & Sem & " sem dado na base)</div>" )
+					& "</div>"
+					& "<div style='width:2px;height:76px;background:#143a72;margin:0 18px'></div>"
+					& "<div style='display:flex;align-items:center;gap:16px;width:266px;height:84px;padding:0 18px;border-radius:10px;border:1.5px solid " & Borda & ";background:" & Fundo & "'>"
+					& "<div style='width:44px;height:44px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;color:#fff;background:" & Cor & "'>" & IF ( N > 0, "!", "✓" ) & "</div>"
+					& "<div><div style='font-size:24px;font-weight:700;color:" & IF ( N > 0, "#ff7b6b", "#27e08a" ) & "'>" & Titulo & "</div>"
+					& "<div style='font-size:17px;color:#f1e3e3;line-height:1.2'>" & Texto & "</div></div></div>"
+					& "</div>"
+		displayFolder: Visuais
+		lineageTag: 50045626-45d1-4ffe-9fd5-c91f5acbf6a9
+
+	measure 'HTML Legenda Comparativo' =
+			"<div style='font-family:Bahnschrift,Segoe UI,sans-serif;color:#fff;display:flex;align-items:center;height:26px;padding:0 4px;overflow:hidden'>"
+				& "<span style='font-size:19px'>Consumo unitário por químico (g/m³)</span>"
+				& "<span style='margin-left:auto;display:flex;gap:26px;font-size:16px'>"
+				& "<span><span style='display:inline-block;width:13px;height:13px;border-radius:50%;background:#2f9bff'></span> " & [Químicos Mês Ano Anterior] & "</span>"
+				& "<span><span style='display:inline-block;width:13px;height:13px;border-radius:50%;background:#27e08a'></span> " & [Químicos Mês] & "</span>"
+				& "</span></div>"
+		displayFolder: Visuais
+		lineageTag: fe24dbce-c641-47cb-9469-7b2f08fc7071
+
+	measure 'HTML Título Evolução' =
+			VAR Q = SELECTEDVALUE ( 'Seletor Químico'[Opção], "Todos" )
+			VAR Unidade = IF ( Q = "Todos", "kg/m³", "g/m³" )
+			VAR Comparar = ISFILTERED ( 'Comparar Ano Anterior'[Opção] )
+			VAR Ano = YEAR ( [Químicos Data Fim] )
+			RETURN
+				"<div style='font-family:Bahnschrift,Segoe UI,sans-serif;color:#fff;padding:0 4px'>"
+					& "<div style='font-size:18px'><b>Evolução do consumo unitário</b> (" & Unidade & ") – " & IF ( Q = "Todos", "todos os químicos", Q ) & "</div>"
+					& "<div style='display:flex;gap:22px;font-size:15px;margin-top:4px;padding-left:220px'>"
+					& IF ( Comparar, "<span><span style='color:#2f9bff'>●</span> " & ( Ano - 1 ) & "</span>" )
+					& "<span><span style='color:#27e08a'>●</span> " & Ano & "</span>"
+					& IF (
+						Q = "Todos",
+						"<span style='margin-left:30px'>- - - Target &lt; " & FORMAT ( [Meta Consumo Unitário Total], "0.00", "pt-BR" ) & "</span>",
+						"<span style='margin-left:30px;color:#6f86ab'>sem meta por químico</span>"
+					)
+					& "</div></div>"
+		displayFolder: Visuais
+		lineageTag: baeb2a9c-4dce-4cc2-b187-41126f5dae04
+
+	measure 'HTML Última Atualização' =
+			"<div style='font-family:Bahnschrift,Segoe UI,sans-serif;color:#d7e2f4;font-size:15px;line-height:24px;white-space:nowrap'>Última atualização: "
+				& FORMAT ( [Químicos Última Data], "dd/mm/yyyy" ) & "</div>"
+		displayFolder: Visuais
+		lineageTag: 0484b0d6-de8f-46b0-a255-081b137ee3a6
+
+	measure 'HTML Detalhe Químico' =
+			-- Dica de ferramenta "Detalhe do químico": aparece ao passar o mouse nas linhas das tabelas.
+			VAR Q = SELECTEDVALUE ( 'Químicos'[Químico] )
+			VAR A = [Autonomia Atual]
+			VAR Alvo = [Autonomia Alvo]
+			VAR St = [Autonomia Status]
+			VAR Cor = SWITCH ( St, 3, "#27e08a", 2, "#f6cf2f", 1, "#ff4b4b", "#5d6f8f" )
+			VAR StTxt = SWITCH ( St, 3, "Dentro da meta", 2, "Atenção", 1, "Crítico", "Sem dado" )
+			VAR Fundo = SWITCH ( St, 3, "rgba(10,110,70,.4)", 2, "rgba(140,110,10,.4)", 1, "rgba(160,25,35,.45)", "rgba(60,75,100,.5)" )
+			VAR Est = [Estoque Atual]
+			VAR C7 = [Consumo Médio 7 Dias]
+			VAR C30 = [Consumo Médio 30 Dias]
+			VAR Prev = [Previsão de Término]
+			VAR CU = [Consumo Unitário Químico]
+			VAR CUm = [Consumo Unitário Químico Mês Anterior]
+			VAR CUa = [Consumo Unitário Químico Ano Anterior]
+			VAR VarMes = DIVIDE ( CU - CUm, CUm )
+			VAR VarAno = DIVIDE ( CU - CUa, CUa )
+			VAR SemDado = "<span style='font-size:16px;font-style:italic;font-weight:400;color:#6f86ab'>sem dado na base</span>"
+			VAR Rotulo = "<div style='font-size:15px;color:#c9d6ea'>"
+			VAR Valor = "<div style='font-size:25px;font-weight:700'>"
+			VAR Peq = "<span style='font-size:17px;font-weight:400'>"
+			VAR TxtM =
+				IF (
+					ISBLANK ( CU ) || ISBLANK ( CUm ),
+					SemDado,
+					"<span style='color:" & IF ( VarMes <= 0, "#27e08a", "#ff4b4b" ) & "'>" & IF ( VarMes > 0, "▲ ", "▼ " ) & FORMAT ( VarMes, "+0.0%;-0.0%;0.0%", "pt-BR" ) & "</span>"
+						& "<div style='font-size:14px;font-weight:400;color:#9db2d3'>(" & FORMAT ( CUm, "#,0.0", "pt-BR" ) & " → " & FORMAT ( CU, "#,0.0", "pt-BR" ) & " g/m³)</div>"
+				)
+			VAR TxtA =
+				IF (
+					ISBLANK ( CU ) || ISBLANK ( CUa ),
+					SemDado,
+					"<span style='color:" & IF ( VarAno <= 0, "#27e08a", "#ff4b4b" ) & "'>" & IF ( VarAno > 0, "▲ ", "▼ " ) & FORMAT ( VarAno, "+0.0%;-0.0%;0.0%", "pt-BR" ) & "</span>"
+						& "<div style='font-size:14px;font-weight:400;color:#9db2d3'>(" & FORMAT ( CUa, "#,0.0", "pt-BR" ) & " → " & FORMAT ( CU, "#,0.0", "pt-BR" ) & " g/m³)</div>"
+				)
+			VAR Celula = "<div style='width:50%;padding:7px 0'>"
+			VAR Celula2 = "<div style='width:50%;padding:7px 0 7px 22px;border-left:1.5px solid #143a72;box-sizing:border-box'>"
+			RETURN
+				"<div style='font-family:Bahnschrift,Segoe UI,sans-serif;color:#fff'>"
+					& "<div style='display:flex;align-items:center;padding:12px 18px;border-bottom:1px solid #143a72'>"
+					& "<span style='font-size:22px;font-weight:700'>Detalhe do químico — " & Q & "</span>"
+					& "<span style='margin-left:auto;display:flex;align-items:center;gap:8px;font-size:16px;padding:4px 12px 4px 8px;border-radius:8px;border:1.5px solid " & Cor & ";background:" & Fundo & "'>"
+					& "<span style='display:inline-block;width:18px;height:18px;border-radius:50%;background:" & Cor & "'></span>" & StTxt & "</span></div>"
+					& "<div style='display:flex;flex-wrap:wrap;padding:6px 22px 0'>"
+					& Celula & Rotulo & "Estoque atual</div>" & Valor & IF ( ISBLANK ( Est ), SemDado, FORMAT ( Est, "#,0", "pt-BR" ) & " " & Peq & "kg</span>" ) & "</div></div>"
+					& Celula2 & Rotulo & "Autonomia atual</div>" & Valor & IF ( ISBLANK ( A ), SemDado, "<span style='color:" & Cor & "'>" & FORMAT ( A, "#,0.0", "pt-BR" ) & " " & Peq & "dias</span></span>" ) & "</div></div>"
+					& Celula & Rotulo & "Consumo médio 7 dias</div>" & Valor & IF ( ISBLANK ( C7 ), SemDado, FORMAT ( C7, "#,0", "pt-BR" ) & " " & Peq & "kg/dia</span>" ) & "</div></div>"
+					& Celula2 & Rotulo & "Target</div>" & Valor & IF ( ISBLANK ( Alvo ), SemDado, "&gt; " & FORMAT ( Alvo, "0", "pt-BR" ) & " " & Peq & "dias</span>" ) & "</div></div>"
+					& Celula & Rotulo & "Consumo médio 30 dias</div>" & Valor & IF ( ISBLANK ( C30 ), SemDado, FORMAT ( C30, "#,0", "pt-BR" ) & " " & Peq & "kg/dia</span>" ) & "</div></div>"
+					& Celula2 & Rotulo & "Previsão de término</div>" & Valor & IF ( ISBLANK ( Prev ), SemDado, FORMAT ( Prev, "dd/mm/yyyy" ) ) & "</div></div>"
+					& "</div>"
+					& "<div style='display:flex;margin:6px 18px 0;padding:8px 4px;border-top:1px solid #143a72;border-bottom:1px solid #143a72'>"
+					& "<div style='width:50%'>" & Rotulo & "vs. mês anterior</div><div style='font-size:22px;font-weight:700'>" & TxtM & "</div></div>"
+					& "<div style='width:50%;padding-left:18px'>" & Rotulo & "vs. mesmo mês do ano anterior</div><div style='font-size:22px;font-weight:700'>" & TxtA & "</div></div>"
+					& "</div>"
+					& "<div style='padding:10px 18px 0;font-size:15px;color:#c9d6ea'>Evolução do consumo unitário (g/m³) – " & Q & " – " & YEAR ( [Químicos Data Fim] ) & "</div>"
+					& "</div>"
+		displayFolder: Visuais
+		lineageTag: 89383887-fd9f-4298-95fc-24ab440fab37
+
+	column Aux
+		dataType: string
+		isHidden
+		lineageTag: df45edae-4aac-48e7-8676-2a12654667fa
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Aux]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Medidas Químicos' = calculated
+		mode: import
+		source = ROW("Aux", BLANK())
+
+	annotation PBI_Id = 151b8ba804144b89b5d9544597d655d0
+

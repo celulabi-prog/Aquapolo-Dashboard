@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "historico",
   "position": {
-    "x": 581,
+    "x": 582,
     "y": 272,
     "z": 5,
-    "height": 500,
+    "height": 530,
     "width": 720,
     "tabOrder": 5
   },

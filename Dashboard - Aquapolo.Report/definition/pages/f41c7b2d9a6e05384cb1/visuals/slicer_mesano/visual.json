@@ -28,8 +28,8 @@
               },
               "queryRef": "dCalendario.Mês/Ano",
               "nativeQueryRef": "Mês/Ano",
-              "displayName": "Mês de referência",
-              "active": true
+              "active": true,
+              "displayName": "Mês de referência"
             }
           ]
         }
@@ -139,13 +139,6 @@
                 }
               }
             },
-            "outline": {
-              "expr": {
-                "Literal": {
-                  "Value": "'None'"
-                }
-              }
-            },
             "textSize": {
               "expr": {
                 "Literal": {
@@ -185,13 +178,6 @@
                       "Value": "'#13365a'"
                     }
                   }
-                }
-              }
-            },
-            "outline": {
-              "expr": {
-                "Literal": {
-                  "Value": "'None'"
                 }
               }
             },

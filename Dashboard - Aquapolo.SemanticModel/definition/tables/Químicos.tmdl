@@ -1,0 +1,59 @@
+/// Lista dos químicos da página Indicadores Químicos, na ordem em que aparecem. "Nome Base" é o nome usado no ID_Indicador da base.
+table Químicos
+	lineageTag: c066b0f0-3841-4e18-87a8-6e982fc5d23a
+
+	column Ordem
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 258d18a0-f890-4513-9c74-7e6028982424
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ordem]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Químico
+		dataType: string
+		lineageTag: 051c5901-8bd9-4590-957d-2558d94f4130
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Químico]
+		sortByColumn: Ordem
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Nome Base'
+		dataType: string
+		isHidden
+		lineageTag: faa88728-3f81-4075-9402-7cdcb620f951
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Nome Base]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Químicos = calculated
+		mode: import
+		source =
+				-- ===== EDITAR AQUI: ordem, nome na página, nome no ID_Indicador da base =====
+				DATATABLE (
+					"Ordem", INTEGER,
+					"Químico", STRING,
+					"Nome Base", STRING,
+					{
+						{ 1, "PAC", "PAC" },
+						{ 2, "Soda", "Soda" },
+						{ 3, "Hipoclorito", "Hipoclorito" },
+						{ 4, "Ácido Cítrico", "Ácido Cítrico" },
+						{ 5, "Purate", "Purate" },
+						{ 6, "Ácido Sulfúrico", "Ácido Sulfúrico" },
+						{ 7, "IK - 220", "Ik - 220" },
+						{ 8, "Vitec 1400", "Vitec 1400" },
+						{ 9, "RoClean 902", "RoClean 902" },
+						{ 10, "RoClean 193", "RoClean 193" }
+					}
+				)
+
+	annotation PBI_Id = 481f38a258c04effb644cd8cbf7625f0
+

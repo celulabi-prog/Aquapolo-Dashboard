@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.14.0/schema.json",
   "name": "card_volume",
   "position": {
-    "x": 581,
+    "x": 582,
     "y": 138,
     "z": 2,
-    "height": 104,
+    "height": 134,
     "width": 720,
     "tabOrder": 2
   },

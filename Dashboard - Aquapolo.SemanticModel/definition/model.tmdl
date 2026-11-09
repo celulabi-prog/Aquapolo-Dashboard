@@ -9,7 +9,7 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 1
 
-annotation PBI_QueryOrder = ["PastaBase","fato_indicadores","dim_indicadores"]
+annotation PBI_QueryOrder = ["PastaBase","fato_indicadores","dim_indicadores","Químicos Diário"]
 
 annotation PBI_ProTooling = ["TMDLView_Desktop","DevMode"]
 
@@ -18,6 +18,13 @@ ref table DateTableTemplate_68c437b8-3156-47a7-8f1c-0f032b1b81b5
 ref table LocalDateTable_26878ded-8d73-4b03-b037-00303befc16a
 ref table dim_indicadores
 ref table 'Medidas HTML'
+ref table 'Químicos Diário'
+ref table Químicos
+ref table Meses
+ref table 'Mês do Ano'
+ref table 'Seletor Químico'
+ref table 'Comparar Ano Anterior'
+ref table 'Medidas Químicos'
 ref table dCalendario
 ref table Clientes
 ref table 'Medidas Volumes'
