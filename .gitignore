@@ -16,3 +16,10 @@ HTML-Content-Data-Model-Walkthrough-*.pbix
 ferramentas/preview/preview.png
 ferramentas/preview/preview.html
 ferramentas/preview/__pycache__/
+
+# Saída e insumo do preview do Painel Operacional
+ferramentas/preview/preview_op.png
+ferramentas/preview/preview_op.html
+# Print de referência do layout: 1,9 MB e só serve para recortar a faixa do
+# cabeçalho (cabecalho_painel.png, essa sim versionada) e comparar o preview
+ferramentas/preview/referencia_painel.png
