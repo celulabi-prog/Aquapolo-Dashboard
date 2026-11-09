@@ -14,12 +14,29 @@ Relatório do Power BI salvo como projeto PBIP: o relatório está em PBIR e o m
 
 ## Painel operacional
 
-- A página **Visão Geral** tem 23 visuais **HTML Content** (visual personalizado do AppSource) sobre a imagem `fundo_painel_operacional.png`.
-- Cada visual mostra uma medida da tabela calculada **Medidas HTML**, ligada à base real pelo `ID_Indicador` (variável `Ids` no início da medida).
+A página **Visão Geral** é o painel operacional, em tema escuro, com 23 indicadores em cinco painéis: **Qualidade EEBC**, **Performance TMBR**, **Performance OR**, **Consumo de Químicos e Energia** e **Volumes**, mais a faixa de rodapé com a data da base e a legenda.
+
+- São **6 visuais HTML Content** (visual personalizado do AppSource), um por painel e um para o rodapé. Cada painel desenha todas as suas linhas ou cartões de uma vez.
+- A imagem `fundo_painel_operacional.png` é o fundo da página e contém **só o cabeçalho** — a foto aérea e os logos GS Inima / Sabesp. Nenhum número está na imagem.
+- As medidas ficam em **Medidas HTML** (`HTML Painel EEBC`, `HTML Painel TMBR`, `HTML Painel OR`, `HTML Painel Consumo`, `HTML Painel Volumes` e `HTML Rodapé`), ligadas à base pelo `ID_Indicador`.
 - **Valor:** média dos últimos 30 dias com dado do indicador, até a última data disponível ou selecionada. Para indicadores calculados é a razão das somas (`Numerador / Denominador`), pela medida `[Valor Indicador]`.
-- **Δ Per.:** variação em relação aos 30 dias anteriores.
-- **Ref.:** meta (`Target_Min` / `Target_Max`) da `dim_indicadores`. Para mudar uma meta, altere a base, não a medida.
-- O cartão **Blend** ainda não tem fonte na base e mostra "Sem fonte de dados na base".
+- **Δ Per.:** variação em relação aos 30 dias anteriores (nos cartões de consumo e volumes).
+- **Ref.:** meta (`Target_Min` / `Target_Max`) da `dim_indicadores`. Onde o indicador tem mínimo **e** máximo (Idade do Lodo, Alimento/Microorganismo, Fluxo), aparece **Faixa a – b**. Para mudar uma meta, altere a base, não a medida.
+- **Cores:** verde dentro da meta, amarelo até 10% fora, vermelho além disso, cinza sem meta ou sem dado. A barra enche até 160% da referência e o tracejado marca os 100%.
+
+Esta página **não é editada à mão**. Ela é gerada pelos scripts de `ferramentas/preview/`, a partir de um molde HTML único — veja o `LEIAME.md` de lá. Mexer no `visual.json` ou na medida direto no Power BI funciona, mas o próximo `python pagina_op.py` ou `python gerar_op.py` desfaz.
+
+### Indicadores sem referência na base
+
+Três pontos do layout de referência não têm correspondência na `dim_indicadores` e por isso aparecem diferentes do desenho original:
+
+| Indicador | No painel | Motivo |
+| --- | --- | --- |
+| **Blend** | cartão vazio, com aviso | a base não traz o indicador |
+| **Energia - Biológico** | `Ref. —`, sem barra | `Consumo SOP Biológico/ Amônia Removida` está sem `Target_Max` |
+| **Coagulante** | `Ref. 17,0 gPAC/gP` | é o `Target_Max` da base (`PAC/ P rem`) |
+
+Preenchendo o `Target_Max` desses indicadores na base, a barra e o percentual passam a aparecer sozinhos.
 
 ## Página Indicadores Químicos
 
@@ -38,9 +55,10 @@ Relatório do Power BI salvo como projeto PBIP: o relatório está em PBIR e o m
 | Caminho | Conteúdo |
 | --- | --- |
 | `Dashboard - Aquapolo.pbip` | Arquivo que abre o projeto |
-| `Dashboard - Aquapolo.Report/` | Relatório (PBIR). Os visuais do painel ficam em `definition/pages/a822121ef6e9b05473aa/visuals/html_*` |
+| `Dashboard - Aquapolo.Report/` | Relatório (PBIR). Os visuais do painel operacional ficam em `definition/pages/a822121ef6e9b05473aa/visuals/painel_*` e `.../rodape` |
 | `Dashboard - Aquapolo.SemanticModel/` | Modelo semântico (TMDL). As medidas do painel ficam em `definition/tables/Medidas HTML.tmdl` |
-| `fundo_painel_operacional.png` | Imagem de fundo original do painel (1920×1080) |
+| `ferramentas/preview/` | Scripts que geram o painel operacional e a página Volumes: molde HTML único, preview em PNG, medidas DAX e visuais PBIR |
+| `fundo_painel_operacional.png` | Fundo da página Visão Geral (1920×1080): só o cabeçalho, o resto é cor chapada |
 | `fundo_indicadores_quimicos.png` | Imagem de fundo da página Indicadores Químicos (1920×1080) |
 | `Dashboard - Aquapolo.SemanticModel/definition/tables/Medidas Químicos.tmdl` | Medidas da página Indicadores Químicos. As tabelas de apoio dela são `Químicos Diário`, `Químicos`, `Meses`, `Mês do Ano`, `Seletor Químico` e `Comparar Ano Anterior` |
 

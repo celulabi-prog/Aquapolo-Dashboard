@@ -1,909 +1,257 @@
 table 'Medidas HTML'
 	lineageTag: af935ac6-adea-4710-8879-f9f7682c9e9d
 
-	measure 'HTML Volume Clientes' = ```
-			    -- ===== EDITAR AQUI (Volume Clientes) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Volumes | Todos Clientes" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR Anterior = CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR VarPeriodo = DIVIDE ( Valor - Anterior, Anterior )    -- variação vs 30 dias anteriores
-			    VAR TipoVar = "%"
-			    VAR MenorMelhor = FALSE ()
-			    VAR FmtValor = "#,##0"
-			    VAR UnidadeRef = " m³/d"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			    VAR VariacaoBoa = IF ( MenorMelhor, VarPeriodo < 0, VarPeriodo > 0 )
-			    VAR CorVar = IF ( VariacaoBoa, "#2e7d32", "#c62828" )
-			    VAR Seta = IF ( VarPeriodo >= 0, "▲", "▼" )
-			    VAR TxtVar =
-			        IF ( TipoVar = "%", FORMAT ( VarPeriodo, "+0.0%;-0.0%" ), FORMAT ( VarPeriodo, "+0.0;-0.0" ) & " p.p." )
+	/// Painel QUALIDADE EEBC da Visão Geral: Retrolavagens, DQO, NH3, Condutividade, Dureza. Valor = média dos últimos 30 dias com dado ([Valor 30d]); referência = Target_Min/Target_Max da dim_indicadores. Verde dentro da meta, amarelo até 10% fora, vermelho além disso. A barra enche até 160% da referência e o tracejado marca os 100%.
+	measure 'HTML Painel EEBC' = ```
+			VAR _ids1 = { "Filtro Disco | Número de Retrolavagens (AV)" }
+			VAR _v1 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids1, fato_indicadores[ID_Indicador] ) )
+			VAR _mi1 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids1, dim_indicadores[ID_Indicador] ) )
+			VAR _ma1 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids1, dim_indicadores[ID_Indicador] ) )
+			VAR _rf1 = _ma1
+			VAR _co1 = SWITCH ( TRUE (), ISBLANK ( _v1 ) || ISBLANK ( _rf1 ), "#5c7791", _v1 <= _rf1, "#4ed15d", _v1 <= _rf1 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg1 = MIN ( MAX ( DIVIDE ( _v1, _rf1 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _ids2 = { "Água Bruta | DQO" }
+			VAR _v2 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids2, fato_indicadores[ID_Indicador] ) )
+			VAR _mi2 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids2, dim_indicadores[ID_Indicador] ) )
+			VAR _ma2 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids2, dim_indicadores[ID_Indicador] ) )
+			VAR _rf2 = _ma2
+			VAR _co2 = SWITCH ( TRUE (), ISBLANK ( _v2 ) || ISBLANK ( _rf2 ), "#5c7791", _v2 <= _rf2, "#4ed15d", _v2 <= _rf2 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg2 = MIN ( MAX ( DIVIDE ( _v2, _rf2 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _ids3 = { "Água Bruta | Amônia" }
+			VAR _v3 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids3, fato_indicadores[ID_Indicador] ) )
+			VAR _mi3 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids3, dim_indicadores[ID_Indicador] ) )
+			VAR _ma3 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids3, dim_indicadores[ID_Indicador] ) )
+			VAR _rf3 = _ma3
+			VAR _co3 = SWITCH ( TRUE (), ISBLANK ( _v3 ) || ISBLANK ( _rf3 ), "#5c7791", _v3 <= _rf3, "#4ed15d", _v3 <= _rf3 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg3 = MIN ( MAX ( DIVIDE ( _v3, _rf3 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _ids4 = { "Água Bruta | Condutividade online" }
+			VAR _v4 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids4, fato_indicadores[ID_Indicador] ) )
+			VAR _mi4 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids4, dim_indicadores[ID_Indicador] ) )
+			VAR _ma4 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids4, dim_indicadores[ID_Indicador] ) )
+			VAR _rf4 = _ma4
+			VAR _co4 = SWITCH ( TRUE (), ISBLANK ( _v4 ) || ISBLANK ( _rf4 ), "#5c7791", _v4 <= _rf4, "#4ed15d", _v4 <= _rf4 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg4 = MIN ( MAX ( DIVIDE ( _v4, _rf4 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _ids5 = { "Água Bruta | Dureza" }
+			VAR _v5 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids5, fato_indicadores[ID_Indicador] ) )
+			VAR _mi5 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids5, dim_indicadores[ID_Indicador] ) )
+			VAR _ma5 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids5, dim_indicadores[ID_Indicador] ) )
+			VAR _rf5 = _ma5
+			VAR _co5 = SWITCH ( TRUE (), ISBLANK ( _v5 ) || ISBLANK ( _rf5 ), "#5c7791", _v5 <= _rf5, "#4ed15d", _v5 <= _rf5 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg5 = MIN ( MAX ( DIVIDE ( _v5, _rf5 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _itens =
+			    "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M4.2 10.2a8 8 0 0 1 13.4-3.3l2.2 2.1'/><path d='M19.8 13.8a8 8 0 0 1-13.4 3.3l-2.2-2.1'/><path d='M20.3 4.4v4.6h-4.6M3.7 19.6V15h4.6'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Retrolavagens</div><div style='font-size:17px;color:#93afc9;margin-top:2px'>ciclos</div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v1 ), "&#8212;", FORMAT ( _v1, "#,##0" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg1, "0" ) & "%;height:100%;background:" & _co1 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Ref." & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _rf1 ), "&#8212;", FORMAT ( _rf1, "#,##0" ) ) & "</div></div></div>"
+			        & "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M9.4 2.8h5.2M10.3 2.8v6.1L5 18.6a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5.3-9.7V2.8'/><path d='M7.2 15.4h9.6'/><circle cx='10' cy='18' r='0.9' fill='currentColor' stroke='none'/><circle cx='13.4' cy='18.6' r='0.9' fill='currentColor' stroke='none'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>DQO</div><div style='font-size:17px;color:#93afc9;margin-top:2px'>mg/L</div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v2 ), "&#8212;", FORMAT ( _v2, "#,##0" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg2, "0" ) & "%;height:100%;background:" & _co2 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Ref." & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _rf2 ), "&#8212;", FORMAT ( _rf2, "#,##0" ) ) & "</div></div></div>"
+			        & "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='5.2' r='2.3'/><circle cx='5.2' cy='17' r='2.3'/><circle cx='18.8' cy='17' r='2.3'/><path d='M10.8 7.2L6.4 14.9M13.2 7.2l4.4 7.7M7.5 17h9'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>NH3</div><div style='font-size:17px;color:#93afc9;margin-top:2px'>mg/L</div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v3 ), "&#8212;", FORMAT ( _v3, "#,##0.0" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg3, "0" ) & "%;height:100%;background:" & _co3 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Ref." & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _rf3 ), "&#8212;", FORMAT ( _rf3, "#,##0.0" ) ) & "</div></div></div>"
+			        & "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M2.6 7.6c1.9-1.9 3.7-1.9 5.6 0s3.7 1.9 5.6 0 3.7-1.9 5.6 0'/><path d='M2.6 12.4c1.9-1.9 3.7-1.9 5.6 0s3.7 1.9 5.6 0 3.7-1.9 5.6 0'/><path d='M2.6 17.2c1.9-1.9 3.7-1.9 5.6 0s3.7 1.9 5.6 0 3.7-1.9 5.6 0'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Condutividade</div><div style='font-size:17px;color:#93afc9;margin-top:2px'>µS/cm</div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v4 ), "&#8212;", FORMAT ( _v4, "#,##0" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg4, "0" ) & "%;height:100%;background:" & _co4 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Ref." & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _rf4 ), "&#8212;", FORMAT ( _rf4, "#,##0" ) ) & "</div></div></div>"
+			        & "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M6.2 3.4h11.6l3.4 5.4L12 20.8 2.8 8.8z'/><path d='M2.8 8.8h18.4M8.7 3.4l-2.5 5.4L12 20.8l5.8-12-2.5-5.4'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Dureza</div><div style='font-size:17px;color:#93afc9;margin-top:2px'>mg/L</div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v5 ), "&#8212;", FORMAT ( _v5, "#,##0" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg5, "0" ) & "%;height:100%;background:" & _co5 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Ref." & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _rf5 ), "&#8212;", FORMAT ( _rf5, "#,##0" ) ) & "</div></div></div>"
 			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;padding:2px 6px'>"
-			        & "<div style='font-size:40px;font-weight:700;line-height:1'>" & FORMAT ( Valor, FmtValor ) & "</div>"
-			        & "<div style='margin-top:10px;font-size:15px;font-weight:600;color:" & CorVar & "'>" & Seta & " " & TxtVar & " <span style='font-size:11px;font-weight:400;color:#4a5b70'>Δ Per.</span>"
-			        & "</div>"
-			        & "<div style='margin-top:14px'>"
-			        & "<div style='position:relative;height:10px;background:#e6edf5;border-radius:5px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:5px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:18px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<div style='display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:#4a5b70'>"
-			        & "<span>Ref. " & FORMAT ( Ref, FmtValor ) & UnidadeRef & "</span>"
-			        & "<b style='font-size:13px;color:#0b2a5b'>" & FORMAT ( Atingimento, "0%" ) & "</b>"
-			        & "</div>"
-			        & "</div>"
+			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style><div style='font-family:Segoe UI,sans-serif;height:100vh;width:100%;display:flex;flex-direction:column;gap:5px'><div style='height:62px;flex:none;border-radius:10px;background:linear-gradient(90deg,#1a5a96 0%,#0d3a68 46%,#071f38 100%);border:1px solid #2a6ca8;display:flex;align-items:center;gap:14px;padding:0 18px'><span style='color:#5fb4f5;display:flex'><svg viewBox='0 0 24 24' width='34' height='34' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3c3.4 4 5.5 6.6 5.5 9.3A5.5 5.5 0 0 1 6.5 12.3C6.5 9.6 8.6 7 12 3z'/></svg></span><span style='font-size:27px;font-weight:700;color:#ffffff;letter-spacing:0.8px;white-space:nowrap'>QUALIDADE EEBC</span><span style='margin-left:auto;padding-left:14px;font-size:16px;color:#9dbbd8;font-weight:400;white-space:nowrap'>Qualidade da água de alimentação</span></div><div style='flex:1;min-height:0;display:flex;flex-direction:column;background:#001b2e;border:1px solid #143d5c;border-radius:10px;overflow:hidden'>" & _itens & "</div></div>"
 			```
-		lineageTag: 353ac2df-47d1-4359-b098-6ce2c50d7dc0
+		displayFolder: Painel Operacional
+		lineageTag: 936f59ad-f0a8-553b-891a-229630c15593
 
-	measure 'HTML Blend' = ```
-			    -- ===== EDITAR AQUI (Blend) =====
-			    -- A base (Base_PowerBI) ainda não tem o indicador de Blend. Quando tiver, copie o cartão 'HTML Perdas' e troque os Ids.
-			    "<div style='font-family:Segoe UI,sans-serif;color:#4a5b70;padding:2px 6px'>"
-			        & "<div style='font-size:40px;font-weight:700;line-height:1;color:#90a4ae'>—</div>"
-			        & "<div style='margin-top:10px;font-size:12px'>Sem fonte de dados na base</div>"
-			        & "</div>"
-			```
-		lineageTag: cd64ac2e-ad8a-4834-8dc3-3ea030101eb5
-
-	measure 'HTML Perdas' = ```
-			    -- ===== EDITAR AQUI (Perdas) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Perdas | Perda Total" }
-			    VAR Valor = 100 * CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = 100 * CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR Anterior = 100 * CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR VarPeriodo = Valor - Anterior    -- variação vs 30 dias anteriores, em pontos percentuais
-			    VAR TipoVar = "p.p."
-			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0.0"
-			    VAR UnidadeRef = " %"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			    VAR VariacaoBoa = IF ( MenorMelhor, VarPeriodo < 0, VarPeriodo > 0 )
-			    VAR CorVar = IF ( VariacaoBoa, "#2e7d32", "#c62828" )
-			    VAR Seta = IF ( VarPeriodo >= 0, "▲", "▼" )
-			    VAR TxtVar =
-			        IF ( TipoVar = "%", FORMAT ( VarPeriodo, "+0.0%;-0.0%" ), FORMAT ( VarPeriodo, "+0.0;-0.0" ) & " p.p." )
+	/// Painel PERFORMANCE TMBR da Visão Geral: Idade do Lodo, Alimento/Microorg., TMP, Permeabilidade, Turbidez, Fluxo. Valor = média dos últimos 30 dias com dado ([Valor 30d]); referência = Target_Min/Target_Max da dim_indicadores. Verde dentro da meta, amarelo até 10% fora, vermelho além disso. A barra enche até 160% da referência e o tracejado marca os 100%.
+	measure 'HTML Painel TMBR' = ```
+			VAR _ids1 = { "Reator Biológico | Idade do lodo (IL)" }
+			VAR _v1 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids1, fato_indicadores[ID_Indicador] ) )
+			VAR _mi1 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids1, dim_indicadores[ID_Indicador] ) )
+			VAR _ma1 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids1, dim_indicadores[ID_Indicador] ) )
+			VAR _rf1 = _ma1
+			VAR _co1 = SWITCH ( TRUE (), ISBLANK ( _v1 ) || ISBLANK ( _mi1 ) || ISBLANK ( _ma1 ), "#5c7791", _v1 >= _mi1 && _v1 <= _ma1, "#4ed15d", _v1 >= _mi1 * 0.9 && _v1 <= _ma1 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg1 = MIN ( MAX ( DIVIDE ( _v1, _rf1 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _ids2 = { "Reator Biológico | Alimento/ Microoganismo (F/M)" }
+			VAR _v2 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids2, fato_indicadores[ID_Indicador] ) )
+			VAR _mi2 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids2, dim_indicadores[ID_Indicador] ) )
+			VAR _ma2 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids2, dim_indicadores[ID_Indicador] ) )
+			VAR _rf2 = _ma2
+			VAR _co2 = SWITCH ( TRUE (), ISBLANK ( _v2 ) || ISBLANK ( _mi2 ) || ISBLANK ( _ma2 ), "#5c7791", _v2 >= _mi2 && _v2 <= _ma2, "#4ed15d", _v2 >= _mi2 * 0.9 && _v2 <= _ma2 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg2 = MIN ( MAX ( DIVIDE ( _v2, _rf2 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _ids3 = { "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM1", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM2", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM3", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM4", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM5", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM6", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM7", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM8" }
+			VAR _v3 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids3, fato_indicadores[ID_Indicador] ) )
+			VAR _mi3 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids3, dim_indicadores[ID_Indicador] ) )
+			VAR _ma3 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids3, dim_indicadores[ID_Indicador] ) )
+			VAR _rf3 = _ma3
+			VAR _co3 = SWITCH ( TRUE (), ISBLANK ( _v3 ) || ISBLANK ( _rf3 ), "#5c7791", _v3 <= _rf3, "#4ed15d", _v3 <= _rf3 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg3 = MIN ( MAX ( DIVIDE ( _v3, _rf3 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _ids4 = { "Membranas de Ultrafiltração | Permeablidade - TM 1", "Membranas de Ultrafiltração | Permeablidade - TM 2", "Membranas de Ultrafiltração | Permeablidade - TM 3", "Membranas de Ultrafiltração | Permeablidade - TM 4", "Membranas de Ultrafiltração | Permeablidade - TM 5", "Membranas de Ultrafiltração | Permeablidade - TM 6", "Membranas de Ultrafiltração | Permeablidade - TM 7", "Membranas de Ultrafiltração | Permeablidade - TM 8" }
+			VAR _v4 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids4, fato_indicadores[ID_Indicador] ) )
+			VAR _mi4 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids4, dim_indicadores[ID_Indicador] ) )
+			VAR _ma4 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids4, dim_indicadores[ID_Indicador] ) )
+			VAR _rf4 = _mi4
+			VAR _co4 = SWITCH ( TRUE (), ISBLANK ( _v4 ) || ISBLANK ( _rf4 ), "#5c7791", _v4 >= _rf4, "#4ed15d", _v4 >= _rf4 * 0.9, "#feb825", "#f4353f" )
+			VAR _lg4 = MIN ( MAX ( DIVIDE ( _v4, _rf4 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _ids5 = { "Membranas de Ultrafiltração | Turbidez online - TM1", "Membranas de Ultrafiltração | Turbidez online - TM2", "Membranas de Ultrafiltração | Turbidez online - TM3", "Membranas de Ultrafiltração | Turbidez online - TM4", "Membranas de Ultrafiltração | Turbidez online - TM5", "Membranas de Ultrafiltração | Turbidez online - TM6", "Membranas de Ultrafiltração | Turbidez online - TM7", "Membranas de Ultrafiltração | Turbidez online - TM8" }
+			VAR _v5 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids5, fato_indicadores[ID_Indicador] ) )
+			VAR _mi5 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids5, dim_indicadores[ID_Indicador] ) )
+			VAR _ma5 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids5, dim_indicadores[ID_Indicador] ) )
+			VAR _rf5 = _ma5
+			VAR _co5 = SWITCH ( TRUE (), ISBLANK ( _v5 ) || ISBLANK ( _rf5 ), "#5c7791", _v5 <= _rf5, "#4ed15d", _v5 <= _rf5 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg5 = MIN ( MAX ( DIVIDE ( _v5, _rf5 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _ids6 = { "Membranas de Ultrafiltração | Fluxo TM's" }
+			VAR _v6 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids6, fato_indicadores[ID_Indicador] ) )
+			VAR _mi6 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids6, dim_indicadores[ID_Indicador] ) )
+			VAR _ma6 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids6, dim_indicadores[ID_Indicador] ) )
+			VAR _rf6 = _ma6
+			VAR _co6 = SWITCH ( TRUE (), ISBLANK ( _v6 ) || ISBLANK ( _mi6 ) || ISBLANK ( _ma6 ), "#5c7791", _v6 >= _mi6 && _v6 <= _ma6, "#4ed15d", _v6 >= _mi6 * 0.9 && _v6 <= _ma6 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg6 = MIN ( MAX ( DIVIDE ( _v6, _rf6 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _itens =
+			    "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='8.4' cy='8.6' r='3.5'/><circle cx='15.8' cy='8.6' r='3'/><circle cx='12' cy='16.2' r='3.8'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Idade do Lodo</div><div style='font-size:17px;color:#93afc9;margin-top:2px'>dias</div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v1 ), "&#8212;", FORMAT ( _v1, "#,##0" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg1, "0" ) & "%;height:100%;background:" & _co1 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Faixa" & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _mi1 ) || ISBLANK ( _ma1 ), "&#8212;", FORMAT ( _mi1, "#,##0" ) & " &#8211; " & FORMAT ( _ma1, "#,##0" ) ) & "</div></div></div>"
+			        & "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3'/><path d='M12 2.8v2.6M12 18.6v2.6M21.2 12h-2.6M5.4 12H2.8M18.5 5.5l-1.8 1.8M7.3 16.7l-1.8 1.8M18.5 18.5l-1.8-1.8M7.3 7.3L5.5 5.5'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Alimento/Microorg.</div><div style='font-size:17px;color:#93afc9;margin-top:2px'>g/g.d<sup>-1</sup></div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v2 ), "&#8212;", FORMAT ( _v2, "#,##0.00" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg2, "0" ) & "%;height:100%;background:" & _co2 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Faixa" & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _mi2 ) || ISBLANK ( _ma2 ), "&#8212;", FORMAT ( _mi2, "#,##0.00" ) & " &#8211; " & FORMAT ( _ma2, "#,##0.00" ) ) & "</div></div></div>"
+			        & "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M3.6 17.4a9 9 0 1 1 16.8 0'/><path d='M12 17.4L16.6 9.6'/><circle cx='12' cy='17.4' r='1.6' fill='currentColor' stroke='none'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>TMP</div><div style='font-size:17px;color:#93afc9;margin-top:2px'>bar</div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v3 ), "&#8212;", FORMAT ( _v3, "#,##0.00" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg3, "0" ) & "%;height:100%;background:" & _co3 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Ref." & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _rf3 ), "&#8212;", FORMAT ( _rf3, "#,##0.00" ) ) & "</div></div></div>"
+			        & "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M4 4.6v14.8M8.7 4.6v14.8M12 4.6v14.8M15.3 4.6v14.8M20 4.6v14.8'/><path d='M2.6 4.6h18.8M2.6 19.4h18.8'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Permeabilidade</div><div style='font-size:17px;color:#93afc9;margin-top:2px'>LMH/bar</div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v4 ), "&#8212;", FORMAT ( _v4, "#,##0" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg4, "0" ) & "%;height:100%;background:" & _co4 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Ref." & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _rf4 ), "&#8212;", FORMAT ( _rf4, "#,##0" ) ) & "</div></div></div>"
+			        & "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='6' cy='6' r='1.25' fill='currentColor' stroke='none'/><circle cx='12' cy='4.6' r='1.25' fill='currentColor' stroke='none'/><circle cx='18' cy='6' r='1.25' fill='currentColor' stroke='none'/><circle cx='4.6' cy='12' r='1.25' fill='currentColor' stroke='none'/><circle cx='12' cy='9.8' r='1.25' fill='currentColor' stroke='none'/><circle cx='19.4' cy='12' r='1.25' fill='currentColor' stroke='none'/><circle cx='6' cy='18' r='1.25' fill='currentColor' stroke='none'/><circle cx='12' cy='15.2' r='1.25' fill='currentColor' stroke='none'/><circle cx='18' cy='18' r='1.25' fill='currentColor' stroke='none'/><circle cx='9' cy='12.4' r='1.25' fill='currentColor' stroke='none'/><circle cx='15' cy='12.4' r='1.25' fill='currentColor' stroke='none'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Turbidez</div><div style='font-size:17px;color:#93afc9;margin-top:2px'>NTU</div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v5 ), "&#8212;", FORMAT ( _v5, "#,##0.00" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg5, "0" ) & "%;height:100%;background:" & _co5 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Ref." & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _rf5 ), "&#8212;", FORMAT ( _rf5, "#,##0.00" ) ) & "</div></div></div>"
+			        & "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M2.6 7.6c1.9-1.9 3.7-1.9 5.6 0s3.7 1.9 5.6 0 3.7-1.9 5.6 0'/><path d='M2.6 12.4c1.9-1.9 3.7-1.9 5.6 0s3.7 1.9 5.6 0 3.7-1.9 5.6 0'/><path d='M2.6 17.2c1.9-1.9 3.7-1.9 5.6 0s3.7 1.9 5.6 0 3.7-1.9 5.6 0'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Fluxo</div><div style='font-size:17px;color:#93afc9;margin-top:2px'>LMH</div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v6 ), "&#8212;", FORMAT ( _v6, "#,##0.0" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg6, "0" ) & "%;height:100%;background:" & _co6 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Faixa" & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _mi6 ) || ISBLANK ( _ma6 ), "&#8212;", FORMAT ( _mi6, "#,##0.0" ) & " &#8211; " & FORMAT ( _ma6, "#,##0.0" ) ) & "</div></div></div>"
 			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;padding:2px 6px'>"
-			        & "<div style='font-size:40px;font-weight:700;line-height:1'>" & FORMAT ( Valor, FmtValor ) & "</div>"
-			        & "<div style='margin-top:10px;font-size:15px;font-weight:600;color:" & CorVar & "'>" & Seta & " " & TxtVar & " <span style='font-size:11px;font-weight:400;color:#4a5b70'>Δ Per.</span>"
-			        & "</div>"
-			        & "<div style='margin-top:14px'>"
-			        & "<div style='position:relative;height:10px;background:#e6edf5;border-radius:5px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:5px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:18px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<div style='display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:#4a5b70'>"
-			        & "<span>Ref. " & FORMAT ( Ref, FmtValor ) & UnidadeRef & "</span>"
-			        & "<b style='font-size:13px;color:#0b2a5b'>" & FORMAT ( Atingimento, "0%" ) & "</b>"
-			        & "</div>"
-			        & "</div>"
+			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style><div style='font-family:Segoe UI,sans-serif;height:100vh;width:100%;display:flex;flex-direction:column;gap:5px'><div style='height:62px;flex:none;border-radius:10px;background:linear-gradient(90deg,#1a5a96 0%,#0d3a68 46%,#071f38 100%);border:1px solid #2a6ca8;display:flex;align-items:center;gap:14px;padding:0 18px'><span style='color:#7fc4ff;display:flex'><svg viewBox='0 0 24 24' width='34' height='34' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3.1'/><path d='M12 2.6v2.1M12 19.3v2.1M21.4 12h-2.1M4.7 12H2.6M18.6 5.4l-1.5 1.5M6.9 17.1l-1.5 1.5M18.6 18.6l-1.5-1.5M6.9 6.9L5.4 5.4'/></svg></span><span style='font-size:27px;font-weight:700;color:#ffffff;letter-spacing:0.8px;white-space:nowrap'>PERFORMANCE TMBR</span><span style='margin-left:auto;padding-left:14px;font-size:16px;color:#9dbbd8;font-weight:400;white-space:nowrap'>Desempenho da etapa biológica</span></div><div style='flex:1;min-height:0;display:flex;flex-direction:column;background:#001b2e;border:1px solid #143d5c;border-radius:10px;overflow:hidden'>" & _itens & "</div></div>"
 			```
-		lineageTag: fd077992-ab74-4a79-8903-bc8770b7f96a
+		displayFolder: Painel Operacional
+		lineageTag: 240860e3-5f5f-5e74-a1aa-fe07fcd1903a
 
-	measure 'HTML Consumo Quimicos' = ```
-			    -- ===== EDITAR AQUI (Consumo Químicos) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Químicos | Consumo Unitário - Químicos" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR Anterior = CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR VarPeriodo = DIVIDE ( Valor - Anterior, Anterior )    -- variação vs 30 dias anteriores
-			    VAR TipoVar = "%"
-			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0.00"
-			    VAR UnidadeRef = " kg/m³"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			    VAR VariacaoBoa = IF ( MenorMelhor, VarPeriodo < 0, VarPeriodo > 0 )
-			    VAR CorVar = IF ( VariacaoBoa, "#2e7d32", "#c62828" )
-			    VAR Seta = IF ( VarPeriodo >= 0, "▲", "▼" )
-			    VAR TxtVar =
-			        IF ( TipoVar = "%", FORMAT ( VarPeriodo, "+0.0%;-0.0%" ), FORMAT ( VarPeriodo, "+0.0;-0.0" ) & " p.p." )
+	/// Painel PERFORMANCE OR da Visão Geral: SDI, dP Skid 1, dP Skid 2, dP Skid 3. Valor = média dos últimos 30 dias com dado ([Valor 30d]); referência = Target_Min/Target_Max da dim_indicadores. Verde dentro da meta, amarelo até 10% fora, vermelho além disso. A barra enche até 160% da referência e o tracejado marca os 100%.
+	measure 'HTML Painel OR' = ```
+			VAR _ids1 = { "Osmose Reversa | SDI" }
+			VAR _v1 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids1, fato_indicadores[ID_Indicador] ) )
+			VAR _mi1 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids1, dim_indicadores[ID_Indicador] ) )
+			VAR _ma1 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids1, dim_indicadores[ID_Indicador] ) )
+			VAR _rf1 = _ma1
+			VAR _co1 = SWITCH ( TRUE (), ISBLANK ( _v1 ) || ISBLANK ( _rf1 ), "#5c7791", _v1 <= _rf1, "#4ed15d", _v1 <= _rf1 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg1 = MIN ( MAX ( DIVIDE ( _v1, _rf1 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _ids2 = { "Osmose Reversa | Diferencial de Pressão - Skid 1" }
+			VAR _v2 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids2, fato_indicadores[ID_Indicador] ) )
+			VAR _mi2 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids2, dim_indicadores[ID_Indicador] ) )
+			VAR _ma2 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids2, dim_indicadores[ID_Indicador] ) )
+			VAR _rf2 = _ma2
+			VAR _co2 = SWITCH ( TRUE (), ISBLANK ( _v2 ) || ISBLANK ( _rf2 ), "#5c7791", _v2 <= _rf2, "#4ed15d", _v2 <= _rf2 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg2 = MIN ( MAX ( DIVIDE ( _v2, _rf2 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _ids3 = { "Osmose Reversa | Diferencial de Pressão - Skid 2" }
+			VAR _v3 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids3, fato_indicadores[ID_Indicador] ) )
+			VAR _mi3 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids3, dim_indicadores[ID_Indicador] ) )
+			VAR _ma3 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids3, dim_indicadores[ID_Indicador] ) )
+			VAR _rf3 = _ma3
+			VAR _co3 = SWITCH ( TRUE (), ISBLANK ( _v3 ) || ISBLANK ( _rf3 ), "#5c7791", _v3 <= _rf3, "#4ed15d", _v3 <= _rf3 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg3 = MIN ( MAX ( DIVIDE ( _v3, _rf3 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _ids4 = { "Osmose Reversa | Diferencial de Pressão - Skid 3" }
+			VAR _v4 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids4, fato_indicadores[ID_Indicador] ) )
+			VAR _mi4 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids4, dim_indicadores[ID_Indicador] ) )
+			VAR _ma4 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids4, dim_indicadores[ID_Indicador] ) )
+			VAR _rf4 = _ma4
+			VAR _co4 = SWITCH ( TRUE (), ISBLANK ( _v4 ) || ISBLANK ( _rf4 ), "#5c7791", _v4 <= _rf4, "#4ed15d", _v4 <= _rf4 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg4 = MIN ( MAX ( DIVIDE ( _v4, _rf4 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _itens =
+			    "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='2.4' fill='currentColor' stroke='none'/><circle cx='12' cy='4.4' r='1.25' fill='currentColor' stroke='none'/><circle cx='12' cy='19.6' r='1.25' fill='currentColor' stroke='none'/><circle cx='4.4' cy='12' r='1.25' fill='currentColor' stroke='none'/><circle cx='19.6' cy='12' r='1.25' fill='currentColor' stroke='none'/><circle cx='6.6' cy='6.6' r='1.25' fill='currentColor' stroke='none'/><circle cx='17.4' cy='6.6' r='1.25' fill='currentColor' stroke='none'/><circle cx='6.6' cy='17.4' r='1.25' fill='currentColor' stroke='none'/><circle cx='17.4' cy='17.4' r='1.25' fill='currentColor' stroke='none'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>SDI</div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v1 ), "&#8212;", FORMAT ( _v1, "#,##0.0" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg1, "0" ) & "%;height:100%;background:" & _co1 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Ref." & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _rf1 ), "&#8212;", FORMAT ( _rf1, "#,##0.0" ) ) & "</div></div></div>"
+			        & "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M3.6 17.4a9 9 0 1 1 16.8 0'/><path d='M12 17.4L16.6 9.6'/><circle cx='12' cy='17.4' r='1.6' fill='currentColor' stroke='none'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>dP Skid 1</div><div style='font-size:17px;color:#93afc9;margin-top:2px'>bar</div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v2 ), "&#8212;", FORMAT ( _v2, "#,##0.0" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg2, "0" ) & "%;height:100%;background:" & _co2 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Ref." & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _rf2 ), "&#8212;", FORMAT ( _rf2, "#,##0.0" ) ) & "</div></div></div>"
+			        & "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M3.6 17.4a9 9 0 1 1 16.8 0'/><path d='M12 17.4L16.6 9.6'/><circle cx='12' cy='17.4' r='1.6' fill='currentColor' stroke='none'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>dP Skid 2</div><div style='font-size:17px;color:#93afc9;margin-top:2px'>bar</div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v3 ), "&#8212;", FORMAT ( _v3, "#,##0.0" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg3, "0" ) & "%;height:100%;background:" & _co3 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Ref." & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _rf3 ), "&#8212;", FORMAT ( _rf3, "#,##0.0" ) ) & "</div></div></div>"
+			        & "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M3.6 17.4a9 9 0 1 1 16.8 0'/><path d='M12 17.4L16.6 9.6'/><circle cx='12' cy='17.4' r='1.6' fill='currentColor' stroke='none'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>dP Skid 3</div><div style='font-size:17px;color:#93afc9;margin-top:2px'>bar</div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v4 ), "&#8212;", FORMAT ( _v4, "#,##0.0" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg4, "0" ) & "%;height:100%;background:" & _co4 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Ref." & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _rf4 ), "&#8212;", FORMAT ( _rf4, "#,##0.0" ) ) & "</div></div></div>"
 			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;padding:2px 6px'>"
-			        & "<div style='font-size:28px;font-weight:700;line-height:1'>" & FORMAT ( Valor, FmtValor ) & "</div>"
-			        & "<div style='margin-top:2px;font-size:12px;font-weight:600;color:" & CorVar & "'>" & Seta & " " & TxtVar & " <span style='font-size:11px;font-weight:400;color:#4a5b70'>Δ Per.</span>"
-			        & "</div>"
-			        & "<div style='margin-top:6px'>"
-			        & "<div style='position:relative;height:10px;background:#e6edf5;border-radius:5px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:5px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:18px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<div style='display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:#4a5b70'>"
-			        & "<span>Ref. " & FORMAT ( Ref, FmtValor ) & UnidadeRef & "</span>"
-			        & "<b style='font-size:13px;color:#0b2a5b'>" & FORMAT ( Atingimento, "0%" ) & "</b>"
-			        & "</div>"
-			        & "</div>"
+			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style><div style='font-family:Segoe UI,sans-serif;height:100vh;width:100%;display:flex;flex-direction:column;gap:5px'><div style='height:62px;flex:none;border-radius:10px;background:linear-gradient(90deg,#1a5a96 0%,#0d3a68 46%,#071f38 100%);border:1px solid #2a6ca8;display:flex;align-items:center;gap:14px;padding:0 18px'><span style='color:#4aa8f0;display:flex'><svg viewBox='0 0 24 24' width='34' height='34' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 4.5h17l-6.6 7.8v6.4l-3.8 2v-8.4z'/></svg></span><span style='font-size:27px;font-weight:700;color:#ffffff;letter-spacing:0.8px;white-space:nowrap'>PERFORMANCE OR</span></div><div style='flex:1;min-height:0;display:flex;flex-direction:column;background:#001b2e;border:1px solid #143d5c;border-radius:10px;overflow:hidden'>" & _itens & "</div></div>"
 			```
-		lineageTag: e44c2f6d-f042-481e-86c0-04e72c7ea9d8
+		displayFolder: Painel Operacional
+		lineageTag: 7135ce04-7bcd-5b0d-86e0-68b62bdf542d
 
-	measure 'HTML Consumo Energia' = ```
-			    -- ===== EDITAR AQUI (Consumo Energia) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Energia | Consumo Unitário - Energia" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR Anterior = CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR VarPeriodo = DIVIDE ( Valor - Anterior, Anterior )    -- variação vs 30 dias anteriores
-			    VAR TipoVar = "%"
-			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0.00"
-			    VAR UnidadeRef = " kWh/m³"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			    VAR VariacaoBoa = IF ( MenorMelhor, VarPeriodo < 0, VarPeriodo > 0 )
-			    VAR CorVar = IF ( VariacaoBoa, "#2e7d32", "#c62828" )
-			    VAR Seta = IF ( VarPeriodo >= 0, "▲", "▼" )
-			    VAR TxtVar =
-			        IF ( TipoVar = "%", FORMAT ( VarPeriodo, "+0.0%;-0.0%" ), FORMAT ( VarPeriodo, "+0.0;-0.0" ) & " p.p." )
+	/// Painel CONSUMO DE QUÍMICOS E ENERGIA da Visão Geral: Químicos, Energia, Energia OR, Energia - Biológico, Coagulante. Valor = média dos últimos 30 dias com dado ([Valor 30d]); referência = Target_Min/Target_Max da dim_indicadores. Verde dentro da meta, amarelo até 10% fora, vermelho além disso. A barra enche até 160% da referência e o tracejado marca os 100%.
+	measure 'HTML Painel Consumo' = ```
+			VAR _ids1 = { "Químicos | Consumo Unitário - Químicos" }
+			VAR _v1 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids1, fato_indicadores[ID_Indicador] ) )
+			VAR _mi1 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids1, dim_indicadores[ID_Indicador] ) )
+			VAR _ma1 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids1, dim_indicadores[ID_Indicador] ) )
+			VAR _rf1 = _ma1
+			VAR _co1 = SWITCH ( TRUE (), ISBLANK ( _v1 ) || ISBLANK ( _rf1 ), "#5c7791", _v1 <= _rf1, "#4ed15d", _v1 <= _rf1 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg1 = MIN ( MAX ( DIVIDE ( _v1, _rf1 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _an1 = CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids1, fato_indicadores[ID_Indicador] ) )
+			VAR _te1 = NOT ISBLANK ( _v1 ) && NOT ISBLANK ( _an1 ) && _an1 <> 0
+			VAR _dl1 = DIVIDE ( _v1 - _an1, _an1 )
+			VAR _ids2 = { "Energia | Consumo Unitário - Energia" }
+			VAR _v2 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids2, fato_indicadores[ID_Indicador] ) )
+			VAR _mi2 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids2, dim_indicadores[ID_Indicador] ) )
+			VAR _ma2 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids2, dim_indicadores[ID_Indicador] ) )
+			VAR _rf2 = _ma2
+			VAR _co2 = SWITCH ( TRUE (), ISBLANK ( _v2 ) || ISBLANK ( _rf2 ), "#5c7791", _v2 <= _rf2, "#4ed15d", _v2 <= _rf2 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg2 = MIN ( MAX ( DIVIDE ( _v2, _rf2 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _an2 = CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids2, fato_indicadores[ID_Indicador] ) )
+			VAR _te2 = NOT ISBLANK ( _v2 ) && NOT ISBLANK ( _an2 ) && _an2 <> 0
+			VAR _dl2 = DIVIDE ( _v2 - _an2, _an2 )
+			VAR _ids3 = { "Energia | Consumo OR" }
+			VAR _v3 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids3, fato_indicadores[ID_Indicador] ) )
+			VAR _mi3 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids3, dim_indicadores[ID_Indicador] ) )
+			VAR _ma3 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids3, dim_indicadores[ID_Indicador] ) )
+			VAR _rf3 = _ma3
+			VAR _co3 = SWITCH ( TRUE (), ISBLANK ( _v3 ) || ISBLANK ( _rf3 ), "#5c7791", _v3 <= _rf3, "#4ed15d", _v3 <= _rf3 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg3 = MIN ( MAX ( DIVIDE ( _v3, _rf3 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _an3 = CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids3, fato_indicadores[ID_Indicador] ) )
+			VAR _te3 = NOT ISBLANK ( _v3 ) && NOT ISBLANK ( _an3 ) && _an3 <> 0
+			VAR _dl3 = DIVIDE ( _v3 - _an3, _an3 )
+			VAR _ids4 = { "Energia | Consumo SOP Biológico/ Amônia Removida" }
+			VAR _v4 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids4, fato_indicadores[ID_Indicador] ) )
+			VAR _mi4 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids4, dim_indicadores[ID_Indicador] ) )
+			VAR _ma4 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids4, dim_indicadores[ID_Indicador] ) )
+			VAR _rf4 = _ma4
+			VAR _co4 = SWITCH ( TRUE (), ISBLANK ( _v4 ) || ISBLANK ( _rf4 ), "#5c7791", _v4 <= _rf4, "#4ed15d", _v4 <= _rf4 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg4 = MIN ( MAX ( DIVIDE ( _v4, _rf4 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _an4 = CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids4, fato_indicadores[ID_Indicador] ) )
+			VAR _te4 = NOT ISBLANK ( _v4 ) && NOT ISBLANK ( _an4 ) && _an4 <> 0
+			VAR _dl4 = DIVIDE ( _v4 - _an4, _an4 )
+			VAR _ids5 = { "Químicos | PAC/ P rem" }
+			VAR _v5 = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids5, fato_indicadores[ID_Indicador] ) )
+			VAR _mi5 = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids5, dim_indicadores[ID_Indicador] ) )
+			VAR _ma5 = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids5, dim_indicadores[ID_Indicador] ) )
+			VAR _rf5 = _ma5
+			VAR _co5 = SWITCH ( TRUE (), ISBLANK ( _v5 ) || ISBLANK ( _rf5 ), "#5c7791", _v5 <= _rf5, "#4ed15d", _v5 <= _rf5 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg5 = MIN ( MAX ( DIVIDE ( _v5, _rf5 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _an5 = CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids5, fato_indicadores[ID_Indicador] ) )
+			VAR _te5 = NOT ISBLANK ( _v5 ) && NOT ISBLANK ( _an5 ) && _an5 <> 0
+			VAR _dl5 = DIVIDE ( _v5 - _an5, _an5 )
+			VAR _itens =
+			    "<div style='flex:1;min-width:0;display:flex;flex-direction:column;background:#0b2740;border:1px solid #1b4a71;border-radius:10px;padding:13px 14px 12px 14px'><div style='display:flex;align-items:center;gap:11px'><div style='width:44px;height:44px;flex:none;border-radius:11px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='23' height='23' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M9.4 2.8h5.2M10.3 2.8v6.1L5 18.6a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5.3-9.7V2.8'/><path d='M7.2 15.4h9.6'/><circle cx='10' cy='18' r='0.9' fill='currentColor' stroke='none'/><circle cx='13.4' cy='18.6' r='0.9' fill='currentColor' stroke='none'/></svg></div><div style='min-width:0'><div style='font-size:17px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Químicos</div><div style='font-size:16px;color:#93afc9;margin-top:1px;white-space:nowrap'>kg/m³</div></div></div><div style='flex:1'></div><div style='display:flex;align-items:flex-end;gap:6px'><div style='font-size:38px;font-weight:700;color:#ffffff;line-height:1;white-space:nowrap'>" & IF ( ISBLANK ( _v1 ), "&#8212;", FORMAT ( _v1, "#,##0.00" ) ) & "</div><div style='margin-left:auto;text-align:right'><div style='font-size:18px;font-weight:700;color:" & IF ( NOT _te1, "#5c7791", IF ( _dl1 < 0, "#4ed15d", "#f4353f" ) ) & ";white-space:nowrap'>" & IF ( _te1, IF ( _dl1 >= 0, "&#9650;", "&#9660;" ), "" ) & " " & IF ( _te1, FORMAT ( _dl1, "+0.0%;-0.0%" ), "&#8212;" ) & "</div><div style='font-size:15px;color:#93afc9;margin-top:2px'>&#916; Per.</div></div></div><div style='margin-top:12px'><div style='position:relative;height:20px;background:#123855;border-radius:10px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg1, "0" ) & "%;height:100%;background:" & _co1 & ";border-radius:10px'></div><div style='position:absolute;left:62.5%;top:-4px;height:28px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='margin-top:9px;display:flex;align-items:baseline;font-size:16px;color:#93afc9'><span style='white-space:nowrap'>" & IF ( ISBLANK ( _rf1 ), "Ref. &#8212;", "Ref. " & FORMAT ( _rf1, "#,##0.00" ) & " kg/m³" ) & "</span><b style='margin-left:auto;padding-left:8px;font-size:19px;color:#ffffff'>" & IF ( ISBLANK ( _rf1 ) || ISBLANK ( _v1 ), "&#8212;", FORMAT ( DIVIDE ( _v1, _rf1 ), "0%" ) ) & "</b></div></div>"
+			        & "<div style='flex:1;min-width:0;display:flex;flex-direction:column;background:#0b2740;border:1px solid #1b4a71;border-radius:10px;padding:13px 14px 12px 14px'><div style='display:flex;align-items:center;gap:11px'><div style='width:44px;height:44px;flex:none;border-radius:11px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='23' height='23' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M13.4 2.5L4.8 13.4h5.6l-.8 8.1 8.6-10.9h-5.6z' fill='currentColor' stroke='none'/></svg></div><div style='min-width:0'><div style='font-size:17px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Energia</div><div style='font-size:16px;color:#93afc9;margin-top:1px;white-space:nowrap'>kWh/m³</div></div></div><div style='flex:1'></div><div style='display:flex;align-items:flex-end;gap:6px'><div style='font-size:38px;font-weight:700;color:#ffffff;line-height:1;white-space:nowrap'>" & IF ( ISBLANK ( _v2 ), "&#8212;", FORMAT ( _v2, "#,##0.00" ) ) & "</div><div style='margin-left:auto;text-align:right'><div style='font-size:18px;font-weight:700;color:" & IF ( NOT _te2, "#5c7791", IF ( _dl2 < 0, "#4ed15d", "#f4353f" ) ) & ";white-space:nowrap'>" & IF ( _te2, IF ( _dl2 >= 0, "&#9650;", "&#9660;" ), "" ) & " " & IF ( _te2, FORMAT ( _dl2, "+0.0%;-0.0%" ), "&#8212;" ) & "</div><div style='font-size:15px;color:#93afc9;margin-top:2px'>&#916; Per.</div></div></div><div style='margin-top:12px'><div style='position:relative;height:20px;background:#123855;border-radius:10px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg2, "0" ) & "%;height:100%;background:" & _co2 & ";border-radius:10px'></div><div style='position:absolute;left:62.5%;top:-4px;height:28px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='margin-top:9px;display:flex;align-items:baseline;font-size:16px;color:#93afc9'><span style='white-space:nowrap'>" & IF ( ISBLANK ( _rf2 ), "Ref. &#8212;", "Ref. " & FORMAT ( _rf2, "#,##0.00" ) & " kWh/m³" ) & "</span><b style='margin-left:auto;padding-left:8px;font-size:19px;color:#ffffff'>" & IF ( ISBLANK ( _rf2 ) || ISBLANK ( _v2 ), "&#8212;", FORMAT ( DIVIDE ( _v2, _rf2 ), "0%" ) ) & "</b></div></div>"
+			        & "<div style='flex:1;min-width:0;display:flex;flex-direction:column;background:#0b2740;border:1px solid #1b4a71;border-radius:10px;padding:13px 14px 12px 14px'><div style='display:flex;align-items:center;gap:11px'><div style='width:44px;height:44px;flex:none;border-radius:11px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='23' height='23' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3.1'/><path d='M12 2.6v2.1M12 19.3v2.1M21.4 12h-2.1M4.7 12H2.6M18.6 5.4l-1.5 1.5M6.9 17.1l-1.5 1.5M18.6 18.6l-1.5-1.5M6.9 6.9L5.4 5.4'/></svg></div><div style='min-width:0'><div style='font-size:17px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Energia OR</div><div style='font-size:16px;color:#93afc9;margin-top:1px;white-space:nowrap'>kWh/m³</div></div></div><div style='flex:1'></div><div style='display:flex;align-items:flex-end;gap:6px'><div style='font-size:38px;font-weight:700;color:#ffffff;line-height:1;white-space:nowrap'>" & IF ( ISBLANK ( _v3 ), "&#8212;", FORMAT ( _v3, "#,##0.00" ) ) & "</div><div style='margin-left:auto;text-align:right'><div style='font-size:18px;font-weight:700;color:" & IF ( NOT _te3, "#5c7791", IF ( _dl3 < 0, "#4ed15d", "#f4353f" ) ) & ";white-space:nowrap'>" & IF ( _te3, IF ( _dl3 >= 0, "&#9650;", "&#9660;" ), "" ) & " " & IF ( _te3, FORMAT ( _dl3, "+0.0%;-0.0%" ), "&#8212;" ) & "</div><div style='font-size:15px;color:#93afc9;margin-top:2px'>&#916; Per.</div></div></div><div style='margin-top:12px'><div style='position:relative;height:20px;background:#123855;border-radius:10px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg3, "0" ) & "%;height:100%;background:" & _co3 & ";border-radius:10px'></div><div style='position:absolute;left:62.5%;top:-4px;height:28px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='margin-top:9px;display:flex;align-items:baseline;font-size:16px;color:#93afc9'><span style='white-space:nowrap'>" & IF ( ISBLANK ( _rf3 ), "Ref. &#8212;", "Ref. " & FORMAT ( _rf3, "#,##0.00" ) & " kWh/m³" ) & "</span><b style='margin-left:auto;padding-left:8px;font-size:19px;color:#ffffff'>" & IF ( ISBLANK ( _rf3 ) || ISBLANK ( _v3 ), "&#8212;", FORMAT ( DIVIDE ( _v3, _rf3 ), "0%" ) ) & "</b></div></div>"
+			        & "<div style='flex:1;min-width:0;display:flex;flex-direction:column;background:#0b2740;border:1px solid #1b4a71;border-radius:10px;padding:13px 14px 12px 14px'><div style='display:flex;align-items:center;gap:11px'><div style='width:44px;height:44px;flex:none;border-radius:11px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='23' height='23' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='2.2'/><path d='M12 9.8c0-3.6.9-6.4 3.4-6.4 2 0 2.8 2.4 1.2 4.3-1.2 1.4-2.9 2.1-4.6 2.1z'/><path d='M14.2 12c3.6 0 6.4.9 6.4 3.4 0 2-2.4 2.8-4.3 1.2-1.4-1.2-2.1-2.9-2.1-4.6z'/><path d='M9.8 12c-3.6 0-6.4-.9-6.4-3.4 0-2 2.4-2.8 4.3-1.2 1.4 1.2 2.1 2.9 2.1 4.6z'/><path d='M12 14.2c0 3.6-.9 6.4-3.4 6.4-2 0-2.8-2.4-1.2-4.3 1.2-1.4 2.9-2.1 4.6-2.1z'/></svg></div><div style='min-width:0'><div style='font-size:17px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Energia - Biológico</div><div style='font-size:16px;color:#93afc9;margin-top:1px;white-space:nowrap'>kWh/kg NH3 rem</div></div></div><div style='flex:1'></div><div style='display:flex;align-items:flex-end;gap:6px'><div style='font-size:38px;font-weight:700;color:#ffffff;line-height:1;white-space:nowrap'>" & IF ( ISBLANK ( _v4 ), "&#8212;", FORMAT ( _v4, "#,##0.0" ) ) & "</div><div style='margin-left:auto;text-align:right'><div style='font-size:18px;font-weight:700;color:" & IF ( NOT _te4, "#5c7791", IF ( _dl4 < 0, "#4ed15d", "#f4353f" ) ) & ";white-space:nowrap'>" & IF ( _te4, IF ( _dl4 >= 0, "&#9650;", "&#9660;" ), "" ) & " " & IF ( _te4, FORMAT ( _dl4, "+0.0%;-0.0%" ), "&#8212;" ) & "</div><div style='font-size:15px;color:#93afc9;margin-top:2px'>&#916; Per.</div></div></div><div style='margin-top:12px'><div style='position:relative;height:20px;background:#123855;border-radius:10px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg4, "0" ) & "%;height:100%;background:" & _co4 & ";border-radius:10px'></div><div style='position:absolute;left:62.5%;top:-4px;height:28px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='margin-top:9px;display:flex;align-items:baseline;font-size:16px;color:#93afc9'><span style='white-space:nowrap'>" & IF ( ISBLANK ( _rf4 ), "Ref. &#8212;", "Ref. " & FORMAT ( _rf4, "#,##0.0" ) & " kWh/kg" ) & "</span><b style='margin-left:auto;padding-left:8px;font-size:19px;color:#ffffff'>" & IF ( ISBLANK ( _rf4 ) || ISBLANK ( _v4 ), "&#8212;", FORMAT ( DIVIDE ( _v4, _rf4 ), "0%" ) ) & "</b></div></div>"
+			        & "<div style='flex:1;min-width:0;display:flex;flex-direction:column;background:#0b2740;border:1px solid #1b4a71;border-radius:10px;padding:13px 14px 12px 14px'><div style='display:flex;align-items:center;gap:11px'><div style='width:44px;height:44px;flex:none;border-radius:11px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='23' height='23' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='5.2' r='2.3'/><circle cx='5.2' cy='17' r='2.3'/><circle cx='18.8' cy='17' r='2.3'/><path d='M10.8 7.2L6.4 14.9M13.2 7.2l4.4 7.7M7.5 17h9'/></svg></div><div style='min-width:0'><div style='font-size:17px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Coagulante</div><div style='font-size:16px;color:#93afc9;margin-top:1px;white-space:nowrap'>gPAC/gP rem</div></div></div><div style='flex:1'></div><div style='display:flex;align-items:flex-end;gap:6px'><div style='font-size:38px;font-weight:700;color:#ffffff;line-height:1;white-space:nowrap'>" & IF ( ISBLANK ( _v5 ), "&#8212;", FORMAT ( _v5, "#,##0.0" ) ) & "</div><div style='margin-left:auto;text-align:right'><div style='font-size:18px;font-weight:700;color:" & IF ( NOT _te5, "#5c7791", IF ( _dl5 < 0, "#4ed15d", "#f4353f" ) ) & ";white-space:nowrap'>" & IF ( _te5, IF ( _dl5 >= 0, "&#9650;", "&#9660;" ), "" ) & " " & IF ( _te5, FORMAT ( _dl5, "+0.0%;-0.0%" ), "&#8212;" ) & "</div><div style='font-size:15px;color:#93afc9;margin-top:2px'>&#916; Per.</div></div></div><div style='margin-top:12px'><div style='position:relative;height:20px;background:#123855;border-radius:10px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg5, "0" ) & "%;height:100%;background:" & _co5 & ";border-radius:10px'></div><div style='position:absolute;left:62.5%;top:-4px;height:28px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='margin-top:9px;display:flex;align-items:baseline;font-size:16px;color:#93afc9'><span style='white-space:nowrap'>" & IF ( ISBLANK ( _rf5 ), "Ref. &#8212;", "Ref. " & FORMAT ( _rf5, "#,##0.0" ) & " gPAC/gP" ) & "</span><b style='margin-left:auto;padding-left:8px;font-size:19px;color:#ffffff'>" & IF ( ISBLANK ( _rf5 ) || ISBLANK ( _v5 ), "&#8212;", FORMAT ( DIVIDE ( _v5, _rf5 ), "0%" ) ) & "</b></div></div>"
 			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;padding:2px 6px'>"
-			        & "<div style='font-size:28px;font-weight:700;line-height:1'>" & FORMAT ( Valor, FmtValor ) & "</div>"
-			        & "<div style='margin-top:2px;font-size:12px;font-weight:600;color:" & CorVar & "'>" & Seta & " " & TxtVar & " <span style='font-size:11px;font-weight:400;color:#4a5b70'>Δ Per.</span>"
-			        & "</div>"
-			        & "<div style='margin-top:6px'>"
-			        & "<div style='position:relative;height:10px;background:#e6edf5;border-radius:5px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:5px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:18px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<div style='display:flex;justify-content:space-between;margin-top:8px;font-size:11px;color:#4a5b70'>"
-			        & "<span>Ref. " & FORMAT ( Ref, FmtValor ) & UnidadeRef & "</span>"
-			        & "<b style='font-size:13px;color:#0b2a5b'>" & FORMAT ( Atingimento, "0%" ) & "</b>"
-			        & "</div>"
-			        & "</div>"
+			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style><div style='font-family:Segoe UI,sans-serif;height:100vh;width:100%;display:flex;flex-direction:column;gap:5px'><div style='height:62px;flex:none;border-radius:10px;background:linear-gradient(90deg,#0a6a62 0%,#064b47 48%,#05282f 100%);border:1px solid #2a6ca8;display:flex;align-items:center;gap:14px;padding:0 18px'><span style='color:#3ddc84;display:flex'><svg viewBox='0 0 24 24' width='34' height='34' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><path d='M20 4c0 8.3-4.2 12.4-10.4 12.4A5.6 5.6 0 0 1 4 10.8C4 5.6 9.6 4 20 4z'/><path d='M4.6 19.4C7 15 11 11.6 16.2 9.6'/></svg></span><span style='color:#4fe3dd;display:flex'><svg viewBox='0 0 24 24' width='34' height='34' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><path d='M13.4 2.5L4.8 13.4h5.6l-.8 8.1 8.6-10.9h-5.6z' fill='currentColor' stroke='none'/></svg></span><span style='font-size:27px;font-weight:700;color:#ffffff;letter-spacing:0.8px;white-space:nowrap'>CONSUMO DE QUÍMICOS E ENERGIA</span><span style='margin-left:34px;font-size:16px;color:#9dbbd8;font-weight:400;white-space:nowrap'>Consumos específicos</span></div><div style='flex:1;min-height:0;display:flex;gap:9px;padding:11px;background:#001f3a;border:1px solid #143d5c;border-radius:10px'>" & _itens & "</div></div>"
 			```
-		lineageTag: b582bfc9-12bd-449f-8ea2-e79eaf9d0dd0
+		displayFolder: Painel Operacional
+		lineageTag: 40e31478-e022-5268-8ccd-9417526a0b12
 
-	measure 'HTML Consumo OR' = ```
-			    -- ===== EDITAR AQUI (Consumo OR) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Energia | Consumo OR" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR Anterior = CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR VarPeriodo = DIVIDE ( Valor - Anterior, Anterior )    -- variação vs 30 dias anteriores
-			    VAR TipoVar = "%"
-			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0.00"
-			    VAR UnidadeRef = ""
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			    VAR VariacaoBoa = IF ( MenorMelhor, VarPeriodo < 0, VarPeriodo > 0 )
-			    VAR CorVar = IF ( VariacaoBoa, "#2e7d32", "#c62828" )
-			    VAR Seta = IF ( VarPeriodo >= 0, "▲", "▼" )
-			    VAR TxtVar =
-			        IF ( TipoVar = "%", FORMAT ( VarPeriodo, "+0.0%;-0.0%" ), FORMAT ( VarPeriodo, "+0.0;-0.0" ) & " p.p." )
+	/// Painel VOLUMES da Visão Geral: Clientes, Blend, Perdas. Valor = média dos últimos 30 dias com dado ([Valor 30d]); referência = Target_Min/Target_Max da dim_indicadores. Verde dentro da meta, amarelo até 10% fora, vermelho além disso. A barra enche até 160% da referência e o tracejado marca os 100%.
+	measure 'HTML Painel Volumes' = ```
+			VAR _ids1 = { "Volumes | Todos Clientes" }
+			VAR _v1 = 0.0115740741 * CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids1, fato_indicadores[ID_Indicador] ) )
+			VAR _mi1 = 0.0115740741 * CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids1, dim_indicadores[ID_Indicador] ) )
+			VAR _ma1 = 0.0115740741 * CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids1, dim_indicadores[ID_Indicador] ) )
+			VAR _rf1 = _mi1
+			VAR _co1 = SWITCH ( TRUE (), ISBLANK ( _v1 ) || ISBLANK ( _rf1 ), "#5c7791", _v1 >= _rf1, "#4ed15d", _v1 >= _rf1 * 0.9, "#feb825", "#f4353f" )
+			VAR _lg1 = MIN ( MAX ( DIVIDE ( _v1, _rf1 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _an1 = 0.0115740741 * CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids1, fato_indicadores[ID_Indicador] ) )
+			VAR _te1 = NOT ISBLANK ( _v1 ) && NOT ISBLANK ( _an1 ) && _an1 <> 0
+			VAR _dl1 = DIVIDE ( _v1 - _an1, _an1 )
+			VAR _ids3 = { "Perdas | Perda Total" }
+			VAR _v3 = 100.0 * CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids3, fato_indicadores[ID_Indicador] ) )
+			VAR _mi3 = 100.0 * CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids3, dim_indicadores[ID_Indicador] ) )
+			VAR _ma3 = 100.0 * CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids3, dim_indicadores[ID_Indicador] ) )
+			VAR _rf3 = _ma3
+			VAR _co3 = SWITCH ( TRUE (), ISBLANK ( _v3 ) || ISBLANK ( _rf3 ), "#5c7791", _v3 <= _rf3, "#4ed15d", _v3 <= _rf3 * 1.1, "#feb825", "#f4353f" )
+			VAR _lg3 = MIN ( MAX ( DIVIDE ( _v3, _rf3 ), 0 ), 1.6 ) / 1.6 * 100
+			VAR _an3 = 100.0 * CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( _ids3, fato_indicadores[ID_Indicador] ) )
+			VAR _te3 = NOT ISBLANK ( _v3 ) && NOT ISBLANK ( _an3 ) && _an3 <> 0
+			VAR _dl3 = _v3 - _an3
+			VAR _itens =
+			    "<div style='flex:1;min-width:0;display:flex;flex-direction:column;background:#0b2740;border:1px solid #1b4a71;border-radius:10px;padding:13px 14px 12px 14px'><div style='display:flex;align-items:center;gap:11px'><div style='width:44px;height:44px;flex:none;border-radius:11px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='23' height='23' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M2.6 8.4h7.2a2.6 2.6 0 0 1 2.6 2.6v2a2.6 2.6 0 0 0 2.6 2.6h6.4'/><path d='M18.6 12.8l2.8 2.8-2.8 2.8M2.6 5.6v5.6'/></svg></div><div style='min-width:0'><div style='font-size:17px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Clientes</div><div style='font-size:16px;color:#93afc9;margin-top:1px;white-space:nowrap'>L/s</div></div></div><div style='flex:1'></div><div style='display:flex;align-items:flex-end;gap:6px'><div style='font-size:38px;font-weight:700;color:#ffffff;line-height:1;white-space:nowrap'>" & IF ( ISBLANK ( _v1 ), "&#8212;", FORMAT ( _v1, "#,##0.0" ) ) & "</div><div style='margin-left:auto;text-align:right'><div style='font-size:18px;font-weight:700;color:" & IF ( NOT _te1, "#5c7791", IF ( _dl1 > 0, "#4ed15d", "#f4353f" ) ) & ";white-space:nowrap'>" & IF ( _te1, IF ( _dl1 >= 0, "&#9650;", "&#9660;" ), "" ) & " " & IF ( _te1, FORMAT ( _dl1, "+0.0%;-0.0%" ), "&#8212;" ) & "</div><div style='font-size:15px;color:#93afc9;margin-top:2px'>&#916; Per.</div></div></div><div style='margin-top:12px'><div style='position:relative;height:20px;background:#123855;border-radius:10px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg1, "0" ) & "%;height:100%;background:" & _co1 & ";border-radius:10px'></div><div style='position:absolute;left:62.5%;top:-4px;height:28px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='margin-top:9px;display:flex;align-items:baseline;font-size:16px;color:#93afc9'><span style='white-space:nowrap'>" & IF ( ISBLANK ( _rf1 ), "Ref. &#8212;", "Ref. " & FORMAT ( _rf1, "#,##0.0" ) & " L/s" ) & "</span><b style='margin-left:auto;padding-left:8px;font-size:19px;color:#ffffff'>" & IF ( ISBLANK ( _rf1 ) || ISBLANK ( _v1 ), "&#8212;", FORMAT ( DIVIDE ( _v1, _rf1 ), "0%" ) ) & "</b></div></div>"
+			        & "<div style='flex:1;min-width:0;display:flex;flex-direction:column;background:#0b2740;border:1px solid #1b4a71;border-radius:10px;padding:13px 14px 12px 14px'><div style='display:flex;align-items:center;gap:11px'><div style='width:44px;height:44px;flex:none;border-radius:11px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='23' height='23' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M9.4 2.8h5.2M10.3 2.8v6.1L5 18.6a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5.3-9.7V2.8'/><path d='M7.2 15.4h9.6'/><circle cx='10' cy='18' r='0.9' fill='currentColor' stroke='none'/><circle cx='13.4' cy='18.6' r='0.9' fill='currentColor' stroke='none'/></svg></div><div style='min-width:0'><div style='font-size:17px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Blend</div><div style='font-size:16px;color:#93afc9;margin-top:1px;white-space:nowrap'>%</div></div></div><div style='flex:1'></div><div style='font-size:38px;font-weight:700;color:#5c7791;line-height:1'>&#8212;</div><div style='margin-top:12px;font-size:15px;color:#6b89a6;line-height:1.35'>A base ainda não traz o indicador de Blend.</div></div>"
+			        & "<div style='flex:1;min-width:0;display:flex;flex-direction:column;background:#0b2740;border:1px solid #1b4a71;border-radius:10px;padding:13px 14px 12px 14px'><div style='display:flex;align-items:center;gap:11px'><div style='width:44px;height:44px;flex:none;border-radius:11px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='23' height='23' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3c3.4 4 5.5 6.6 5.5 9.3A5.5 5.5 0 0 1 6.5 12.3C6.5 9.6 8.6 7 12 3z'/></svg></div><div style='min-width:0'><div style='font-size:17px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Perdas</div><div style='font-size:16px;color:#93afc9;margin-top:1px;white-space:nowrap'>%</div></div></div><div style='flex:1'></div><div style='display:flex;align-items:flex-end;gap:6px'><div style='font-size:38px;font-weight:700;color:#ffffff;line-height:1;white-space:nowrap'>" & IF ( ISBLANK ( _v3 ), "&#8212;", FORMAT ( _v3, "#,##0.0" ) ) & "</div><div style='margin-left:auto;text-align:right'><div style='font-size:18px;font-weight:700;color:" & IF ( NOT _te3, "#5c7791", IF ( _dl3 < 0, "#4ed15d", "#f4353f" ) ) & ";white-space:nowrap'>" & IF ( _te3, IF ( _dl3 >= 0, "&#9650;", "&#9660;" ), "" ) & " " & IF ( _te3, FORMAT ( _dl3, "+0.0;-0.0" ) & " p.p.", "&#8212;" ) & "</div><div style='font-size:15px;color:#93afc9;margin-top:2px'>&#916; Per.</div></div></div><div style='margin-top:12px'><div style='position:relative;height:20px;background:#123855;border-radius:10px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg3, "0" ) & "%;height:100%;background:" & _co3 & ";border-radius:10px'></div><div style='position:absolute;left:62.5%;top:-4px;height:28px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='margin-top:9px;display:flex;align-items:baseline;font-size:16px;color:#93afc9'><span style='white-space:nowrap'>" & IF ( ISBLANK ( _rf3 ), "Ref. &#8212;", "Ref. " & FORMAT ( _rf3, "#,##0.0" ) & " %" ) & "</span><b style='margin-left:auto;padding-left:8px;font-size:19px;color:#ffffff'>" & IF ( ISBLANK ( _rf3 ) || ISBLANK ( _v3 ), "&#8212;", FORMAT ( DIVIDE ( _v3, _rf3 ), "0%" ) ) & "</b></div></div>"
 			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;padding:0 4px'>"
-			        & "<div style='display:flex;align-items:baseline;justify-content:space-between'>"
-			        & "<b style='font-size:18px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<span style='font-size:11px;font-weight:600;color:" & CorVar & "'>" & Seta & " " & TxtVar & "</span>"
-			        & "</div>"
-			        & "<div style='display:flex;align-items:center;gap:8px;margin-top:6px'>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:7px;background:#e6edf5;border-radius:3px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:3px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:15px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='font-size:10px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			        & "</div>"
+			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style><div style='font-family:Segoe UI,sans-serif;height:100vh;width:100%;display:flex;flex-direction:column;gap:5px'><div style='height:62px;flex:none;border-radius:10px;background:linear-gradient(90deg,#1a5a96 0%,#0d3a68 46%,#071f38 100%);border:1px solid #2a6ca8;display:flex;align-items:center;gap:14px;padding:0 18px'><span style='color:#5fb4f5;display:flex'><svg viewBox='0 0 24 24' width='34' height='34' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3c3.4 4 5.5 6.6 5.5 9.3A5.5 5.5 0 0 1 6.5 12.3C6.5 9.6 8.6 7 12 3z'/></svg></span><span style='font-size:27px;font-weight:700;color:#ffffff;letter-spacing:0.8px;white-space:nowrap'>VOLUMES</span><span style='margin-left:auto;padding-left:14px;font-size:16px;color:#9dbbd8;font-weight:400;white-space:nowrap'>Distribuição e balanço hídrico</span></div><div style='flex:1;min-height:0;display:flex;gap:9px;padding:11px;background:#001f3a;border:1px solid #143d5c;border-radius:10px'>" & _itens & "</div></div>"
 			```
-		lineageTag: 82fe0299-1ef3-433a-b33e-5c79bca68f7f
+		displayFolder: Painel Operacional
+		lineageTag: 42a34f17-360d-57f9-ae44-84db616022dc
 
-	measure 'HTML Consumo Soprador' = ```
-			    -- ===== EDITAR AQUI (Consumo Soprador TMBR) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Energia | Consumo SOP Biológico/ Amônia Removida" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR Anterior = CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR VarPeriodo = DIVIDE ( Valor - Anterior, Anterior )    -- variação vs 30 dias anteriores
-			    VAR TipoVar = "%"
-			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0.0"
-			    VAR UnidadeRef = ""
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF ( ISBLANK ( Ref ), "#90a4ae",
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        ) )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = IF ( ISBLANK ( Ref ), 0, MIN ( Atingimento, Escala ) / Escala * 100 )
-			    VAR Marcador = 100 / Escala
-			    VAR VariacaoBoa = IF ( MenorMelhor, VarPeriodo < 0, VarPeriodo > 0 )
-			    VAR CorVar = IF ( VariacaoBoa, "#2e7d32", "#c62828" )
-			    VAR Seta = IF ( VarPeriodo >= 0, "▲", "▼" )
-			    VAR TxtVar =
-			        IF ( TipoVar = "%", FORMAT ( VarPeriodo, "+0.0%;-0.0%" ), FORMAT ( VarPeriodo, "+0.0;-0.0" ) & " p.p." )
+	/// Faixa do rodapé: data da última medição da base e a legenda das cores e dos termos.
+	measure 'HTML Rodapé' = ```
+			VAR _ult = CALCULATE ( MAX ( fato_indicadores[Data] ), ALL ( fato_indicadores ) )
 			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;padding:0 4px'>"
-			        & "<div style='display:flex;align-items:baseline;justify-content:space-between'>"
-			        & "<b style='font-size:18px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<span style='font-size:11px;font-weight:600;color:" & CorVar & "'>" & Seta & " " & TxtVar & "</span>"
-			        & "</div>"
-			        & "<div style='display:flex;align-items:center;gap:8px;margin-top:6px'>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:7px;background:#e6edf5;border-radius:3px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:3px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:15px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='font-size:10px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			        & "</div>"
+			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style><div style='font-family:Segoe UI,sans-serif;height:100vh;width:100%;display:flex;align-items:center;gap:24px;padding:0 26px;background:#04182a;border:1px solid #1f5a66;border-radius:10px'><span style='color:#93afc9;display:flex;flex:none'><svg viewBox='0 0 24 24' width='25' height='25' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='9'/><path d='M12 6.6V12l3.6 2.2'/></svg></span><span style='font-size:17px;color:#dce9f7;white-space:nowrap'>Última atualização: " & IF ( ISBLANK ( _ult ), "&#8212;", FORMAT ( _ult, "dd/mm/yyyy" ) ) & "</span><div style='width:1px;height:42px;background:#2a5f78;flex:none'></div><div><div style='font-size:17px;color:#dce9f7;white-space:nowrap'><b>Legenda do status</b> <span style='font-size:15px;color:#93afc9'>(em relação à referência)</span></div><div style='margin-top:7px;font-size:16px;color:#dce9f7;white-space:nowrap'><span style='display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:8px;background:#4ed15d'></span>Dentro da meta &nbsp;&nbsp;&nbsp;<span style='display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:8px;background:#feb825'></span>Atenção &nbsp;&nbsp;&nbsp;<span style='display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:8px;background:#f4353f'></span>Fora da meta</div></div><div style='width:1px;height:42px;background:#2a5f78;flex:none'></div><div style='display:flex;align-items:center;gap:11px'><b style='font-size:17px;color:#dce9f7;white-space:nowrap'>&#916; Per.</b><span style='font-size:15px;color:#93afc9;line-height:1.3'>Variação em relação ao<br>período anterior</span></div><div style='width:1px;height:42px;background:#2a5f78;flex:none'></div><div style='display:flex;align-items:center;gap:11px'><b style='font-size:17px;color:#dce9f7;white-space:nowrap'>Ref.</b><span style='font-size:15px;color:#93afc9;line-height:1.3'>Valor de referência<br>(meta)</span></div><div style='width:1px;height:42px;background:#2a5f78;flex:none'></div><div style='display:flex;align-items:center;gap:11px'><b style='font-size:17px;color:#dce9f7;white-space:nowrap'>Faixa</b><span style='font-size:15px;color:#93afc9;line-height:1.3'>Faixa operacional</span></div><div style='margin-left:auto;padding-left:24px;font-size:16px;color:#93afc9;white-space:nowrap'>Aquapolo &nbsp;&#124;&nbsp; GS Inima &nbsp;&#124;&nbsp; Sabesp</div></div>"
 			```
-		lineageTag: eb51ac46-e0cc-431c-9d7f-320ebdb021a1
-
-	measure 'HTML Consumo Coagulante' = ```
-			    -- ===== EDITAR AQUI (Consumo Coagulante) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Químicos | PAC/ P rem" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR Anterior = CALCULATE ( [Valor 30d Anterior], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR VarPeriodo = DIVIDE ( Valor - Anterior, Anterior )    -- variação vs 30 dias anteriores
-			    VAR TipoVar = "%"
-			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0.0"
-			    VAR UnidadeRef = ""
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			    VAR VariacaoBoa = IF ( MenorMelhor, VarPeriodo < 0, VarPeriodo > 0 )
-			    VAR CorVar = IF ( VariacaoBoa, "#2e7d32", "#c62828" )
-			    VAR Seta = IF ( VarPeriodo >= 0, "▲", "▼" )
-			    VAR TxtVar =
-			        IF ( TipoVar = "%", FORMAT ( VarPeriodo, "+0.0%;-0.0%" ), FORMAT ( VarPeriodo, "+0.0;-0.0" ) & " p.p." )
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;padding:0 4px'>"
-			        & "<div style='display:flex;align-items:baseline;justify-content:space-between'>"
-			        & "<b style='font-size:18px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<span style='font-size:11px;font-weight:600;color:" & CorVar & "'>" & Seta & " " & TxtVar & "</span>"
-			        & "</div>"
-			        & "<div style='display:flex;align-items:center;gap:8px;margin-top:6px'>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:7px;background:#e6edf5;border-radius:3px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:3px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:15px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='font-size:10px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			        & "</div>"
-			```
-		lineageTag: ae6a0032-ac15-4e38-bee6-e5909f4f274d
-
-	measure 'HTML Retrolavagem' = ```
-			    -- ===== EDITAR AQUI (Nº Retrolavagem Disco) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Filtro Disco | Número de Retrolavagens (AV)" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
-			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			```
-		lineageTag: 826d702a-9218-403d-a7e9-589858469f3c
-
-	measure 'HTML DQO' = ```
-			    -- ===== EDITAR AQUI (DQO) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Água Bruta | DQO" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
-			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			```
-		lineageTag: 3fc4dfe9-c3e2-4d6a-bd63-6943e893d8fc
-
-	measure 'HTML NH3' = ```
-			    -- ===== EDITAR AQUI (NH3) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Água Bruta | Amônia" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0.0"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
-			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			```
-		lineageTag: 9be623ee-3add-48e7-9fef-4e83c0127040
-
-	measure 'HTML Condutividade' = ```
-			    -- ===== EDITAR AQUI (Condutividade) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Água Bruta | Condutividade online" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
-			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			```
-		lineageTag: f5747b77-83d7-417b-bee0-72661524552f
-
-	measure 'HTML Dureza' = ```
-			    -- ===== EDITAR AQUI (Dureza) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Água Bruta | Dureza" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
-			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			```
-		lineageTag: 5e531646-4816-47b4-bdb4-5974dda74b98
-
-	measure 'HTML Idade Lodo' = ```
-			    -- ===== EDITAR AQUI (Idade do Lodo) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Reator Biológico | Idade do lodo (IL)" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR RefMin = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR FmtValor = "0"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        SWITCH (
-			            TRUE (),
-			            Valor >= RefMin && Valor <= Ref, "#43a047",
-			            Valor >= RefMin * ( 1 - Tolerancia ) && Valor <= Ref * ( 1 + Tolerancia ), "#f9a825",
-			            "#e53935"
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
-			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			```
-		lineageTag: 9be2a327-f6f1-4fd9-8ebe-5abef8c38c8f
-
-	measure 'HTML FM' = ```
-			    -- ===== EDITAR AQUI (Alimento/Microorganismo) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Reator Biológico | Alimento/ Microoganismo (F/M)" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR RefMin = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR FmtValor = "0.00"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        SWITCH (
-			            TRUE (),
-			            Valor >= RefMin && Valor <= Ref, "#43a047",
-			            Valor >= RefMin * ( 1 - Tolerancia ) && Valor <= Ref * ( 1 + Tolerancia ), "#f9a825",
-			            "#e53935"
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
-			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			```
-		lineageTag: ea91af1e-399f-48b9-a31f-cab78f48b9e1
-
-	measure 'HTML PTM' = ```
-			    -- ===== EDITAR AQUI (Pressão Transmembrana) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM1", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM2", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM3", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM4", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM5", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM6", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM7", "Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM8" }
-			    VAR Valor = 98.0665 * CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )    -- kgf/cm² -> kPa
-			    VAR Ref = 98.0665 * CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
-			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			```
-		lineageTag: 40867451-1876-4057-912f-9017520884f4
-
-	measure 'HTML Permeabilidade' = ```
-			    -- ===== EDITAR AQUI (Permeabilidade) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Membranas de Ultrafiltração | Permeablidade - TM 1", "Membranas de Ultrafiltração | Permeablidade - TM 2", "Membranas de Ultrafiltração | Permeablidade - TM 3", "Membranas de Ultrafiltração | Permeablidade - TM 4", "Membranas de Ultrafiltração | Permeablidade - TM 5", "Membranas de Ultrafiltração | Permeablidade - TM 6", "Membranas de Ultrafiltração | Permeablidade - TM 7", "Membranas de Ultrafiltração | Permeablidade - TM 8" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR MenorMelhor = FALSE ()
-			    VAR FmtValor = "0"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
-			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			```
-		lineageTag: 67c1d952-004f-46e6-b2bc-522a9386b2f6
-
-	measure 'HTML Turbidez' = ```
-			    -- ===== EDITAR AQUI (Turbidez) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Membranas de Ultrafiltração | Turbidez online - TM1", "Membranas de Ultrafiltração | Turbidez online - TM2", "Membranas de Ultrafiltração | Turbidez online - TM3", "Membranas de Ultrafiltração | Turbidez online - TM4", "Membranas de Ultrafiltração | Turbidez online - TM5", "Membranas de Ultrafiltração | Turbidez online - TM6", "Membranas de Ultrafiltração | Turbidez online - TM7", "Membranas de Ultrafiltração | Turbidez online - TM8" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0.00"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
-			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			```
-		lineageTag: c06f81dc-233f-44ce-88b9-c0989a83ffa5
-
-	measure 'HTML Fluxo' = ```
-			    -- ===== EDITAR AQUI (Fluxo) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Membranas de Ultrafiltração | Fluxo TM's" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR RefMin = CALCULATE ( MAX ( dim_indicadores[Target_Min] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR FmtValor = "0.0"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        SWITCH (
-			            TRUE (),
-			            Valor >= RefMin && Valor <= Ref, "#43a047",
-			            Valor >= RefMin * ( 1 - Tolerancia ) && Valor <= Ref * ( 1 + Tolerancia ), "#f9a825",
-			            "#e53935"
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
-			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			```
-		lineageTag: 4f42fc6d-830c-4336-ba02-462705186a4b
-
-	measure 'HTML SDI' = ```
-			    -- ===== EDITAR AQUI (SDI) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Osmose Reversa | SDI" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0.0"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
-			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			```
-		lineageTag: e7e33d40-f9d4-4bdc-984a-3c5071c25235
-
-	measure 'HTML DP Skid 1' = ```
-			    -- ===== EDITAR AQUI (Diferencial de Pressão Skid 1) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Osmose Reversa | Diferencial de Pressão - Skid 1" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0.0"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
-			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			```
-		lineageTag: b68ceaf5-b7a4-4c07-bef2-35236505506a
-
-	measure 'HTML DP Skid 2' = ```
-			    -- ===== EDITAR AQUI (Diferencial de Pressão Skid 2) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Osmose Reversa | Diferencial de Pressão - Skid 2" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0.0"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
-			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			```
-		lineageTag: ad94b2ae-555f-4fc4-b7ff-4627d796e5c2
-
-	measure 'HTML DP Skid 3' = ```
-			    -- ===== EDITAR AQUI (Diferencial de Pressão Skid 3) =====
-			    -- Valor: média dos últimos 30 dias com dado. Ref.: meta da dim_indicadores.
-			    VAR Ids = { "Osmose Reversa | Diferencial de Pressão - Skid 3" }
-			    VAR Valor = CALCULATE ( [Valor 30d], REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, fato_indicadores[ID_Indicador] ) )
-			    VAR Ref = CALCULATE ( MAX ( dim_indicadores[Target_Max] ), REMOVEFILTERS ( dim_indicadores ), TREATAS ( Ids, dim_indicadores[ID_Indicador] ) )
-			    VAR MenorMelhor = TRUE ()
-			    VAR FmtValor = "0.0"
-			    -- ===== daqui pra baixo não precisa mexer =====
-			    VAR Tolerancia = 0.10      -- faixa de "Atenção" (10% além da referência)
-			    VAR Atingimento = DIVIDE ( Valor, Ref )
-			    VAR Cor =
-			        IF (
-			            MenorMelhor,
-			            SWITCH ( TRUE (), Valor <= Ref, "#43a047", Valor <= Ref * ( 1 + Tolerancia ), "#f9a825", "#e53935" ),
-			            SWITCH ( TRUE (), Valor >= Ref, "#43a047", Valor >= Ref * ( 1 - Tolerancia ), "#f9a825", "#e53935" )
-			        )
-			    VAR Escala = 1.3           -- barra cheia = 130% da referência
-			    VAR Largura = MIN ( Atingimento, Escala ) / Escala * 100
-			    VAR Marcador = 100 / Escala
-			RETURN
-			    "<div style='font-family:Segoe UI,sans-serif;color:#0b2a5b;display:flex;align-items:center;gap:10px;height:100%'>"
-			        & "<b style='width:38px;text-align:right;font-size:14px'>" & FORMAT ( Valor, FmtValor ) & "</b>"
-			        & "<div style='flex:1'>"
-			        & "<div style='position:relative;height:9px;background:#e6edf5;border-radius:4px'>"
-			        & "<div style='width:" & FORMAT ( Largura, "0" ) & "%;height:100%;background:" & Cor & ";border-radius:4px'>"
-			        & "</div>"
-			        & "<div style='position:absolute;left:" & FORMAT ( Marcador, "0" ) & "%;top:-4px;height:17px;border-left:2px dashed #0b2a5b'>"
-			        & "</div>"
-			        & "</div>"
-			        & "</div>"
-			        & "<span style='width:56px;font-size:11px;color:#4a5b70;white-space:nowrap'>Ref. " & FORMAT ( Ref, FmtValor ) & "</span>"
-			        & "</div>"
-			```
-		lineageTag: 39e32d72-b575-4b51-a02c-96c145951b6d
+		displayFolder: Painel Operacional
+		lineageTag: 3ef746ee-f6d1-5e1f-bbfe-c1cbaf7c89ca
 
 	column Aux
 		dataType: string
@@ -918,4 +266,3 @@ table 'Medidas HTML'
 	partition 'Medidas HTML' = calculated
 		mode: import
 		source = ROW("Aux", BLANK())
-

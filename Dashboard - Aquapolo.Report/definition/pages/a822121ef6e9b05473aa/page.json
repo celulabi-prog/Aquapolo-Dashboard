@@ -13,9 +13,8 @@
             "solid": {
               "color": {
                 "expr": {
-                  "ThemeDataColor": {
-                    "ColorId": 0,
-                    "Percent": 0
+                  "Literal": {
+                    "Value": "'#000f21'"
                   }
                 }
               }
@@ -43,6 +42,30 @@
                 "expr": {
                   "Literal": {
                     "Value": "'Fit'"
+                  }
+                }
+              }
+            }
+          },
+          "transparency": {
+            "expr": {
+              "Literal": {
+                "Value": "0D"
+              }
+            }
+          }
+        }
+      }
+    ],
+    "outspace": [
+      {
+        "properties": {
+          "color": {
+            "solid": {
+              "color": {
+                "expr": {
+                  "Literal": {
+                    "Value": "'#02080f'"
                   }
                 }
               }
