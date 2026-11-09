@@ -37,7 +37,7 @@ Y_PAN  = Y_CARD + H_CARD + V2
 Y_VAR  = Y_PAN + H_PAN + V3
 LARG   = COL[0] + COL[1] + COL[2] + 2 * GAP
 
-CARD = ('height:100%;width:100%;box-sizing:border-box;overflow:hidden;display:flex;'
+CARD = ('height:100vh;width:100%;box-sizing:border-box;overflow:hidden;display:flex;'
         'flex-direction:column;background:' + PANEL + ';border:1px solid ' + BORDA
         + ';border-radius:8px')
 

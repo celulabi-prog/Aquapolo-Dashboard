@@ -20,7 +20,7 @@ def cabecalho(d):
     pt = ("<span style='display:inline-block;width:7px;height:7px;border-radius:50%;"
           "margin-right:5px;background:")
     return RESET + (
-        "<div style='" + FONTE + "position:relative;height:100%;"
+        "<div style='" + FONTE + "position:relative;height:100vh;"
         "background:linear-gradient(100deg,#0c2038 0%,#133053 58%,#17436f 100%);"
         "border:1px solid " + BORDA + ";border-radius:8px'>"
         + "<div style='position:absolute;left:22px;top:24px'>"

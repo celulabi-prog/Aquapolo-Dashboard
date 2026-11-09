@@ -10,8 +10,12 @@ P = prep.paineis(c)
 
 # cada painel é um visual separado no Power BI: um iframe reproduz isso fielmente
 def visual(conteudo, x, y, w, h):
+    # O visual HTML do Power BI injeta o conteudo dentro de um <div> SEM altura
+    # definida. Reproduzir isso aqui e' o que faz o preview mostrar o mesmo
+    # colapso de altura que acontece no Power BI.
+    miolo = "<div class='pbi-host'>" + conteudo + "</div>"
     return ("<iframe scrolling='no' style='position:absolute;left:%dpx;top:%dpx;width:%dpx;height:%dpx;"
-            "border:0' srcdoc=\"%s\"></iframe>" % (x, y, w, h, html.escape(conteudo, quote=True)))
+            "border:0' srcdoc=\"%s\"></iframe>" % (x, y, w, h, html.escape(miolo, quote=True)))
 
 
 def slicer(rotulo, valor, x, y, w, h, destaque=False):
