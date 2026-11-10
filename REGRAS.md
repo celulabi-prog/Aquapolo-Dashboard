@@ -1,0 +1,1 @@
+Seguir a gramática da norma brasileira.
