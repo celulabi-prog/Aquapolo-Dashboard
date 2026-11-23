@@ -1,0 +1,47 @@
+/// Meses do ano. Alimenta a segmentação "Mês" da página Energia (tabela desconectada).
+table 'Energia Mês'
+	lineageTag: 1d496808-f4c4-4617-88b1-7b20275bd270
+
+	column MesNum
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 4cc1693e-39f2-4c50-a417-66a38f8861e3
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [MesNum]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Mês
+		dataType: string
+		lineageTag: 1309fd6d-13b5-4365-99a3-f5ffa54f59db
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Mês]
+		sortByColumn: MesNum
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Energia Mês' = calculated
+		mode: import
+		source =
+				DATATABLE (
+				    "MesNum", INTEGER,
+				    "Mês", STRING,
+				    {
+				        { 1, "Janeiro" },
+				        { 2, "Fevereiro" },
+				        { 3, "Março" },
+				        { 4, "Abril" },
+				        { 5, "Maio" },
+				        { 6, "Junho" },
+				        { 7, "Julho" },
+				        { 8, "Agosto" },
+				        { 9, "Setembro" },
+				        { 10, "Outubro" },
+				        { 11, "Novembro" },
+				        { 12, "Dezembro" }
+				    }
+				)
+

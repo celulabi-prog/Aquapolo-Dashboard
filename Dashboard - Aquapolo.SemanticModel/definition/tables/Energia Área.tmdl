@@ -1,0 +1,75 @@
+/// Áreas de consumo de energia da página Energia (tabela desconectada).
+/// ID_Indicador liga cada área à base. Cor e CorTexto são usadas na rosca de participação.
+table 'Energia Área'
+	lineageTag: 5fb4b93a-41f3-45c7-8b15-3dca428c5e3e
+
+	column Ordem
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 5583180d-174a-459a-b228-702c62350cae
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ordem]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Área
+		dataType: string
+		lineageTag: 2ce50c69-2fd9-4fbb-9515-1f5936411964
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Área]
+		sortByColumn: Ordem
+
+		annotation SummarizationSetBy = Automatic
+
+	column ID_Indicador
+		dataType: string
+		isHidden
+		lineageTag: 98a85fdb-062e-4d5a-bcef-b00c78db7eb7
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [ID_Indicador]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Cor
+		dataType: string
+		isHidden
+		lineageTag: 6fcc9bf8-ba74-4e8c-ba4d-06543d5f7608
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Cor]
+
+		annotation SummarizationSetBy = Automatic
+
+	column CorTexto
+		dataType: string
+		isHidden
+		lineageTag: 33d5b465-3059-40d4-8e0e-26fb655bd7b4
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [CorTexto]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Energia Área' = calculated
+		mode: import
+		source =
+				DATATABLE (
+				    "Ordem", INTEGER,
+				    "Área", STRING,
+				    "ID_Indicador", STRING,
+				    "Cor", STRING,
+				    "CorTexto", STRING,
+				    {
+				        { 1, "EEBC", "Energia | Consumo EEBC", "#174A87", "#FFFFFF" },
+				        { 2, "AUX", "Energia | Consumo AUX", "#2A7FD9", "#FFFFFF" },
+				        { 3, "SOP", "Energia | Consumo SOP", "#1F63B3", "#FFFFFF" },
+				        { 4, "TMBR", "Energia | Consumo TMBR", "#3B9CFF", "#06162E" },
+				        { 5, "OR", "Energia | Consumo OR", "#5FB3FF", "#06162E" },
+				        { 6, "EEAC", "Energia | Consumo EEAC", "#9AD0FF", "#06162E" }
+				    }
+				)
+
