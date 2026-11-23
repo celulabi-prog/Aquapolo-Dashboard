@@ -161,22 +161,6 @@ def cartao_ind(C):
             + C['pct'] + "</b></div></div>")
 
 
-def cartao_vazio(C):
-    """Cartão de indicador que a base ainda não tem."""
-    uni = ("<div style='font-size:16px;color:" + SEC + ";margin-top:1px;white-space:nowrap'>"
-           + C['unidade'] + "</div>") if C['unidade'] else ''
-    return ("<div style='flex:1;min-width:0;display:flex;flex-direction:column;background:" + CARTAO
-            + ";border:1px solid " + BORDA_C + ";border-radius:10px;padding:13px 14px 12px 14px'>"
-            + "<div style='display:flex;align-items:center;gap:11px'>" + chip(C['icone'], 44, 23, raio=11)
-            + "<div style='min-width:0'><div style='font-size:17px;font-weight:600;color:" + BRANCO
-            + ";line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>"
-            + C['nome'] + "</div>" + uni + "</div></div>"
-            + "<div style='flex:1'></div>"
-            + "<div style='font-size:38px;font-weight:700;color:" + CINZA + ";line-height:1'>&#8212;</div>"
-            + "<div style='margin-top:12px;font-size:15px;color:" + TER + ";line-height:1.35'>"
-            + C['aviso'] + "</div></div>")
-
-
 def painel_cartoes(d, cartoes):
     return RESET + (
         "<div style='" + FONTE + "height:100vh;width:100%;display:flex;flex-direction:column;gap:5px'>"

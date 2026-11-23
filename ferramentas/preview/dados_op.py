@@ -1,15 +1,20 @@
 # -*- coding: utf-8 -*-
 """Refaz em Python as contas das medidas do Painel Operacional, para o preview.
 
-Espelha o DAX:
-  [Valor 30d]          = DIVIDE(SUM(Numerador), SUM(Denominador)) nos 30 dias
-                         até a última data COM DADO daquele indicador
-  [Valor 30d Anterior] = mesma conta nos 30 dias anteriores a esses
+Espelha o que o Power BI faz com a planilha 'Dados BI.xlsx':
+  ler()      = a consulta M da tabela 'Dados BI' (Data, Indicador, Valor; só números)
+  calcular() = as medidas DAX '<indicador> 30d' e '<indicador> 30d Anterior'
+
+A planilha só é lida, nunca gravada.
+
+    python dados_op.py               # os números de hoje
+    python dados_op.py 2026-09-14    # como o painel estaria nesse dia
 """
 import pandas as pd
 import indicadores_op as IX
 
-BASE = r'C:\Aquapolo\Base_PowerBI'
+ARQUIVO = r'G:\OME\Operacao\BI\Dados BI.xlsx'     # o mesmo do parâmetro ArquivoDadosBI
+ABA = 'Dados BI'
 
 
 def num(v, casas=0):
@@ -26,38 +31,60 @@ def pct(v, casas=1, sufixo='%'):
     return ('%+.*f' % (casas, v)).replace('.', ',') + sufixo
 
 
-def _janela(f, ids, ini, fim):
-    s = f[f['ID_Indicador'].isin(ids) & (f['Data'] > ini) & (f['Data'] <= fim)]
-    den = s['Denominador'].sum()
-    if not len(s) or den == 0:
+def ler(arquivo=ARQUIVO):
+    """Linha 1 = grupos, linha 2 = nomes, dados da linha 3 em diante. Fica só o que é número."""
+    bruto = pd.read_excel(arquivo, sheet_name=ABA, header=None)
+    t = bruto.iloc[2:].copy()
+    t.columns = ['Data'] + [str(c).strip() for c in bruto.iloc[1, 1:]]
+    longa = t.melt(id_vars='Data', var_name='Indicador', value_name='Valor')
+    numero = longa['Valor'].map(lambda v: isinstance(v, (int, float)) and not isinstance(v, bool))
+    longa = longa[numero & longa['Valor'].notna() & longa['Data'].notna()]
+    return longa.assign(Data=pd.to_datetime(longa['Data']), Valor=longa['Valor'].astype(float))
+
+
+def _serie(longa, ind, hoje):
+    """Os dias que valem como leitura do indicador: até hoje e, em geral, diferentes de zero."""
+    s = longa[(longa['Indicador'] == ind['coluna']) & (longa['Data'] <= hoje)].set_index('Data')['Valor']
+    if ind['conta'] == 'mediana':
+        return s[s > 0]
+    return s if ind['zero_vale'] else s[s != 0]
+
+
+def _periodo(s, peso, conta, ini, fim):
+    """O número do período (ini, fim], pela conta do indicador."""
+    w = s[(s.index > ini) & (s.index <= fim)]
+    if not len(w):
         return None
-    return s['Numerador'].sum() / den
+    if conta == 'mediana':
+        return float(w.median())
+    if conta == 'ponderada':
+        p = peso.reindex(w.index).dropna()
+        return float((w[p.index] * p).sum() / p.sum()) if p.sum() else None
+    return float(w.mean())
 
 
-def calcular():
-    f = pd.read_parquet(BASE + r'\fato_indicadores.parquet')
-    d = pd.read_parquet(BASE + r'\dim_indicadores.parquet')
-    alvo = d.set_index('ID_Indicador')[['Target_Min', 'Target_Max']]
-    d30 = pd.Timedelta(days=30)
+def calcular(hoje=None, arquivo=ARQUIVO):
+    hoje = pd.Timestamp(hoje) if hoje else pd.Timestamp.today().normalize()
+    longa = ler(arquivo)
+    faltam = [i['coluna'] for i in IX.TODOS if i['coluna'] not in set(longa['Indicador'])]
+    if faltam:
+        raise SystemExit('Colunas de indicadores_op.py que não existem (ou estão vazias) na planilha: %s'
+                         % faltam)
+    peso = longa[longa['Indicador'] == IX.PESO].groupby('Data')['Valor'].mean()
+    d = pd.Timedelta(days=IX.JANELA)
 
-    out = {'ult': f['Data'].max()}
+    validas = longa[(longa['Valor'] != 0) & (longa['Data'] <= hoje)]
+    out = {'ult': validas['Data'].max()}
     for ind in IX.TODOS:
-        ids = ind['ids']
-        r = {'v': None, 'ant': None, 'rmin': None, 'rmax': None}
-        if ids:
-            sub = f[f['ID_Indicador'].isin(ids)]
-            if len(sub):
-                fim = sub['Data'].max()
-                r['v'] = _janela(f, ids, fim - d30, fim)
-                r['ant'] = _janela(f, ids, fim - 2 * d30, fim - d30)
-            vistos = alvo.reindex(ids)
-            for c, k in (('Target_Min', 'rmin'), ('Target_Max', 'rmax')):
-                vs = vistos[c].dropna()
-                r[k] = float(vs.max()) if len(vs) else None
-        g = ind['fator']
-        for k in ('v', 'ant', 'rmin', 'rmax'):
+        s = _serie(longa, ind, hoje)
+        r = {'v': None, 'ant': None, 'rmin': ind['meta_min'], 'rmax': ind['meta_max']}
+        if len(s):
+            fim = s.index.max()
+            r['v'] = _periodo(s, peso, ind['conta'], fim - d, fim)
+            r['ant'] = _periodo(s, peso, ind['conta'], fim - 2 * d, fim - d)
+        for k in ('v', 'ant'):
             if r[k] is not None:
-                r[k] = r[k] * g
+                r[k] = r[k] * ind['fator']
         r['ref'] = r['rmax'] if ind['tipo'] in ('menor', 'faixa') else r['rmin']
         r['at'] = (r['v'] / r['ref']) if (r['v'] is not None and r['ref']) else None
         if r['v'] is not None and r['ant'] not in (None, 0):
@@ -71,8 +98,8 @@ def calcular():
 if __name__ == '__main__':
     import sys
     sys.stdout.reconfigure(encoding='utf-8')
-    c = calcular()
-    print('última data da base:', c['ult'].date())
+    c = calcular(sys.argv[1] if len(sys.argv) > 1 else None)
+    print('última data da planilha:', c['ult'].date())
     print('%-18s %10s %10s %10s %10s %8s' % ('indicador', 'valor', 'anterior', 'ref', 'atingim.', 'var'))
     for ind in IX.TODOS:
         r = c[ind['k']]

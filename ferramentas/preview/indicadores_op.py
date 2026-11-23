@@ -3,27 +3,36 @@
 Os 23 indicadores do Painel Operacional, em UMA lista só.
 
 É daqui que saem tanto os números do preview quanto as medidas DAX. Mudou a
-unidade, o ícone, a casa decimal ou o ID na base? Muda aqui e roda de novo.
+unidade, o ícone, a casa decimal, a meta ou o nome da coluna na planilha?
+Muda aqui e roda de novo.
 
+coluna: o título da coluna na linha 2 da planilha 'Dados BI.xlsx', letra por
+        letra (com os erros de digitação de lá). Se alguém renomear a coluna
+        na planilha, o indicador fica com '—' até o nome ser acertado aqui.
 tipo:
-  'menor' — quanto menor melhor; a referência é Target_Max
-  'maior' — quanto maior melhor; a referência é Target_Min
-  'faixa' — bom é ficar entre Target_Min e Target_Max
-fator: multiplica o valor e a referência (fração -> %, m³/d -> L/s).
+  'menor' — quanto menor melhor; a referência é meta_max
+  'maior' — quanto maior melhor; a referência é meta_min
+  'faixa' — bom é ficar entre meta_min e meta_max
+meta_min / meta_max: a referência, já na unidade que aparece no painel.
+conta: como os valores diários viram o número dos 30 dias
+  'media'     — média simples (leituras diretas)
+  'ponderada' — média ponderada pelo volume de clientes do dia. É igual a
+                somar o consumo e dividir pelo volume somado, que é a conta
+                que a base antiga fazia
+  'mediana'   — mediana dos valores positivos. Para as razões em que a planilha
+                não traz o divisor: um dia com divisor perto de zero estoura a
+                média (o Coagulante tem dias milhares de vezes acima do normal)
+zero_vale: na planilha o PROCV devolve 0 quando a célula de origem está vazia,
+           então 0 conta como "sem leitura". True só onde zero é leitura de verdade.
+fator: multiplica o valor da planilha (fração -> %).
 """
 
 TOLERANCIA = 0.10      # margem de "Atenção" em volta da referência
 ESCALA = 1.6           # barra cheia = 160% da referência (traço da meta a 62,5%)
 MARCADOR = 100.0 / ESCALA
+JANELA = 30            # dias de cada período
 
-
-def _trens(molde, n=8, sep=''):
-    return [molde % (sep + str(i)) for i in range(1, n + 1)]
-
-
-TMP = _trens("Membranas de Ultrafiltração | Pressão Transmembrana (TMP) - TM%s")
-PERM = _trens("Membranas de Ultrafiltração | Permeablidade - TM %s")
-TURB = _trens("Membranas de Ultrafiltração | Turbidez online - TM%s")
+PESO = 'Clientes (L/s)'      # coluna que pondera as contas 'ponderada'
 
 
 def I(**kw):
@@ -31,73 +40,88 @@ def I(**kw):
     kw.setdefault('dec_ref', kw['dec'])
     kw.setdefault('uni_ref', '')
     kw.setdefault('tipo_var', '%')
+    kw.setdefault('conta', 'media')
+    kw.setdefault('zero_vale', False)
+    kw.setdefault('meta_min', None)
+    kw.setdefault('meta_max', None)
     return kw
 
 
 # ---------------------------------------------------------------- linhas
 EEBC = [
+    # zero_vale: aqui há dias com zero retrolavagem de verdade. O preço é que um
+    # dia ainda não preenchido na origem também entra como zero.
     I(k='retrolavagem', nome='Retrolavagens', unidade='ciclos', icone='retro',
-      ids=["Filtro Disco | Número de Retrolavagens (AV)"], tipo='menor', dec=0),
+      coluna='Nº retrolayagens disco ( ciclos/d)', tipo='menor', dec=0, meta_max=12,
+      zero_vale=True),
     I(k='dqo', nome='DQO', unidade='mg/L', icone='frasco',
-      ids=["Água Bruta | DQO"], tipo='menor', dec=0),
+      coluna='DQO (mg/L)', tipo='menor', dec=0, meta_max=100),
     I(k='nh3', nome='NH3', unidade='mg/L', icone='molecula',
-      ids=["Água Bruta | Amônia"], tipo='menor', dec=1),
+      coluna='NH3 (mg/L)', tipo='menor', dec=1, meta_max=20),
     I(k='condutividade', nome='Condutividade', unidade='µS/cm', icone='ondas',
-      ids=["Água Bruta | Condutividade online"], tipo='menor', dec=0),
+      coluna='Condutividade', tipo='menor', dec=0, meta_max=650),
     I(k='dureza', nome='Dureza', unidade='mg/L', icone='diamante',
-      ids=["Água Bruta | Dureza"], tipo='menor', dec=0),
+      coluna='Dureza (mg/L)', tipo='menor', dec=0, meta_max=100),
 ]
 
 TMBR = [
     I(k='idade_lodo', nome='Idade do Lodo', unidade='dias', icone='lodo',
-      ids=["Reator Biológico | Idade do lodo (IL)"], tipo='faixa', dec=0),
+      coluna='Idade do lodo (dias)', tipo='faixa', dec=0, meta_min=18, meta_max=22),
     I(k='fm', nome='Alimento/Microorg.', unidade='g/g.d<sup>-1</sup>', icone='microorg',
-      ids=["Reator Biológico | Alimento/ Microoganismo (F/M)"], tipo='faixa', dec=2),
+      coluna='Alimento/ Microorg (g/g.d-¹)', tipo='faixa', dec=2, meta_min=0.08, meta_max=0.16),
+    # Na planilha estes três já vêm resumidos entre os 8 trens: o pior do dia
+    # (maior TMP, menor permeabilidade, maior turbidez).
     I(k='ptm', nome='TMP', unidade='bar', icone='manometro',
-      ids=TMP, tipo='menor', dec=2),
+      coluna='Pressão transmembrana (Bar)', tipo='menor', dec=2, meta_max=0.6),
     I(k='permeabilidade', nome='Permeabilidade', unidade='LMH/bar', icone='colunas',
-      ids=PERM, tipo='maior', dec=0),
+      coluna='Permeabilidade (LMH/bar)', tipo='maior', dec=0, meta_min=100),
     I(k='turbidez', nome='Turbidez', unidade='NTU', icone='turbidez',
-      ids=TURB, tipo='menor', dec=2),
+      coluna='Turbidez (NTU)', tipo='menor', dec=2, meta_max=0.4),
     I(k='fluxo', nome='Fluxo', unidade='LMH', icone='ondas',
-      ids=["Membranas de Ultrafiltração | Fluxo TM's"], tipo='faixa', dec=1),
+      coluna='Fluxo (LMH)', tipo='faixa', dec=1, meta_min=17, meta_max=24),
 ]
 
 OR = [
     I(k='sdi', nome='SDI', unidade='', icone='sdi',
-      ids=["Osmose Reversa | SDI"], tipo='menor', dec=1),
+      coluna='SDI', tipo='menor', dec=1, meta_max=3),
     I(k='dp_skid_1', nome='dP Skid 1', unidade='bar', icone='manometro',
-      ids=["Osmose Reversa | Diferencial de Pressão - Skid 1"], tipo='menor', dec=1),
+      coluna='dP Skid 1 (bar)', tipo='menor', dec=1, meta_max=3.5),
     I(k='dp_skid_2', nome='dP Skid 2', unidade='bar', icone='manometro',
-      ids=["Osmose Reversa | Diferencial de Pressão - Skid 2"], tipo='menor', dec=1),
+      coluna='dP Skid-02 (bar)', tipo='menor', dec=1, meta_max=3.5),
     I(k='dp_skid_3', nome='dP Skid 3', unidade='bar', icone='manometro',
-      ids=["Osmose Reversa | Diferencial de Pressão - Skid 3"], tipo='menor', dec=1),
+      coluna='dP Skid-03 (bar)', tipo='menor', dec=1, meta_max=3.5),
 ]
 
 # ---------------------------------------------------------------- cartões
 CONSUMO = [
     I(k='quimicos', nome='Químicos', unidade='kg/m³', icone='frasco',
-      ids=["Químicos | Consumo Unitário - Químicos"], tipo='menor', dec=2, uni_ref=' kg/m³'),
+      coluna='Químicos (Kg/m³)', tipo='menor', dec=2, uni_ref=' kg/m³', meta_max=0.12,
+      conta='ponderada'),
     I(k='energia', nome='Energia', unidade='kWh/m³', icone='raio',
-      ids=["Energia | Consumo Unitário - Energia"], tipo='menor', dec=2, uni_ref=' kWh/m³'),
+      coluna='Energia (KWh/m³)', tipo='menor', dec=2, uni_ref=' kWh/m³', meta_max=0.98,
+      conta='ponderada'),
+    # Na planilha é a energia da OR por m³ entregue aos clientes. Na base antiga
+    # era por m³ de permeado da OR, e a meta de 0,50 foi definida para aquela conta.
     I(k='energia_or', nome='Energia OR', unidade='kWh/m³', icone='engrenagem',
-      ids=["Energia | Consumo OR"], tipo='menor', dec=2, uni_ref=' kWh/m³'),
+      coluna='Energia OR KW/m³', tipo='menor', dec=2, uni_ref=' kWh/m³', meta_max=0.50,
+      conta='ponderada'),
     I(k='biologico', nome='Energia - Biológico', unidade='kWh/kg NH3 rem', icone='ventilador',
-      ids=["Energia | Consumo SOP Biológico/ Amônia Removida"], tipo='menor', dec=1,
-      uni_ref=' kWh/kg'),
+      coluna='Energia - Biológico (KWh/kg NH3 rem)', tipo='menor', dec=1, uni_ref=' kWh/kg',
+      conta='mediana'),
     I(k='coagulante', nome='Coagulante', unidade='gPAC/gP rem', icone='molecula',
-      ids=["Químicos | PAC/ P rem"], tipo='menor', dec=1, uni_ref=' gPAC/gP'),
+      coluna='Coagulante (gPAC/gP rem)', tipo='menor', dec=1, uni_ref=' gPAC/gP', meta_max=17,
+      conta='mediana'),
 ]
 
 VOLUMES = [
     I(k='clientes', nome='Clientes', unidade='L/s', icone='tubos',
-      ids=["Volumes | Todos Clientes"], tipo='maior', dec=1, fator=1 / 86.4, uni_ref=' L/s'),
-    I(k='blend', nome='Blend', unidade='%', icone='frasco', ids=[], tipo='menor', dec=1,
-      uni_ref=' %', tipo_var='p.p.',
-      aviso='A base ainda não traz o indicador de Blend.'),
+      coluna=PESO, tipo='maior', dec=1, uni_ref=' L/s', meta_min=26950 / 86.4),   # 26.950 m³/d
+    I(k='blend', nome='Blend', unidade='%', icone='frasco',
+      coluna='Blend %', tipo='menor', dec=1, fator=100.0, uni_ref=' %', tipo_var='p.p.',
+      conta='ponderada'),
     I(k='perdas', nome='Perdas', unidade='%', icone='gota',
-      ids=["Perdas | Perda Total"], tipo='menor', dec=1, fator=100.0, uni_ref=' %',
-      tipo_var='p.p.'),
+      coluna='Perdas %', tipo='menor', dec=1, fator=100.0, uni_ref=' %', tipo_var='p.p.',
+      meta_max=18, conta='ponderada'),
 ]
 
 # ---------------------------------------------------------------- painéis
