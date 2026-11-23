@@ -73,6 +73,11 @@ Comparando na mesma data (14/09/2026, o fim da base antiga), 12 indicadores dão
 | `fundo_indicadores_quimicos.png` | Imagem de fundo da página Indicadores Químicos (1920×1080) |
 | `Dashboard - Aquapolo.SemanticModel/definition/tables/Medidas Químicos.tmdl` | Medidas da página Indicadores Químicos. As tabelas de apoio dela são `Químicos Diário`, `Químicos`, `Meses`, `Mês do Ano`, `Seletor Químico` e `Comparar Ano Anterior` |
 
+## Diagramas e skill `diagram-design`
+
+- `docs/diagramas/fluxo-alimentacao-powerbi.html` (e o `.png` ao lado): fluxo atual de alimentação do Power BI, da pasta `Base_PowerBI` do OneDrive até o relatório, incluindo os scripts de `ferramentas/preview/`. Foi montado a partir do `expressions.tmdl`, das partições das tabelas e do `relationships.tmdl`. A origem dos `.parquet` e da planilha EPAI não está documentada aqui; quem souber, complete o diagrama.
+- A skill `.claude/skills/diagram-design` ([cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design), MIT, commit em `UPSTREAM_COMMIT`) faz diagramas editoriais em HTML + SVG com exportação PNG. Já está com as cores do Aquapolo (`references/style-guide.md`). No Claude Code, peça em português, por exemplo: "faça um diagrama ER do modelo semântico". Para conferir: `python .claude/skills/diagram-design/scripts/verify_geometry.py <arquivo>`; para exportar PNG: `pip install playwright`, `python -m playwright install chromium` e `python .claude/skills/diagram-design/scripts/export_png.py <arquivo.html> <saida.png> 2`.
+
 ## Regras de Git e GitHub (pessoas e agentes)
 
 Cinco pessoas trabalham neste repositório, cada uma com a própria conta do GitHub. A branch `main` é protegida: só recebe mudanças por pull request com 1 aprovação, e a regra vale também para administradores.
