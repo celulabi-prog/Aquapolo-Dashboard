@@ -17,7 +17,7 @@ AQUI = pathlib.Path(__file__).parent
 REF = AQUI / 'referencia_painel.png'      # print de referência (opcional)
 FAIXA = AQUI / 'cabecalho_painel.png'     # a faixa já recortada (esta vai pro git)
 
-REPO = pathlib.Path(r'C:\Users\Iza\Documents\dashboard aquapolo claude')
+REPO = pathlib.Path(__file__).resolve().parents[2]
 SAIDA = REPO / 'fundo_painel_operacional.png'
 # o Power BI lê a imagem daqui; a da raiz é a cópia legível do repositório
 RECURSO = (REPO / 'Dashboard - Aquapolo.Report' / 'StaticResources' / 'RegisteredResources'

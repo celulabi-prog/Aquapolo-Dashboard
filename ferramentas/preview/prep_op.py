@@ -38,10 +38,6 @@ def cartoes(c, itens):
     out = ''
     for ind in itens:
         r = c[ind['k']]
-        if r['v'] is None:
-            out += M.cartao_vazio({'icone': ind['icone'], 'nome': ind['nome'],
-                                   'unidade': ind['unidade'], 'aviso': ind.get('aviso', '')})
-            continue
         v = r['var']
         pp = ind['tipo_var'] != '%'
         boa = (v is not None) and ((v < 0) if ind['tipo'] == 'menor' else (v > 0))

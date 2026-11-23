@@ -1,0 +1,63 @@
+/// Planilha 'Dados BI.xlsx' (aba 'Dados BI'), uma linha por dia e por indicador. A consulta só arruma a estrutura: cabeçalho em duas linhas, colunas viradas em linhas e textos descartados. As regras de negócio (zero sem leitura, datas futuras, médias, unidades) ficam nas medidas DAX da tabela 'Medidas HTML'.
+table 'Dados BI'
+	lineageTag: ee4e13ee-fc31-483a-901f-fd96769f1aa4
+
+	column Data
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 047800c8-421f-462f-8a13-eb92c4909aad
+		summarizeBy: none
+		sourceColumn: Data
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation UnderlyingDateTimeDataType = Date
+
+	/// Nome da coluna na planilha, exatamente como está na linha 2 (com os erros de digitação de lá).
+	column Indicador
+		dataType: string
+		lineageTag: 985b3bed-05d6-46d6-802c-d1e738dedc2f
+		summarizeBy: none
+		sourceColumn: Indicador
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Valor do dia como está na planilha, sem tratamento. Use as medidas '... 30d' em vez desta coluna.
+	column Valor
+		dataType: double
+		lineageTag: 5ca53e92-5749-4e9a-910b-7d2e006a0678
+		summarizeBy: none
+		sourceColumn: Valor
+
+		annotation SummarizationSetBy = User
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	partition 'Dados BI' = m
+		mode: import
+		source =
+				let
+				    // A planilha fica na VPS da Aquapolo e aqui ela é só LIDA: nada grava nela.
+				    // O Power BI lê o último valor que o Excel calculou em cada fórmula. Como as fórmulas
+				    // buscam outras planilhas, os números só mudam depois que alguém abre e salva o arquivo no Excel.
+				    Fonte = Excel.Workbook(File.Contents(ArquivoDadosBI), null, true),
+				    Aba = Fonte{[Item = "Dados BI", Kind = "Sheet"]}[Data],
+				    // Linha 1 = títulos dos grupos (células mescladas). Linha 2 = nome de cada indicador.
+				    Cabecalho = Table.PromoteHeaders(Table.Skip(Aba, 1), [PromoteAllScalars = true]),
+				    // A coluna da data fica sem nome na linha 2, porque A1:A2 é uma célula mesclada.
+				    ComData = Table.RenameColumns(Cabecalho, {{Table.ColumnNames(Cabecalho){0}, "Data"}}),
+				    // Erros de fórmula (#N/D) viram vazio.
+				    SemErros = Table.ReplaceErrorValues(ComData, List.Transform(Table.ColumnNames(ComData), each {_, null})),
+				    // Uma linha por dia e por indicador. As células vazias somem aqui.
+				    Longa = Table.UnpivotOtherColumns(SemErros, {"Data"}, "Indicador", "Valor"),
+				    // Fica só o que é número: saem os textos que as fórmulas devolvem ("-" e "").
+				    Numeros = Table.SelectRows(Longa, each [Data] <> null and [Valor] is number),
+				    Limpa = Table.TransformColumns(Numeros, {{"Indicador", Text.Trim, type text}}),
+				    Tipos = Table.TransformColumnTypes(Limpa, {{"Data", type date}, {"Valor", type number}})
+				in
+				    Tipos
+
+	annotation PBI_NavigationStepName = Navegação
+
+	annotation PBI_ResultType = Table
+
