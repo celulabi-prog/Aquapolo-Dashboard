@@ -3,3 +3,9 @@ expression PastaBase = "C:\Aquapolo\Base_PowerBI\" meta [IsParameterQuery=true, 
 
 	annotation PBI_ResultType = Text
 
+/// Caminho da planilha que alimenta a Visão Geral (tabela Dados BI). Fica na VPS da Aquapolo.
+expression ArquivoDadosBI = "G:\OME\Operacao\BI\Dados BI.xlsx" meta [IsParameterQuery=true, Type="Text", IsParameterQueryRequired=true]
+	lineageTag: c788abc2-8a1b-4084-8f0b-822059a1038c
+
+	annotation PBI_ResultType = Text
+

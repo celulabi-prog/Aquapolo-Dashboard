@@ -26,17 +26,21 @@ python fundo_op.py       # refaz o PNG de fundo (a faixa do cabeçalho)
 python gerar_op.py       # reescreve Medidas HTML.tmdl
 python pagina_op.py      # reescreve os visuais da página Visão Geral
 python dados_op.py       # só imprime os números, sem desenhar nada
+python dados_op.py 2026-09-14    # idem, como o painel estaria nesse dia
 ```
+
+A página lê a planilha `G:\OME\Operacao\BI\Dados BI.xlsx` (só leitura). No Power BI ela entra
+pela tabela **Dados BI**; aqui, por `dados_op.ler()`, que faz a mesma arrumação.
 
 | Arquivo | Papel |
 | --- | --- |
 | `estilo_op.py` | paleta e grade da página — medidas tiradas do print de referência |
-| `indicadores_op.py` | **os 23 indicadores**: nome, unidade, ícone, `ID_Indicador`, tipo de meta e casas decimais. É o arquivo que se mexe no dia a dia |
+| `indicadores_op.py` | **os 23 indicadores**: nome, unidade, ícone, coluna da planilha, meta, tipo de conta (média, ponderada ou mediana) e casas decimais. É o arquivo que se mexe no dia a dia |
 | `molde_op.py` | o HTML de cada painel, cartão e linha, e os ícones SVG. Só texto, nenhuma conta |
-| `dados_op.py` | lê os parquet e refaz em Python as contas das medidas |
+| `dados_op.py` | lê a planilha e refaz em Python as contas das medidas. Para se a planilha não tiver mais alguma coluna de `indicadores_op.py` |
 | `prep_op.py` | formata os dados reais para o molde (lado do preview) |
 | `fundo_op.py` | recorta a faixa do cabeçalho e monta o PNG de fundo |
-| `gerar_op.py` | monta as medidas HTML em DAX e escreve o TMDL |
+| `gerar_op.py` | monta em DAX as medidas de cada indicador (`... 30d`) e as medidas HTML, e escreve o TMDL |
 | `pagina_op.py` | escreve os visuais e a página no formato PBIR |
 | `preview_op.py` | monta a página e tira o print |
 | `cabecalho_painel.png` | a faixa do cabeçalho (1920×156): foto aérea e logos. **Versionada** |
@@ -44,7 +48,9 @@ python dados_op.py       # só imprime os números, sem desenhar nada
 
 ### Mudanças mais comuns
 
-- **Trocar o `ID_Indicador` de um indicador, a unidade, o ícone ou a casa decimal:** `indicadores_op.py`.
+- **Trocar a meta, a unidade, o ícone ou a casa decimal de um indicador:** `indicadores_op.py`.
+- **Renomearam uma coluna na planilha:** acerte o `coluna=` do indicador em `indicadores_op.py`
+  (tem de ser o título da linha 2, letra por letra). Enquanto não acertar, o indicador mostra `—`.
 - **Tirar ou acrescentar um indicador de um painel:** mesma lista, em `EEBC`, `TMBR`, `OR`,
   `CONSUMO` ou `VOLUMES`. As linhas se redistribuem sozinhas na altura do painel.
 - **Cor, fonte, espaçamento:** `molde_op.py` (aparência) ou `estilo_op.py` (paleta e grade).

@@ -9,8 +9,9 @@ Relatório do Power BI salvo como projeto PBIP: o relatório está em PBIR e o m
    - **Recomendado:** sincronize a pasta compartilhada `Base_PowerBI` do OneDrive e crie um atalho para ela no Prompt de Comando, uma vez só:
      `mkdir C:\Aquapolo` e depois `mklink /J C:\Aquapolo\Base_PowerBI "<caminho da Base_PowerBI no seu OneDrive>"`. Assim a base se atualiza sozinha.
    - **Manual:** crie a pasta e copie os arquivos para ela sempre que houver uma extração nova.
-3. Clique em **Atualizar**.
-4. Se os visuais HTML da página **Visão Geral** aparecerem vazios, clique com o botão direito na tabela **Medidas HTML**, no painel Dados, e escolha **Atualizar dados**.
+3. A página **Visão Geral** não usa essa base: ela lê a planilha `G:\OME\Operacao\BI\Dados BI.xlsx`, na VPS da Aquapolo (parâmetro `ArquivoDadosBI`; se o caminho for outro na sua máquina, troque em **Transformar dados > Editar parâmetros**). O Power BI só lê a planilha, nunca grava nela.
+4. Clique em **Atualizar**.
+5. Se os visuais HTML da página **Visão Geral** aparecerem vazios, clique com o botão direito na tabela **Medidas HTML**, no painel Dados, e escolha **Atualizar dados**.
 
 ## Painel operacional
 
@@ -18,25 +19,35 @@ A página **Visão Geral** é o painel operacional, em tema escuro, com 23 indic
 
 - São **6 visuais HTML Content** (visual personalizado do AppSource), um por painel e um para o rodapé. Cada painel desenha todas as suas linhas ou cartões de uma vez.
 - A imagem `fundo_painel_operacional.png` é o fundo da página e contém **só o cabeçalho** — a foto aérea e os logos GS Inima / Sabesp. Nenhum número está na imagem.
-- As medidas ficam em **Medidas HTML** (`HTML Painel EEBC`, `HTML Painel TMBR`, `HTML Painel OR`, `HTML Painel Consumo`, `HTML Painel Volumes` e `HTML Rodapé`), ligadas à base pelo `ID_Indicador`.
-- **Valor:** média dos últimos 30 dias com dado do indicador, até a última data disponível ou selecionada. Para indicadores calculados é a razão das somas (`Numerador / Denominador`), pela medida `[Valor Indicador]`.
+- **Fonte:** a planilha `Dados BI.xlsx`, carregada na tabela **Dados BI** com uma linha por dia e por indicador (`Data`, `Indicador`, `Valor`). A consulta só arruma a estrutura: descarta a linha dos grupos, usa a linha 2 como nome das colunas, vira as colunas em linhas e joga fora o que não é número (`-`, vazio e `#N/D`).
+- **Atenção:** a planilha é feita de fórmulas que buscam outras planilhas, e o Power BI lê o último valor que o Excel calculou. Os números só mudam depois que alguém abre a planilha no Excel, deixa os vínculos atualizarem e salva.
+- As medidas ficam em **Medidas HTML**. Na pasta `Painel Operacional\Indicadores` há uma medida por indicador (`DQO 30d`, `Químicos 30d`, `Químicos 30d Anterior`...), que é onde a planilha é tratada. As seis medidas de HTML (`HTML Painel EEBC`, `HTML Painel TMBR`, `HTML Painel OR`, `HTML Painel Consumo`, `HTML Painel Volumes` e `HTML Rodapé`) só buscam esses números e desenham.
+- **Valor:** os 30 dias que terminam na última leitura do indicador. Regras do tratamento:
+  - **Zero é "sem leitura".** Na planilha, o PROCV/PROCX devolve 0 quando a célula de origem está vazia. A exceção é Retrolavagens, em que zero é leitura de verdade.
+  - **Datas futuras ficam de fora.** A planilha já traz as linhas até jan/2027.
+  - **Leituras diretas:** média simples.
+  - **Químicos, Energia, Energia OR, Blend e Perdas:** média ponderada pelo volume de clientes do dia, que equivale a somar o consumo e dividir pelo volume somado (a conta da base antiga).
+  - **Energia - Biológico e Coagulante:** mediana dos valores positivos. A planilha só traz a razão do dia, e um dia com divisor perto de zero estouraria a média (o Coagulante tem dias milhares de vezes acima do normal).
 - **Δ Per.:** variação em relação aos 30 dias anteriores (nos cartões de consumo e volumes).
-- **Ref.:** meta (`Target_Min` / `Target_Max`) da `dim_indicadores`. Onde o indicador tem mínimo **e** máximo (Idade do Lodo, Alimento/Microorganismo, Fluxo), aparece **Faixa a – b**. Para mudar uma meta, altere a base, não a medida.
+- **Ref.:** a meta de cada indicador (`meta_min` / `meta_max`) em `ferramentas/preview/indicadores_op.py`, porque a planilha não traz metas. Onde o indicador tem mínimo **e** máximo (Idade do Lodo, Alimento/Microorganismo, Fluxo), aparece **Faixa a – b**. Para mudar uma meta, altere lá e rode `python gerar_op.py`.
 - **Cores:** verde dentro da meta, amarelo até 10% fora, vermelho além disso, cinza sem meta ou sem dado. A barra enche até 160% da referência e o tracejado marca os 100%.
 
 Esta página **não é editada à mão**. Ela é gerada pelos scripts de `ferramentas/preview/`, a partir de um molde HTML único — veja o `LEIAME.md` de lá. Mexer no `visual.json` ou na medida direto no Power BI funciona, mas o próximo `python pagina_op.py` ou `python gerar_op.py` desfaz.
 
-### Indicadores sem referência na base
+### O que mudou em relação à base antiga (parquet)
 
-Três pontos do layout de referência não têm correspondência na `dim_indicadores` e por isso aparecem diferentes do desenho original:
+Comparando na mesma data (14/09/2026, o fim da base antiga), 12 indicadores dão exatamente o número da base antiga, e Condutividade e Dureza ficam a menos de 0,2% (um dia de dado diferente entre as duas fontes). Os outros mudam porque a planilha traz outra informação:
 
-| Indicador | No painel | Motivo |
+| Indicador | Diferença | Motivo |
 | --- | --- | --- |
-| **Blend** | cartão vazio, com aviso | a base não traz o indicador |
-| **Energia - Biológico** | `Ref. —`, sem barra | `Consumo SOP Biológico/ Amônia Removida` está sem `Target_Max` |
-| **Coagulante** | `Ref. 17,0 gPAC/gP` | é o `Target_Max` da base (`PAC/ P rem`) |
+| **NH3** | cerca de 60% menor | a planilha usa a análise de laboratório; a base usava a leitura online da EEBC |
+| **TMP, Permeabilidade, Turbidez** | pior trem do dia, e não a média dos 8 | a planilha já traz o maior TMP, a menor permeabilidade e a maior turbidez |
+| **Energia OR** | cerca de 70% menor | a planilha divide pelo volume de clientes; a base dividia pelo permeado da OR. A meta de 0,50 foi definida para a conta antiga |
+| **Energia - Biológico, Coagulante** | em geral de 5% a 10%, às vezes mais | a base somava o consumo e dividia pela soma do divisor; a planilha só traz a razão do dia, e a mediana é o que mais se aproxima |
+| **Perdas** | em geral abaixo de 2% | ponderada pelo volume de clientes, porque a planilha não traz o volume de entrada |
+| **Blend** | agora tem valor | a planilha traz o indicador; segue sem meta (`Ref. —`) |
 
-Preenchendo o `Target_Max` desses indicadores na base, a barra e o percentual passam a aparecer sozinhos.
+**Energia - Biológico** e **Blend** estão sem meta. Preenchendo `meta_max` em `indicadores_op.py`, a barra e o percentual passam a aparecer.
 
 ## Página Indicadores Químicos
 
@@ -71,11 +82,16 @@ Preenchendo o `Target_Max` desses indicadores na base, a barra e o percentual pa
 | --- | --- |
 | `Dashboard - Aquapolo.pbip` | Arquivo que abre o projeto |
 | `Dashboard - Aquapolo.Report/` | Relatório (PBIR). Os visuais do painel operacional ficam em `definition/pages/a822121ef6e9b05473aa/visuals/painel_*` e `.../rodape` |
-| `Dashboard - Aquapolo.SemanticModel/` | Modelo semântico (TMDL). As medidas do painel ficam em `definition/tables/Medidas HTML.tmdl` |
+| `Dashboard - Aquapolo.SemanticModel/` | Modelo semântico (TMDL). As medidas do painel ficam em `definition/tables/Medidas HTML.tmdl` e a consulta da planilha em `definition/tables/Dados BI.tmdl` |
 | `ferramentas/preview/` | Scripts que geram o painel operacional e a página Volumes: molde HTML único, preview em PNG, medidas DAX e visuais PBIR |
 | `fundo_painel_operacional.png` | Fundo da página Visão Geral (1920×1080): só o cabeçalho, o resto é cor chapada |
 | `fundo_indicadores_quimicos.png` | Imagem de fundo da página Indicadores Químicos (1920×1080) |
 | `Dashboard - Aquapolo.SemanticModel/definition/tables/Medidas Químicos.tmdl` | Medidas da página Indicadores Químicos. As tabelas de apoio dela são `Químicos Diário`, `Químicos`, `Meses`, `Mês do Ano`, `Seletor Químico` e `Comparar Ano Anterior` |
+
+## Diagramas e skill `diagram-design`
+
+- `docs/diagramas/fluxo-alimentacao-powerbi.html` (e o `.png` ao lado): fluxo atual de alimentação do Power BI, da pasta `Base_PowerBI` do OneDrive até o relatório, incluindo os scripts de `ferramentas/preview/`. Foi montado a partir do `expressions.tmdl`, das partições das tabelas e do `relationships.tmdl`. A origem dos `.parquet` e da planilha EPAI não está documentada aqui; quem souber, complete o diagrama.
+- A skill `.claude/skills/diagram-design` ([cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design), MIT, commit em `UPSTREAM_COMMIT`) faz diagramas editoriais em HTML + SVG com exportação PNG. Já está com as cores do Aquapolo (`references/style-guide.md`). No Claude Code, peça em português, por exemplo: "faça um diagrama ER do modelo semântico". Para conferir: `python .claude/skills/diagram-design/scripts/verify_geometry.py <arquivo>`; para exportar PNG: `pip install playwright`, `python -m playwright install chromium` e `python .claude/skills/diagram-design/scripts/export_png.py <arquivo.html> <saida.png> 2`.
 
 ## Regras de Git e GitHub (pessoas e agentes)
 
