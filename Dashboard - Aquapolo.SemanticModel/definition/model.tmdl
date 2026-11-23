@@ -9,7 +9,7 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 1
 
-annotation PBI_QueryOrder = ["PastaBase","fato_indicadores","dim_indicadores","Químicos Diário"]
+annotation PBI_QueryOrder = ["PastaBase","fato_indicadores","dim_indicadores","Químicos Diário","ArquivoDadosBI","Dados BI"]
 
 annotation PBI_ProTooling = ["TMDLView_Desktop","DevMode"]
 
@@ -28,6 +28,7 @@ ref table 'Medidas Químicos'
 ref table dCalendario
 ref table Clientes
 ref table 'Medidas Volumes'
+ref table 'Dados BI'
 
 ref cultureInfo pt-BR
 
