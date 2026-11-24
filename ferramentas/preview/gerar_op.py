@@ -3,11 +3,13 @@
 
 Saem dois grupos de medidas, todos lendo a tabela 'Dados BI' (a planilha):
 
-  '<indicador> 30d' e '<indicador> 30d Anterior' — o número de cada indicador,
-      já tratado: só dias até hoje, zero como "sem leitura", média simples,
-      ponderada pelo volume de clientes ou mediana, e a unidade do painel.
+  '<indicador> Período' e '<indicador> Período Anterior' — o número de cada
+      indicador, já tratado: só dias até hoje, zero como "sem leitura", média
+      simples, ponderada pelo volume de clientes ou mediana, e a unidade do
+      painel. O tamanho do período vem do seletor Período (tabela 'Período Painel').
   'HTML Painel ...' e 'HTML Rodapé' — o HTML de cada visual da página. Cada
       painel vira UMA medida, que só busca os números acima e desenha.
+  'HTML Status' — a caixa do cabeçalho que diz se os dados estão em dia.
 """
 import io, pathlib, uuid
 import molde_op as M
@@ -23,6 +25,7 @@ FMT_MODELO = {0: '#,0', 1: '#,0.0', 2: '#,0.00'}
 TRACO = '"&#8212;"'
 PASTA = 'Painel Operacional'
 T = "'Dados BI'"
+PER = "'Período Painel'"
 
 
 def F(expr):
@@ -45,7 +48,7 @@ def nuM(expr, dec):
 
 # --------------------------------------------------- medidas dos indicadores
 def nome_medida(ind, anterior=False):
-    return ind['nome'] + (' %dd Anterior' if anterior else ' %dd') % IX.JANELA
+    return ind['nome'] + (' Período Anterior' if anterior else ' Período')
 
 
 def leituras(ind):
@@ -59,16 +62,18 @@ def leituras(ind):
 
 
 def dax_indicador(ind, anterior=False):
-    """Últimos 30 dias até a última leitura do indicador — ou os 30 dias antes desses."""
-    j, lei = IX.JANELA, leituras(ind)
-    periodo = (['%s[Data] > _fim - %d' % (T, 2 * j), '%s[Data] <= _fim - %d' % (T, j)] if anterior
-               else ['%s[Data] > _fim - %d' % (T, j), '%s[Data] <= _fim' % T])
+    """O período que termina na última leitura do indicador — ou o período antes desse.
+    O tamanho (_tamanho) é o que estiver marcado no seletor Período."""
+    lei = leituras(ind)
+    periodo = (['%s[Data] > _fim - 2 * _tamanho' % T, '%s[Data] <= _fim - _tamanho' % T] if anterior
+               else ['%s[Data] > _fim - _tamanho' % T, '%s[Data] <= _fim' % T])
 
     def calculate(cabeca, filtros, recuo):
         e = ' ' * recuo
         return (cabeca + ' (\n' + ',\n'.join(e + '    ' + x for x in filtros) + '\n' + e + ')')
 
-    L = ['VAR _fim =',
+    L = ['VAR _tamanho = SELECTEDVALUE ( %s[Dias], %d )' % (PER, IX.JANELA),
+         'VAR _fim =',
          '    ' + calculate('CALCULATE', ['MAX ( %s[Data] )' % T] + lei
                             + ['KEEPFILTERS ( %s[Data] <= TODAY () )' % T], 4)]
     vezes = '' if ind['fator'] == 1.0 else ('%s * ' % numero(ind['fator']))
@@ -96,8 +101,9 @@ def doc_indicador(ind, anterior=False):
                           'pelo volume somado)',
              'mediana': 'mediana dos valores positivos (a planilha não traz o divisor, e um dia com '
                         'divisor perto de zero estouraria a média)'}[ind['conta']]
-    quando = ('dos %d dias anteriores aos de [%s]' % (IX.JANELA, nome_medida(ind)) if anterior
-              else 'dos últimos %d dias, contados até a última leitura do indicador' % IX.JANELA)
+    quando = ('do período anterior ao de [%s], com o mesmo tamanho' % nome_medida(ind) if anterior
+              else 'do período marcado no seletor Período (%d dias se nada estiver marcado), '
+                   'contado até a última leitura do indicador' % IX.JANELA)
     zero = ('Zero conta como leitura.' if ind['zero_vale'] else
             'Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.')
     vezes = '' if ind['fator'] == 1.0 else ' Sai multiplicado por %g (fração para %%).' % ind['fator']
@@ -189,11 +195,11 @@ for p in IX.PAINEIS:
     quais = ', '.join(i['nome'] for i in p['itens'])
     MEDIDAS.append({
         'nome': p['medida'], 'pasta': PASTA,
-        'doc': ("Painel %s da Visão Geral: %s. Valor = as medidas '... %dd' de cada indicador "
+        'doc': ("Painel %s da Visão Geral: %s. Valor = as medidas '... Período' de cada indicador "
                 '(planilha Dados BI); referência = a meta de ferramentas/preview/indicadores_op.py. '
                 'Verde dentro da meta, amarelo até %d%% fora, vermelho além disso. '
                 'A barra enche até %d%% da referência e o tracejado marca os 100%%.'
-                % (p['titulo'], quais, IX.JANELA, IX.TOLERANCIA * 100, IX.ESCALA * 100)),
+                % (p['titulo'], quais, IX.TOLERANCIA * 100, IX.ESCALA * 100)),
         'dax': medida_painel(p)})
 
 MEDIDAS.append({
@@ -203,6 +209,48 @@ MEDIDAS.append({
             'RETURN\n    ' % (T, T, T)
             + texto(M.rodape({'ult': F('IF ( ISBLANK ( _ult ), "&#8212;", '
                                        'FORMAT ( _ult, "dd/mm/yyyy" ) )')})))})
+
+
+def medida_status():
+    """A caixa do cabeçalho: os dados estão em dia? Espelha dados_op.atualizacao()."""
+    cor = {n: COR[c] for n, (_, c) in IX.NIVEIS.items()}
+    pal = {n: p for n, (p, _) in IX.NIVEIS.items()}
+    data_hora = lambda v: 'IF ( ISBLANK ( %s ), %s, FORMAT ( %s, "dd/mm/yyyy hh:nn" ) )' % (v, TRACO, v)
+    L = [
+        '-- Agora no horário de Brasília (UTC-3), para valer igual no Desktop e no serviço.',
+        'VAR _agora = UTCNOW () - 3 / 24',
+        'VAR _hoje = INT ( _agora )',
+        'VAR _dados = CALCULATE ( MAX ( %s[Data] ), %s[Valor] <> 0, %s[Data] <= TODAY () )' % (T, T, T),
+        'VAR _plan = CALCULATE ( MAX ( %s[Planilha salva em] ), REMOVEFILTERS ( %s ) )' % (T, T),
+        'VAR _bi = CALCULATE ( MAX ( %s[Carregado em] ), REMOVEFILTERS ( %s ) )' % (T, T),
+        '-- Atraso = dias entre a última leitura e hoje. É ele que decide o status.',
+        'VAR _atraso = _hoje - INT ( _dados )',
+        'VAR _nivel = SWITCH ( TRUE (), ISBLANK ( _dados ), 0, _atraso <= %d, 1, _atraso <= %d, 2, 3 )'
+        % (IX.ATRASO_EM_DIA, IX.ATRASO_PENDENTE),
+        'VAR _cor = SWITCH ( _nivel, 1, "%s", 2, "%s", 3, "%s", "%s" )' % (cor[1], cor[2], cor[3], cor[0]),
+        'VAR _palavra = SWITCH ( _nivel, 1, "%s", 2, "%s", 3, "%s", "%s" )' % (pal[1], pal[2], pal[3], pal[0]),
+        'VAR _ha = SWITCH ( TRUE (), _atraso <= 0, "hoje", _atraso = 1, "ontem", "há " & _atraso & " dias" )',
+        'VAR _rotulo = IF ( ISBLANK ( _dados ), "Sem leitura na planilha", '
+        '"Dados até " & FORMAT ( _dados, "dd/mm" ) & " &#183; " & _ha )',
+        '-- O que falta, na ordem em que dá para saber: o Power BI só enxerga a planilha quando é atualizado.',
+        'VAR _falta = SWITCH ( TRUE (), _nivel = 1, "%s", ISBLANK ( _bi ) || INT ( _bi ) < _hoje, "%s", '
+        'ISBLANK ( _plan ) || INT ( _plan ) < _hoje, "%s", "%s" )'
+        % (IX.FALTA['nada'], IX.FALTA['bi'], IX.FALTA['planilha'], IX.FALTA['origem']),
+        'RETURN\n    ' + texto(M.status({
+            'cor': F('_cor'), 'palavra': F('_palavra'), 'rotulo': F('_rotulo'),
+            'dados': F('IF ( ISBLANK ( _dados ), %s, FORMAT ( _dados, "dd/mm/yyyy" ) )' % TRACO),
+            'plan': F(data_hora('_plan')), 'bi': F(data_hora('_bi')), 'falta': F('_falta')})),
+    ]
+    return '\n'.join(L)
+
+
+MEDIDAS.append({
+    'nome': 'HTML Status', 'pasta': PASTA,
+    'doc': ('Caixa do cabeçalho com o status da atualização dos dados. Em dia = última leitura há até %d dia; '
+            'Pendente = até %d dias; Atrasado = mais que isso. Ao passar o mouse, mostra a data dos dados, '
+            'quando a planilha foi salva, quando o Power BI foi atualizado e o que falta fazer.'
+            % (IX.ATRASO_EM_DIA, IX.ATRASO_PENDENTE)),
+    'dax': medida_status()})
 
 for p in IX.PAINEIS:
     for ind in p['itens']:

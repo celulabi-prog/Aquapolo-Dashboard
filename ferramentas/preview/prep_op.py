@@ -2,6 +2,7 @@
 """Converte os dados reais em texto pronto para o molde (lado do preview)."""
 import molde_op as M
 import indicadores_op as IX
+import dados_op
 from dados_op import num, pct
 from estilo_op import *
 
@@ -53,6 +54,21 @@ def cartoes(c, itens):
     return out
 
 
+def status(a):
+    """O indicador de atualização, a partir de dados_op.atualizacao()."""
+    palavra, cor_nome = IX.NIVEIS[a['nivel']]
+    if a['atraso'] is None:
+        rotulo, dados = 'Sem leitura na planilha', TRACO
+    else:
+        ha = ('hoje' if a['atraso'] <= 0 else 'ontem' if a['atraso'] == 1
+              else 'há %d dias' % a['atraso'])
+        rotulo = 'Dados até ' + a['dados'].strftime('%d/%m') + ' &#183; ' + ha
+        dados = a['dados'].strftime('%d/%m/%Y')
+    return M.status({'cor': COR[cor_nome], 'palavra': palavra, 'rotulo': rotulo, 'dados': dados,
+                     'plan': a['plan'].strftime('%d/%m/%Y %H:%M'),
+                     'bi': a['bi'].strftime('%d/%m/%Y %H:%M'), 'falta': IX.FALTA[a['falta']]})
+
+
 def paineis(c):
     out = {}
     for p in IX.PAINEIS:
@@ -63,4 +79,5 @@ def paineis(c):
         else:
             out[p['k']] = M.painel_cartoes(d, cartoes(c, p['itens']))
     out['rodape'] = M.rodape({'ult': c['ult'].strftime('%d/%m/%Y')})
+    out['status'] = status(dados_op.atualizacao(c))
     return out

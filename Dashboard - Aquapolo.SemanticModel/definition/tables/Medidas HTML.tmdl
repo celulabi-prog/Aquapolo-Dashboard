@@ -1,33 +1,33 @@
 table 'Medidas HTML'
 	lineageTag: af935ac6-adea-4710-8879-f9f7682c9e9d
 
-	/// Painel QUALIDADE EEBC da Visão Geral: Retrolavagens, DQO, NH3, Condutividade, Dureza. Valor = as medidas '... 30d' de cada indicador (planilha Dados BI); referência = a meta de ferramentas/preview/indicadores_op.py. Verde dentro da meta, amarelo até 10% fora, vermelho além disso. A barra enche até 160% da referência e o tracejado marca os 100%.
-	measure 'HTML Painel EEBC' =
-			VAR _v1 = [Retrolavagens 30d]
+	/// Painel QUALIDADE EEBC da Visão Geral: Retrolavagens, DQO, NH3, Condutividade, Dureza. Valor = as medidas '... Período' de cada indicador (planilha Dados BI); referência = a meta de ferramentas/preview/indicadores_op.py. Verde dentro da meta, amarelo até 10% fora, vermelho além disso. A barra enche até 160% da referência e o tracejado marca os 100%.
+	measure 'HTML Painel EEBC' = ```
+			VAR _v1 = [Retrolavagens Período]
 			VAR _mi1 = BLANK ()
 			VAR _ma1 = 12.0
 			VAR _rf1 = _ma1
 			VAR _co1 = SWITCH ( TRUE (), ISBLANK ( _v1 ) || ISBLANK ( _rf1 ), "#5c7791", _v1 <= _rf1, "#4ed15d", _v1 <= _rf1 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg1 = MIN ( MAX ( DIVIDE ( _v1, _rf1 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _v2 = [DQO 30d]
+			VAR _v2 = [DQO Período]
 			VAR _mi2 = BLANK ()
 			VAR _ma2 = 100.0
 			VAR _rf2 = _ma2
 			VAR _co2 = SWITCH ( TRUE (), ISBLANK ( _v2 ) || ISBLANK ( _rf2 ), "#5c7791", _v2 <= _rf2, "#4ed15d", _v2 <= _rf2 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg2 = MIN ( MAX ( DIVIDE ( _v2, _rf2 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _v3 = [NH3 30d]
+			VAR _v3 = [NH3 Período]
 			VAR _mi3 = BLANK ()
 			VAR _ma3 = 20.0
 			VAR _rf3 = _ma3
 			VAR _co3 = SWITCH ( TRUE (), ISBLANK ( _v3 ) || ISBLANK ( _rf3 ), "#5c7791", _v3 <= _rf3, "#4ed15d", _v3 <= _rf3 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg3 = MIN ( MAX ( DIVIDE ( _v3, _rf3 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _v4 = [Condutividade 30d]
+			VAR _v4 = [Condutividade Período]
 			VAR _mi4 = BLANK ()
 			VAR _ma4 = 650.0
 			VAR _rf4 = _ma4
 			VAR _co4 = SWITCH ( TRUE (), ISBLANK ( _v4 ) || ISBLANK ( _rf4 ), "#5c7791", _v4 <= _rf4, "#4ed15d", _v4 <= _rf4 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg4 = MIN ( MAX ( DIVIDE ( _v4, _rf4 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _v5 = [Dureza 30d]
+			VAR _v5 = [Dureza Período]
 			VAR _mi5 = BLANK ()
 			VAR _ma5 = 100.0
 			VAR _rf5 = _ma5
@@ -41,42 +41,43 @@ table 'Medidas HTML'
 			        & "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M6.2 3.4h11.6l3.4 5.4L12 20.8 2.8 8.8z'/><path d='M2.8 8.8h18.4M8.7 3.4l-2.5 5.4L12 20.8l5.8-12-2.5-5.4'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Dureza</div><div style='font-size:17px;color:#93afc9;margin-top:2px'>mg/L</div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v5 ), "&#8212;", FORMAT ( _v5, "#,##0" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg5, "0" ) & "%;height:100%;background:" & _co5 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Ref." & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _rf5 ), "&#8212;", FORMAT ( _rf5, "#,##0" ) ) & "</div></div></div>"
 			RETURN
 			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style><div style='font-family:Segoe UI,sans-serif;height:100vh;width:100%;display:flex;flex-direction:column;gap:5px'><div style='height:62px;flex:none;border-radius:10px;background:linear-gradient(90deg,#1a5a96 0%,#0d3a68 46%,#071f38 100%);border:1px solid #2a6ca8;display:flex;align-items:center;gap:14px;padding:0 18px'><span style='color:#5fb4f5;display:flex'><svg viewBox='0 0 24 24' width='34' height='34' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3c3.4 4 5.5 6.6 5.5 9.3A5.5 5.5 0 0 1 6.5 12.3C6.5 9.6 8.6 7 12 3z'/></svg></span><span style='font-size:27px;font-weight:700;color:#ffffff;letter-spacing:0.8px;white-space:nowrap'>QUALIDADE EEBC</span><span style='margin-left:auto;padding-left:14px;font-size:16px;color:#9dbbd8;font-weight:400;white-space:nowrap'>Qualidade da água de alimentação</span></div><div style='flex:1;min-height:0;display:flex;flex-direction:column;background:#001b2e;border:1px solid #143d5c;border-radius:10px;overflow:hidden'>" & _itens & "</div></div>"
+			```
 		displayFolder: Painel Operacional
 		lineageTag: 936f59ad-f0a8-553b-891a-229630c15593
 
-	/// Painel PERFORMANCE TMBR da Visão Geral: Idade do Lodo, Alimento/Microorg., TMP, Permeabilidade, Turbidez, Fluxo. Valor = as medidas '... 30d' de cada indicador (planilha Dados BI); referência = a meta de ferramentas/preview/indicadores_op.py. Verde dentro da meta, amarelo até 10% fora, vermelho além disso. A barra enche até 160% da referência e o tracejado marca os 100%.
-	measure 'HTML Painel TMBR' =
-			VAR _v1 = [Idade do Lodo 30d]
+	/// Painel PERFORMANCE TMBR da Visão Geral: Idade do Lodo, Alimento/Microorg., TMP, Permeabilidade, Turbidez, Fluxo. Valor = as medidas '... Período' de cada indicador (planilha Dados BI); referência = a meta de ferramentas/preview/indicadores_op.py. Verde dentro da meta, amarelo até 10% fora, vermelho além disso. A barra enche até 160% da referência e o tracejado marca os 100%.
+	measure 'HTML Painel TMBR' = ```
+			VAR _v1 = [Idade do Lodo Período]
 			VAR _mi1 = 18.0
 			VAR _ma1 = 22.0
 			VAR _rf1 = _ma1
 			VAR _co1 = SWITCH ( TRUE (), ISBLANK ( _v1 ) || ISBLANK ( _mi1 ) || ISBLANK ( _ma1 ), "#5c7791", _v1 >= _mi1 && _v1 <= _ma1, "#4ed15d", _v1 >= _mi1 * 0.9 && _v1 <= _ma1 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg1 = MIN ( MAX ( DIVIDE ( _v1, _rf1 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _v2 = [Alimento/Microorg. 30d]
+			VAR _v2 = [Alimento/Microorg. Período]
 			VAR _mi2 = 0.08
 			VAR _ma2 = 0.16
 			VAR _rf2 = _ma2
 			VAR _co2 = SWITCH ( TRUE (), ISBLANK ( _v2 ) || ISBLANK ( _mi2 ) || ISBLANK ( _ma2 ), "#5c7791", _v2 >= _mi2 && _v2 <= _ma2, "#4ed15d", _v2 >= _mi2 * 0.9 && _v2 <= _ma2 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg2 = MIN ( MAX ( DIVIDE ( _v2, _rf2 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _v3 = [TMP 30d]
+			VAR _v3 = [TMP Período]
 			VAR _mi3 = BLANK ()
 			VAR _ma3 = 0.6
 			VAR _rf3 = _ma3
 			VAR _co3 = SWITCH ( TRUE (), ISBLANK ( _v3 ) || ISBLANK ( _rf3 ), "#5c7791", _v3 <= _rf3, "#4ed15d", _v3 <= _rf3 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg3 = MIN ( MAX ( DIVIDE ( _v3, _rf3 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _v4 = [Permeabilidade 30d]
+			VAR _v4 = [Permeabilidade Período]
 			VAR _mi4 = 100.0
 			VAR _ma4 = BLANK ()
 			VAR _rf4 = _mi4
 			VAR _co4 = SWITCH ( TRUE (), ISBLANK ( _v4 ) || ISBLANK ( _rf4 ), "#5c7791", _v4 >= _rf4, "#4ed15d", _v4 >= _rf4 * 0.9, "#feb825", "#f4353f" )
 			VAR _lg4 = MIN ( MAX ( DIVIDE ( _v4, _rf4 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _v5 = [Turbidez 30d]
+			VAR _v5 = [Turbidez Período]
 			VAR _mi5 = BLANK ()
 			VAR _ma5 = 0.4
 			VAR _rf5 = _ma5
 			VAR _co5 = SWITCH ( TRUE (), ISBLANK ( _v5 ) || ISBLANK ( _rf5 ), "#5c7791", _v5 <= _rf5, "#4ed15d", _v5 <= _rf5 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg5 = MIN ( MAX ( DIVIDE ( _v5, _rf5 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _v6 = [Fluxo 30d]
+			VAR _v6 = [Fluxo Período]
 			VAR _mi6 = 17.0
 			VAR _ma6 = 24.0
 			VAR _rf6 = _ma6
@@ -91,30 +92,31 @@ table 'Medidas HTML'
 			        & "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M2.6 7.6c1.9-1.9 3.7-1.9 5.6 0s3.7 1.9 5.6 0 3.7-1.9 5.6 0'/><path d='M2.6 12.4c1.9-1.9 3.7-1.9 5.6 0s3.7 1.9 5.6 0 3.7-1.9 5.6 0'/><path d='M2.6 17.2c1.9-1.9 3.7-1.9 5.6 0s3.7 1.9 5.6 0 3.7-1.9 5.6 0'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Fluxo</div><div style='font-size:17px;color:#93afc9;margin-top:2px'>LMH</div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v6 ), "&#8212;", FORMAT ( _v6, "#,##0.0" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg6, "0" ) & "%;height:100%;background:" & _co6 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Faixa" & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _mi6 ) || ISBLANK ( _ma6 ), "&#8212;", FORMAT ( _mi6, "#,##0.0" ) & " &#8211; " & FORMAT ( _ma6, "#,##0.0" ) ) & "</div></div></div>"
 			RETURN
 			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style><div style='font-family:Segoe UI,sans-serif;height:100vh;width:100%;display:flex;flex-direction:column;gap:5px'><div style='height:62px;flex:none;border-radius:10px;background:linear-gradient(90deg,#1a5a96 0%,#0d3a68 46%,#071f38 100%);border:1px solid #2a6ca8;display:flex;align-items:center;gap:14px;padding:0 18px'><span style='color:#7fc4ff;display:flex'><svg viewBox='0 0 24 24' width='34' height='34' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='3.1'/><path d='M12 2.6v2.1M12 19.3v2.1M21.4 12h-2.1M4.7 12H2.6M18.6 5.4l-1.5 1.5M6.9 17.1l-1.5 1.5M18.6 18.6l-1.5-1.5M6.9 6.9L5.4 5.4'/></svg></span><span style='font-size:27px;font-weight:700;color:#ffffff;letter-spacing:0.8px;white-space:nowrap'>PERFORMANCE TMBR</span><span style='margin-left:auto;padding-left:14px;font-size:16px;color:#9dbbd8;font-weight:400;white-space:nowrap'>Desempenho da etapa biológica</span></div><div style='flex:1;min-height:0;display:flex;flex-direction:column;background:#001b2e;border:1px solid #143d5c;border-radius:10px;overflow:hidden'>" & _itens & "</div></div>"
+			```
 		displayFolder: Painel Operacional
 		lineageTag: 240860e3-5f5f-5e74-a1aa-fe07fcd1903a
 
-	/// Painel PERFORMANCE OR da Visão Geral: SDI, dP Skid 1, dP Skid 2, dP Skid 3. Valor = as medidas '... 30d' de cada indicador (planilha Dados BI); referência = a meta de ferramentas/preview/indicadores_op.py. Verde dentro da meta, amarelo até 10% fora, vermelho além disso. A barra enche até 160% da referência e o tracejado marca os 100%.
-	measure 'HTML Painel OR' =
-			VAR _v1 = [SDI 30d]
+	/// Painel PERFORMANCE OR da Visão Geral: SDI, dP Skid 1, dP Skid 2, dP Skid 3. Valor = as medidas '... Período' de cada indicador (planilha Dados BI); referência = a meta de ferramentas/preview/indicadores_op.py. Verde dentro da meta, amarelo até 10% fora, vermelho além disso. A barra enche até 160% da referência e o tracejado marca os 100%.
+	measure 'HTML Painel OR' = ```
+			VAR _v1 = [SDI Período]
 			VAR _mi1 = BLANK ()
 			VAR _ma1 = 3.0
 			VAR _rf1 = _ma1
 			VAR _co1 = SWITCH ( TRUE (), ISBLANK ( _v1 ) || ISBLANK ( _rf1 ), "#5c7791", _v1 <= _rf1, "#4ed15d", _v1 <= _rf1 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg1 = MIN ( MAX ( DIVIDE ( _v1, _rf1 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _v2 = [dP Skid 1 30d]
+			VAR _v2 = [dP Skid 1 Período]
 			VAR _mi2 = BLANK ()
 			VAR _ma2 = 3.5
 			VAR _rf2 = _ma2
 			VAR _co2 = SWITCH ( TRUE (), ISBLANK ( _v2 ) || ISBLANK ( _rf2 ), "#5c7791", _v2 <= _rf2, "#4ed15d", _v2 <= _rf2 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg2 = MIN ( MAX ( DIVIDE ( _v2, _rf2 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _v3 = [dP Skid 2 30d]
+			VAR _v3 = [dP Skid 2 Período]
 			VAR _mi3 = BLANK ()
 			VAR _ma3 = 3.5
 			VAR _rf3 = _ma3
 			VAR _co3 = SWITCH ( TRUE (), ISBLANK ( _v3 ) || ISBLANK ( _rf3 ), "#5c7791", _v3 <= _rf3, "#4ed15d", _v3 <= _rf3 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg3 = MIN ( MAX ( DIVIDE ( _v3, _rf3 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _v4 = [dP Skid 3 30d]
+			VAR _v4 = [dP Skid 3 Período]
 			VAR _mi4 = BLANK ()
 			VAR _ma4 = 3.5
 			VAR _rf4 = _ma4
@@ -127,54 +129,55 @@ table 'Medidas HTML'
 			        & "<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;padding:0 14px 0 18px;border-top:1px solid #102e4b'><div style='width:60px;height:60px;flex:none;border-radius:14px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='31' height='31' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M3.6 17.4a9 9 0 1 1 16.8 0'/><path d='M12 17.4L16.6 9.6'/><circle cx='12' cy='17.4' r='1.6' fill='currentColor' stroke='none'/></svg></div><div style='flex:1;min-width:0'><div style='font-size:19px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>dP Skid 3</div><div style='font-size:17px;color:#93afc9;margin-top:2px'>bar</div></div><div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _v4 ), "&#8212;", FORMAT ( _v4, "#,##0.0" ) ) & "</div><div style='width:144px;flex:none'><div style='position:relative;height:24px;background:#123855;border-radius:12px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg4, "0" ) & "%;height:100%;background:" & _co4 & ";border-radius:12px'></div><div style='position:absolute;left:62.5%;top:-4px;height:32px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='width:84px;flex:none;text-align:left;line-height:1.22'><div style='font-size:17px;color:#93afc9'>" & "Ref." & "</div><div style='font-size:19px;font-weight:700;color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _rf4 ), "&#8212;", FORMAT ( _rf4, "#,##0.0" ) ) & "</div></div></div>"
 			RETURN
 			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style><div style='font-family:Segoe UI,sans-serif;height:100vh;width:100%;display:flex;flex-direction:column;gap:5px'><div style='height:62px;flex:none;border-radius:10px;background:linear-gradient(90deg,#1a5a96 0%,#0d3a68 46%,#071f38 100%);border:1px solid #2a6ca8;display:flex;align-items:center;gap:14px;padding:0 18px'><span style='color:#4aa8f0;display:flex'><svg viewBox='0 0 24 24' width='34' height='34' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><path d='M3.5 4.5h17l-6.6 7.8v6.4l-3.8 2v-8.4z'/></svg></span><span style='font-size:27px;font-weight:700;color:#ffffff;letter-spacing:0.8px;white-space:nowrap'>PERFORMANCE OR</span></div><div style='flex:1;min-height:0;display:flex;flex-direction:column;background:#001b2e;border:1px solid #143d5c;border-radius:10px;overflow:hidden'>" & _itens & "</div></div>"
+			```
 		displayFolder: Painel Operacional
 		lineageTag: 7135ce04-7bcd-5b0d-86e0-68b62bdf542d
 
-	/// Painel CONSUMO DE QUÍMICOS E ENERGIA da Visão Geral: Químicos, Energia, Energia OR, Energia - Biológico, Coagulante. Valor = as medidas '... 30d' de cada indicador (planilha Dados BI); referência = a meta de ferramentas/preview/indicadores_op.py. Verde dentro da meta, amarelo até 10% fora, vermelho além disso. A barra enche até 160% da referência e o tracejado marca os 100%.
-	measure 'HTML Painel Consumo' =
-			VAR _v1 = [Químicos 30d]
+	/// Painel CONSUMO DE QUÍMICOS E ENERGIA da Visão Geral: Químicos, Energia, Energia OR, Energia - Biológico, Coagulante. Valor = as medidas '... Período' de cada indicador (planilha Dados BI); referência = a meta de ferramentas/preview/indicadores_op.py. Verde dentro da meta, amarelo até 10% fora, vermelho além disso. A barra enche até 160% da referência e o tracejado marca os 100%.
+	measure 'HTML Painel Consumo' = ```
+			VAR _v1 = [Químicos Período]
 			VAR _mi1 = BLANK ()
 			VAR _ma1 = 0.12
 			VAR _rf1 = _ma1
 			VAR _co1 = SWITCH ( TRUE (), ISBLANK ( _v1 ) || ISBLANK ( _rf1 ), "#5c7791", _v1 <= _rf1, "#4ed15d", _v1 <= _rf1 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg1 = MIN ( MAX ( DIVIDE ( _v1, _rf1 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _an1 = [Químicos 30d Anterior]
+			VAR _an1 = [Químicos Período Anterior]
 			VAR _te1 = NOT ISBLANK ( _v1 ) && NOT ISBLANK ( _an1 ) && _an1 <> 0
 			VAR _dl1 = DIVIDE ( _v1 - _an1, _an1 )
-			VAR _v2 = [Energia 30d]
+			VAR _v2 = [Energia Período]
 			VAR _mi2 = BLANK ()
 			VAR _ma2 = 0.98
 			VAR _rf2 = _ma2
 			VAR _co2 = SWITCH ( TRUE (), ISBLANK ( _v2 ) || ISBLANK ( _rf2 ), "#5c7791", _v2 <= _rf2, "#4ed15d", _v2 <= _rf2 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg2 = MIN ( MAX ( DIVIDE ( _v2, _rf2 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _an2 = [Energia 30d Anterior]
+			VAR _an2 = [Energia Período Anterior]
 			VAR _te2 = NOT ISBLANK ( _v2 ) && NOT ISBLANK ( _an2 ) && _an2 <> 0
 			VAR _dl2 = DIVIDE ( _v2 - _an2, _an2 )
-			VAR _v3 = [Energia OR 30d]
+			VAR _v3 = [Energia OR Período]
 			VAR _mi3 = BLANK ()
 			VAR _ma3 = 0.5
 			VAR _rf3 = _ma3
 			VAR _co3 = SWITCH ( TRUE (), ISBLANK ( _v3 ) || ISBLANK ( _rf3 ), "#5c7791", _v3 <= _rf3, "#4ed15d", _v3 <= _rf3 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg3 = MIN ( MAX ( DIVIDE ( _v3, _rf3 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _an3 = [Energia OR 30d Anterior]
+			VAR _an3 = [Energia OR Período Anterior]
 			VAR _te3 = NOT ISBLANK ( _v3 ) && NOT ISBLANK ( _an3 ) && _an3 <> 0
 			VAR _dl3 = DIVIDE ( _v3 - _an3, _an3 )
-			VAR _v4 = [Energia - Biológico 30d]
+			VAR _v4 = [Energia - Biológico Período]
 			VAR _mi4 = BLANK ()
 			VAR _ma4 = BLANK ()
 			VAR _rf4 = _ma4
 			VAR _co4 = SWITCH ( TRUE (), ISBLANK ( _v4 ) || ISBLANK ( _rf4 ), "#5c7791", _v4 <= _rf4, "#4ed15d", _v4 <= _rf4 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg4 = MIN ( MAX ( DIVIDE ( _v4, _rf4 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _an4 = [Energia - Biológico 30d Anterior]
+			VAR _an4 = [Energia - Biológico Período Anterior]
 			VAR _te4 = NOT ISBLANK ( _v4 ) && NOT ISBLANK ( _an4 ) && _an4 <> 0
 			VAR _dl4 = DIVIDE ( _v4 - _an4, _an4 )
-			VAR _v5 = [Coagulante 30d]
+			VAR _v5 = [Coagulante Período]
 			VAR _mi5 = BLANK ()
 			VAR _ma5 = 17.0
 			VAR _rf5 = _ma5
 			VAR _co5 = SWITCH ( TRUE (), ISBLANK ( _v5 ) || ISBLANK ( _rf5 ), "#5c7791", _v5 <= _rf5, "#4ed15d", _v5 <= _rf5 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg5 = MIN ( MAX ( DIVIDE ( _v5, _rf5 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _an5 = [Coagulante 30d Anterior]
+			VAR _an5 = [Coagulante Período Anterior]
 			VAR _te5 = NOT ISBLANK ( _v5 ) && NOT ISBLANK ( _an5 ) && _an5 <> 0
 			VAR _dl5 = DIVIDE ( _v5 - _an5, _an5 )
 			VAR _itens =
@@ -185,36 +188,37 @@ table 'Medidas HTML'
 			        & "<div style='flex:1;min-width:0;display:flex;flex-direction:column;background:#0b2740;border:1px solid #1b4a71;border-radius:10px;padding:13px 14px 12px 14px'><div style='display:flex;align-items:center;gap:11px'><div style='width:44px;height:44px;flex:none;border-radius:11px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='23' height='23' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='5.2' r='2.3'/><circle cx='5.2' cy='17' r='2.3'/><circle cx='18.8' cy='17' r='2.3'/><path d='M10.8 7.2L6.4 14.9M13.2 7.2l4.4 7.7M7.5 17h9'/></svg></div><div style='min-width:0'><div style='font-size:17px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Coagulante</div><div style='font-size:16px;color:#93afc9;margin-top:1px;white-space:nowrap'>gPAC/gP rem</div></div></div><div style='flex:1'></div><div style='display:flex;align-items:flex-end;gap:6px'><div style='font-size:38px;font-weight:700;color:#ffffff;line-height:1;white-space:nowrap'>" & IF ( ISBLANK ( _v5 ), "&#8212;", FORMAT ( _v5, "#,##0.0" ) ) & "</div><div style='margin-left:auto;text-align:right'><div style='font-size:18px;font-weight:700;color:" & IF ( NOT _te5, "#5c7791", IF ( _dl5 < 0, "#4ed15d", "#f4353f" ) ) & ";white-space:nowrap'>" & IF ( _te5, IF ( _dl5 >= 0, "&#9650;", "&#9660;" ), "" ) & " " & IF ( _te5, FORMAT ( _dl5, "+0.0%;-0.0%" ), "&#8212;" ) & "</div><div style='font-size:15px;color:#93afc9;margin-top:2px'>&#916; Per.</div></div></div><div style='margin-top:12px'><div style='position:relative;height:20px;background:#123855;border-radius:10px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg5, "0" ) & "%;height:100%;background:" & _co5 & ";border-radius:10px'></div><div style='position:absolute;left:62.5%;top:-4px;height:28px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='margin-top:9px;display:flex;align-items:baseline;font-size:16px;color:#93afc9'><span style='white-space:nowrap'>" & IF ( ISBLANK ( _rf5 ), "Ref. &#8212;", "Ref. " & FORMAT ( _rf5, "#,##0.0" ) & " gPAC/gP" ) & "</span><b style='margin-left:auto;padding-left:8px;font-size:19px;color:#ffffff'>" & IF ( ISBLANK ( _rf5 ) || ISBLANK ( _v5 ), "&#8212;", FORMAT ( DIVIDE ( _v5, _rf5 ), "0%" ) ) & "</b></div></div>"
 			RETURN
 			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style><div style='font-family:Segoe UI,sans-serif;height:100vh;width:100%;display:flex;flex-direction:column;gap:5px'><div style='height:62px;flex:none;border-radius:10px;background:linear-gradient(90deg,#0a6a62 0%,#064b47 48%,#05282f 100%);border:1px solid #2a6ca8;display:flex;align-items:center;gap:14px;padding:0 18px'><span style='color:#3ddc84;display:flex'><svg viewBox='0 0 24 24' width='34' height='34' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><path d='M20 4c0 8.3-4.2 12.4-10.4 12.4A5.6 5.6 0 0 1 4 10.8C4 5.6 9.6 4 20 4z'/><path d='M4.6 19.4C7 15 11 11.6 16.2 9.6'/></svg></span><span style='color:#4fe3dd;display:flex'><svg viewBox='0 0 24 24' width='34' height='34' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><path d='M13.4 2.5L4.8 13.4h5.6l-.8 8.1 8.6-10.9h-5.6z' fill='currentColor' stroke='none'/></svg></span><span style='font-size:27px;font-weight:700;color:#ffffff;letter-spacing:0.8px;white-space:nowrap'>CONSUMO DE QUÍMICOS E ENERGIA</span><span style='margin-left:34px;font-size:16px;color:#9dbbd8;font-weight:400;white-space:nowrap'>Consumos específicos</span></div><div style='flex:1;min-height:0;display:flex;gap:9px;padding:11px;background:#001f3a;border:1px solid #143d5c;border-radius:10px'>" & _itens & "</div></div>"
+			```
 		displayFolder: Painel Operacional
 		lineageTag: 40e31478-e022-5268-8ccd-9417526a0b12
 
-	/// Painel VOLUMES da Visão Geral: Clientes, Blend, Perdas. Valor = as medidas '... 30d' de cada indicador (planilha Dados BI); referência = a meta de ferramentas/preview/indicadores_op.py. Verde dentro da meta, amarelo até 10% fora, vermelho além disso. A barra enche até 160% da referência e o tracejado marca os 100%.
-	measure 'HTML Painel Volumes' =
-			VAR _v1 = [Clientes 30d]
+	/// Painel VOLUMES da Visão Geral: Clientes, Blend, Perdas. Valor = as medidas '... Período' de cada indicador (planilha Dados BI); referência = a meta de ferramentas/preview/indicadores_op.py. Verde dentro da meta, amarelo até 10% fora, vermelho além disso. A barra enche até 160% da referência e o tracejado marca os 100%.
+	measure 'HTML Painel Volumes' = ```
+			VAR _v1 = [Clientes Período]
 			VAR _mi1 = 311.9212962963
 			VAR _ma1 = BLANK ()
 			VAR _rf1 = _mi1
 			VAR _co1 = SWITCH ( TRUE (), ISBLANK ( _v1 ) || ISBLANK ( _rf1 ), "#5c7791", _v1 >= _rf1, "#4ed15d", _v1 >= _rf1 * 0.9, "#feb825", "#f4353f" )
 			VAR _lg1 = MIN ( MAX ( DIVIDE ( _v1, _rf1 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _an1 = [Clientes 30d Anterior]
+			VAR _an1 = [Clientes Período Anterior]
 			VAR _te1 = NOT ISBLANK ( _v1 ) && NOT ISBLANK ( _an1 ) && _an1 <> 0
 			VAR _dl1 = DIVIDE ( _v1 - _an1, _an1 )
-			VAR _v2 = [Blend 30d]
+			VAR _v2 = [Blend Período]
 			VAR _mi2 = BLANK ()
 			VAR _ma2 = BLANK ()
 			VAR _rf2 = _ma2
 			VAR _co2 = SWITCH ( TRUE (), ISBLANK ( _v2 ) || ISBLANK ( _rf2 ), "#5c7791", _v2 <= _rf2, "#4ed15d", _v2 <= _rf2 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg2 = MIN ( MAX ( DIVIDE ( _v2, _rf2 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _an2 = [Blend 30d Anterior]
+			VAR _an2 = [Blend Período Anterior]
 			VAR _te2 = NOT ISBLANK ( _v2 ) && NOT ISBLANK ( _an2 ) && _an2 <> 0
 			VAR _dl2 = _v2 - _an2
-			VAR _v3 = [Perdas 30d]
+			VAR _v3 = [Perdas Período]
 			VAR _mi3 = BLANK ()
 			VAR _ma3 = 18.0
 			VAR _rf3 = _ma3
 			VAR _co3 = SWITCH ( TRUE (), ISBLANK ( _v3 ) || ISBLANK ( _rf3 ), "#5c7791", _v3 <= _rf3, "#4ed15d", _v3 <= _rf3 * 1.1, "#feb825", "#f4353f" )
 			VAR _lg3 = MIN ( MAX ( DIVIDE ( _v3, _rf3 ), 0 ), 1.6 ) / 1.6 * 100
-			VAR _an3 = [Perdas 30d Anterior]
+			VAR _an3 = [Perdas Período Anterior]
 			VAR _te3 = NOT ISBLANK ( _v3 ) && NOT ISBLANK ( _an3 ) && _an3 <> 0
 			VAR _dl3 = _v3 - _an3
 			VAR _itens =
@@ -223,19 +227,45 @@ table 'Medidas HTML'
 			        & "<div style='flex:1;min-width:0;display:flex;flex-direction:column;background:#0b2740;border:1px solid #1b4a71;border-radius:10px;padding:13px 14px 12px 14px'><div style='display:flex;align-items:center;gap:11px'><div style='width:44px;height:44px;flex:none;border-radius:11px;background:#0f3c66;border:1px solid #1c5285;color:#dce9f7;display:flex;align-items:center;justify-content:center'><svg viewBox='0 0 24 24' width='23' height='23' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3c3.4 4 5.5 6.6 5.5 9.3A5.5 5.5 0 0 1 6.5 12.3C6.5 9.6 8.6 7 12 3z'/></svg></div><div style='min-width:0'><div style='font-size:17px;font-weight:600;color:#ffffff;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Perdas</div><div style='font-size:16px;color:#93afc9;margin-top:1px;white-space:nowrap'>%</div></div></div><div style='flex:1'></div><div style='display:flex;align-items:flex-end;gap:6px'><div style='font-size:38px;font-weight:700;color:#ffffff;line-height:1;white-space:nowrap'>" & IF ( ISBLANK ( _v3 ), "&#8212;", FORMAT ( _v3, "#,##0.0" ) ) & "</div><div style='margin-left:auto;text-align:right'><div style='font-size:18px;font-weight:700;color:" & IF ( NOT _te3, "#5c7791", IF ( _dl3 < 0, "#4ed15d", "#f4353f" ) ) & ";white-space:nowrap'>" & IF ( _te3, IF ( _dl3 >= 0, "&#9650;", "&#9660;" ), "" ) & " " & IF ( _te3, FORMAT ( _dl3, "+0.0;-0.0" ) & " p.p.", "&#8212;" ) & "</div><div style='font-size:15px;color:#93afc9;margin-top:2px'>&#916; Per.</div></div></div><div style='margin-top:12px'><div style='position:relative;height:20px;background:#123855;border-radius:10px;border:1px solid #16375a'><div style='width:" & FORMAT ( _lg3, "0" ) & "%;height:100%;background:" & _co3 & ";border-radius:10px'></div><div style='position:absolute;left:62.5%;top:-4px;height:28px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div></div><div style='margin-top:9px;display:flex;align-items:baseline;font-size:16px;color:#93afc9'><span style='white-space:nowrap'>" & IF ( ISBLANK ( _rf3 ), "Ref. &#8212;", "Ref. " & FORMAT ( _rf3, "#,##0.0" ) & " %" ) & "</span><b style='margin-left:auto;padding-left:8px;font-size:19px;color:#ffffff'>" & IF ( ISBLANK ( _rf3 ) || ISBLANK ( _v3 ), "&#8212;", FORMAT ( DIVIDE ( _v3, _rf3 ), "0%" ) ) & "</b></div></div>"
 			RETURN
 			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style><div style='font-family:Segoe UI,sans-serif;height:100vh;width:100%;display:flex;flex-direction:column;gap:5px'><div style='height:62px;flex:none;border-radius:10px;background:linear-gradient(90deg,#1a5a96 0%,#0d3a68 46%,#071f38 100%);border:1px solid #2a6ca8;display:flex;align-items:center;gap:14px;padding:0 18px'><span style='color:#5fb4f5;display:flex'><svg viewBox='0 0 24 24' width='34' height='34' fill='none' stroke='currentColor' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'><path d='M12 3c3.4 4 5.5 6.6 5.5 9.3A5.5 5.5 0 0 1 6.5 12.3C6.5 9.6 8.6 7 12 3z'/></svg></span><span style='font-size:27px;font-weight:700;color:#ffffff;letter-spacing:0.8px;white-space:nowrap'>VOLUMES</span><span style='margin-left:auto;padding-left:14px;font-size:16px;color:#9dbbd8;font-weight:400;white-space:nowrap'>Distribuição e balanço hídrico</span></div><div style='flex:1;min-height:0;display:flex;gap:9px;padding:11px;background:#001f3a;border:1px solid #143d5c;border-radius:10px'>" & _itens & "</div></div>"
+			```
 		displayFolder: Painel Operacional
 		lineageTag: 42a34f17-360d-57f9-ae44-84db616022dc
 
 	/// Faixa do rodapé: data da última medição da planilha e a legenda das cores e dos termos.
-	measure 'HTML Rodapé' =
+	measure 'HTML Rodapé' = ```
 			VAR _ult = CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Valor] <> 0, 'Dados BI'[Data] <= TODAY () )
 			RETURN
 			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style><div style='font-family:Segoe UI,sans-serif;height:100vh;width:100%;display:flex;align-items:center;gap:24px;padding:0 26px;background:#04182a;border:1px solid #1f5a66;border-radius:10px'><span style='color:#93afc9;display:flex;flex:none'><svg viewBox='0 0 24 24' width='25' height='25' fill='none' stroke='currentColor' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='9'/><path d='M12 6.6V12l3.6 2.2'/></svg></span><span style='font-size:17px;color:#dce9f7;white-space:nowrap'>Última atualização: " & IF ( ISBLANK ( _ult ), "&#8212;", FORMAT ( _ult, "dd/mm/yyyy" ) ) & "</span><div style='width:1px;height:42px;background:#2a5f78;flex:none'></div><div><div style='font-size:17px;color:#dce9f7;white-space:nowrap'><b>Legenda do status</b> <span style='font-size:15px;color:#93afc9'>(em relação à referência)</span></div><div style='margin-top:7px;font-size:16px;color:#dce9f7;white-space:nowrap'><span style='display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:8px;background:#4ed15d'></span>Dentro da meta &nbsp;&nbsp;&nbsp;<span style='display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:8px;background:#feb825'></span>Atenção &nbsp;&nbsp;&nbsp;<span style='display:inline-block;width:14px;height:14px;border-radius:50%;vertical-align:-2px;margin-right:8px;background:#f4353f'></span>Fora da meta</div></div><div style='width:1px;height:42px;background:#2a5f78;flex:none'></div><div style='display:flex;align-items:center;gap:11px'><b style='font-size:17px;color:#dce9f7;white-space:nowrap'>&#916; Per.</b><span style='font-size:15px;color:#93afc9;line-height:1.3'>Variação em relação ao<br>período anterior</span></div><div style='width:1px;height:42px;background:#2a5f78;flex:none'></div><div style='display:flex;align-items:center;gap:11px'><b style='font-size:17px;color:#dce9f7;white-space:nowrap'>Ref.</b><span style='font-size:15px;color:#93afc9;line-height:1.3'>Valor de referência<br>(meta)</span></div><div style='width:1px;height:42px;background:#2a5f78;flex:none'></div><div style='display:flex;align-items:center;gap:11px'><b style='font-size:17px;color:#dce9f7;white-space:nowrap'>Faixa</b><span style='font-size:15px;color:#93afc9;line-height:1.3'>Faixa operacional</span></div><div style='margin-left:auto;padding-left:24px;font-size:16px;color:#93afc9;white-space:nowrap'>Aquapolo &nbsp;&#124;&nbsp; GS Inima &nbsp;&#124;&nbsp; Sabesp</div></div>"
+			```
 		displayFolder: Painel Operacional
 		lineageTag: 3ef746ee-f6d1-5e1f-bbfe-c1cbaf7c89ca
 
-	/// Retrolavagens: média simples dos últimos 30 dias, contados até a última leitura do indicador, coluna 'Nº retrolayagens disco ( ciclos/d)' da planilha Dados BI. Zero conta como leitura.
-	measure 'Retrolavagens 30d' =
+	/// Caixa do cabeçalho com o status da atualização dos dados. Em dia = última leitura há até 1 dia; Pendente = até 3 dias; Atrasado = mais que isso. Ao passar o mouse, mostra a data dos dados, quando a planilha foi salva, quando o Power BI foi atualizado e o que falta fazer.
+	measure 'HTML Status' = ```
+			-- Agora no horário de Brasília (UTC-3), para valer igual no Desktop e no serviço.
+			VAR _agora = UTCNOW () - 3 / 24
+			VAR _hoje = INT ( _agora )
+			VAR _dados = CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Valor] <> 0, 'Dados BI'[Data] <= TODAY () )
+			VAR _plan = CALCULATE ( MAX ( 'Dados BI'[Planilha salva em] ), REMOVEFILTERS ( 'Dados BI' ) )
+			VAR _bi = CALCULATE ( MAX ( 'Dados BI'[Carregado em] ), REMOVEFILTERS ( 'Dados BI' ) )
+			-- Atraso = dias entre a última leitura e hoje. É ele que decide o status.
+			VAR _atraso = _hoje - INT ( _dados )
+			VAR _nivel = SWITCH ( TRUE (), ISBLANK ( _dados ), 0, _atraso <= 1, 1, _atraso <= 3, 2, 3 )
+			VAR _cor = SWITCH ( _nivel, 1, "#4ed15d", 2, "#feb825", 3, "#f4353f", "#5c7791" )
+			VAR _palavra = SWITCH ( _nivel, 1, "Em dia", 2, "Pendente", 3, "Atrasado", "Sem dados" )
+			VAR _ha = SWITCH ( TRUE (), _atraso <= 0, "hoje", _atraso = 1, "ontem", "há " & _atraso & " dias" )
+			VAR _rotulo = IF ( ISBLANK ( _dados ), "Sem leitura na planilha", "Dados até " & FORMAT ( _dados, "dd/mm" ) & " &#183; " & _ha )
+			-- O que falta, na ordem em que dá para saber: o Power BI só enxerga a planilha quando é atualizado.
+			VAR _falta = SWITCH ( TRUE (), _nivel = 1, "Nada pendente.", ISBLANK ( _bi ) || INT ( _bi ) < _hoje, "Falta atualizar o Power BI.", ISBLANK ( _plan ) || INT ( _plan ) < _hoje, "Falta abrir e salvar a planilha no Excel e depois atualizar o Power BI.", "Falta lançar os dados nas planilhas de origem." )
+			RETURN
+			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style><style>.cx:hover+.dt,.dt:hover{display:block!important}</style><div style='font-family:Segoe UI,sans-serif;height:100vh;width:100%'><div class='cx' style='height:79px;display:flex;align-items:center;gap:16px;padding:0 16px 0 20px;background:#001429;border:1px solid #245b7c;border-radius:10px;cursor:default'><span style='color:" & _cor & ";display:flex;flex:none'><svg viewBox='0 0 24 24' width='38' height='38' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4.2 10.2a8 8 0 0 1 13.4-3.3l2.2 2.1'/><path d='M19.8 13.8a8 8 0 0 1-13.4 3.3l-2.2-2.1'/><path d='M20.3 4.4v4.6h-4.6M3.7 19.6V15h4.6'/></svg></span><div style='min-width:0'><div style='font-size:15px;color:#dce9f7;white-space:nowrap'>" & _rotulo & "</div><div style='font-size:23px;font-weight:700;color:" & _cor & ";line-height:1.25;white-space:nowrap'>" & _palavra & "</div></div></div><div class='dt' style='display:none;margin-top:6px;padding:12px 16px 13px 16px;background:#04182a;border:1px solid #245b7c;border-radius:10px;font-size:15px'><div style='display:flex;justify-content:space-between;gap:18px;padding:3px 0'><span style='color:#93afc9'>Dados até</span><b style='color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _dados ), "&#8212;", FORMAT ( _dados, "dd/mm/yyyy" ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:18px;padding:3px 0'><span style='color:#93afc9'>Planilha salva em</span><b style='color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _plan ), "&#8212;", FORMAT ( _plan, "dd/mm/yyyy hh:nn" ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:18px;padding:3px 0'><span style='color:#93afc9'>Power BI atualizado em</span><b style='color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _bi ), "&#8212;", FORMAT ( _bi, "dd/mm/yyyy hh:nn" ) ) & "</b></div><div style='margin-top:8px;padding-top:9px;border-top:1px solid #102e4b;color:#dce9f7;line-height:1.35'>" & _falta & "</div></div></div>"
+			```
+		displayFolder: Painel Operacional
+		lineageTag: aa71737a-8e5c-5297-80fe-fb5312da2c07
+
+	/// Retrolavagens: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Nº retrolayagens disco ( ciclos/d)' da planilha Dados BI. Zero conta como leitura.
+	measure 'Retrolavagens Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -246,15 +276,17 @@ table 'Medidas HTML'
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "Nº retrolayagens disco ( ciclos/d)",
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 83846d12-58db-5cdf-b811-131e6c98197a
+		lineageTag: f6251bd4-4e90-5030-b75c-927f06d82ba2
 
-	/// DQO: média simples dos últimos 30 dias, contados até a última leitura do indicador, coluna 'DQO (mg/L)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'DQO 30d' =
+	/// DQO: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'DQO (mg/L)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'DQO Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -267,15 +299,17 @@ table 'Medidas HTML'
 			        AVERAGE ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "DQO (mg/L)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 357bb16f-33d6-5bc3-9347-1f02fde8ba95
+		lineageTag: eed6ff4a-7fd3-5ea3-bfca-c26bd8b824bd
 
-	/// NH3: média simples dos últimos 30 dias, contados até a última leitura do indicador, coluna 'NH3 (mg/L)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'NH3 30d' =
+	/// NH3: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'NH3 (mg/L)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'NH3 Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -288,15 +322,17 @@ table 'Medidas HTML'
 			        AVERAGE ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "NH3 (mg/L)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0.0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 95a7ee81-01f6-5eb6-b4b0-f3e9cbd65f2f
+		lineageTag: e69dac95-63c4-5c82-97bd-02a7673f2586
 
-	/// Condutividade: média simples dos últimos 30 dias, contados até a última leitura do indicador, coluna 'Condutividade' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Condutividade 30d' =
+	/// Condutividade: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Condutividade' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Condutividade Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -309,15 +345,17 @@ table 'Medidas HTML'
 			        AVERAGE ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "Condutividade",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: a534ecd8-246f-5d75-b476-1b10a800cc88
+		lineageTag: 1b886021-03ef-5ae7-95e5-6f881958086a
 
-	/// Dureza: média simples dos últimos 30 dias, contados até a última leitura do indicador, coluna 'Dureza (mg/L)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Dureza 30d' =
+	/// Dureza: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Dureza (mg/L)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Dureza Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -330,15 +368,17 @@ table 'Medidas HTML'
 			        AVERAGE ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "Dureza (mg/L)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 32912d83-62b4-5f3f-af00-2d66bb043f37
+		lineageTag: b6b9aac2-4b87-500e-8aaf-03f4a9482716
 
-	/// Idade do Lodo: média simples dos últimos 30 dias, contados até a última leitura do indicador, coluna 'Idade do lodo (dias)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Idade do Lodo 30d' =
+	/// Idade do Lodo: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Idade do lodo (dias)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Idade do Lodo Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -351,15 +391,17 @@ table 'Medidas HTML'
 			        AVERAGE ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "Idade do lodo (dias)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 9249159f-37e6-50d9-ae19-fc513126687d
+		lineageTag: ab5e21f8-aa67-5053-ab4b-ad3cca6e113d
 
-	/// Alimento/Microorg.: média simples dos últimos 30 dias, contados até a última leitura do indicador, coluna 'Alimento/ Microorg (g/g.d-¹)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Alimento/Microorg. 30d' =
+	/// Alimento/Microorg.: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Alimento/ Microorg (g/g.d-¹)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Alimento/Microorg. Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -372,15 +414,17 @@ table 'Medidas HTML'
 			        AVERAGE ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "Alimento/ Microorg (g/g.d-¹)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0.00
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 835e6789-9009-50a4-86c7-fd13aa06cc6b
+		lineageTag: becb901a-a1b0-5621-8ad3-3283f7110e61
 
-	/// TMP: média simples dos últimos 30 dias, contados até a última leitura do indicador, coluna 'Pressão transmembrana (Bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'TMP 30d' =
+	/// TMP: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Pressão transmembrana (Bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'TMP Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -393,15 +437,17 @@ table 'Medidas HTML'
 			        AVERAGE ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "Pressão transmembrana (Bar)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0.00
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 7f25e22c-69ca-5388-bd57-a82d5c9ce532
+		lineageTag: 35c31f72-dee8-53e8-9af4-cd00d25588ba
 
-	/// Permeabilidade: média simples dos últimos 30 dias, contados até a última leitura do indicador, coluna 'Permeabilidade (LMH/bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Permeabilidade 30d' =
+	/// Permeabilidade: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Permeabilidade (LMH/bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Permeabilidade Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -414,15 +460,17 @@ table 'Medidas HTML'
 			        AVERAGE ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "Permeabilidade (LMH/bar)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: a65b1a01-dabd-533c-bbb5-ef0b8928c093
+		lineageTag: df971bfd-c81c-5f91-8335-1416c55a07c3
 
-	/// Turbidez: média simples dos últimos 30 dias, contados até a última leitura do indicador, coluna 'Turbidez (NTU)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Turbidez 30d' =
+	/// Turbidez: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Turbidez (NTU)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Turbidez Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -435,15 +483,17 @@ table 'Medidas HTML'
 			        AVERAGE ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "Turbidez (NTU)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0.00
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: ff004987-0b7b-56ce-9d19-cd1f0db45942
+		lineageTag: 256c7758-e05d-58a6-a247-69ce7c4ba76e
 
-	/// Fluxo: média simples dos últimos 30 dias, contados até a última leitura do indicador, coluna 'Fluxo (LMH)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Fluxo 30d' =
+	/// Fluxo: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Fluxo (LMH)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Fluxo Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -456,15 +506,17 @@ table 'Medidas HTML'
 			        AVERAGE ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "Fluxo (LMH)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0.0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: e53f4443-246e-5027-a114-04b995b3ff71
+		lineageTag: 448f695c-d8dc-5212-8cc7-71026715937d
 
-	/// SDI: média simples dos últimos 30 dias, contados até a última leitura do indicador, coluna 'SDI' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'SDI 30d' =
+	/// SDI: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'SDI' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'SDI Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -477,15 +529,17 @@ table 'Medidas HTML'
 			        AVERAGE ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "SDI",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0.0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 34a52884-2364-56d4-850d-55730476812b
+		lineageTag: 9f623e2e-7433-57ce-9a2e-2d1710346209
 
-	/// dP Skid 1: média simples dos últimos 30 dias, contados até a última leitura do indicador, coluna 'dP Skid 1 (bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'dP Skid 1 30d' =
+	/// dP Skid 1: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'dP Skid 1 (bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'dP Skid 1 Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -498,15 +552,17 @@ table 'Medidas HTML'
 			        AVERAGE ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "dP Skid 1 (bar)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0.0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 11e9c441-0e73-59e9-9ffb-b04d08dadb63
+		lineageTag: 6f99347c-fb4f-5891-8ff4-880c2726fc11
 
-	/// dP Skid 2: média simples dos últimos 30 dias, contados até a última leitura do indicador, coluna 'dP Skid-02 (bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'dP Skid 2 30d' =
+	/// dP Skid 2: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'dP Skid-02 (bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'dP Skid 2 Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -519,15 +575,17 @@ table 'Medidas HTML'
 			        AVERAGE ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "dP Skid-02 (bar)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0.0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 698ddda6-d730-53e5-9183-8e3b54991daf
+		lineageTag: 61c65062-2207-528c-b8e5-25cb824b3ac7
 
-	/// dP Skid 3: média simples dos últimos 30 dias, contados até a última leitura do indicador, coluna 'dP Skid-03 (bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'dP Skid 3 30d' =
+	/// dP Skid 3: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'dP Skid-03 (bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'dP Skid 3 Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -540,15 +598,17 @@ table 'Medidas HTML'
 			        AVERAGE ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "dP Skid-03 (bar)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0.0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 02f7538d-a33f-5181-ba68-0191478635af
+		lineageTag: 4ab6b50c-88ba-59c5-9561-857beff7ebbb
 
-	/// Químicos: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) dos últimos 30 dias, contados até a última leitura do indicador, coluna 'Químicos (Kg/m³)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Químicos 30d' =
+	/// Químicos: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Químicos (Kg/m³)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Químicos Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -561,7 +621,7 @@ table 'Medidas HTML'
 			        VALUES ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Químicos (Kg/m³)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
 			VAR _t =
@@ -572,12 +632,14 @@ table 'Medidas HTML'
 			    )
 			RETURN
 			    DIVIDE ( SUMX ( _t, [@v] * [@p] ), SUMX ( _t, [@p] ) )
+			```
 		formatString: #,0.00
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: dc22462e-6020-55ee-98e0-015fcb2c52d3
+		lineageTag: 0280c799-fd77-55d7-9ed2-d8a5e205c28a
 
-	/// Químicos: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) dos 30 dias anteriores aos de [Químicos 30d], coluna 'Químicos (Kg/m³)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Químicos 30d Anterior' =
+	/// Químicos: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período anterior ao de [Químicos Período], com o mesmo tamanho, coluna 'Químicos (Kg/m³)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Químicos Período Anterior' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -590,8 +652,8 @@ table 'Medidas HTML'
 			        VALUES ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Químicos (Kg/m³)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 60,
-			        'Dados BI'[Data] <= _fim - 30
+			        'Dados BI'[Data] > _fim - 2 * _tamanho,
+			        'Dados BI'[Data] <= _fim - _tamanho
 			    )
 			VAR _t =
 			    ADDCOLUMNS (
@@ -601,12 +663,14 @@ table 'Medidas HTML'
 			    )
 			RETURN
 			    DIVIDE ( SUMX ( _t, [@v] * [@p] ), SUMX ( _t, [@p] ) )
+			```
 		formatString: #,0.00
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 88c1dadd-8dd3-55c6-b69d-c5e554e72650
+		lineageTag: f9a0d7f7-883d-5e65-9e68-78b15b494c4e
 
-	/// Energia: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) dos últimos 30 dias, contados até a última leitura do indicador, coluna 'Energia (KWh/m³)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Energia 30d' =
+	/// Energia: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Energia (KWh/m³)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Energia Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -619,7 +683,7 @@ table 'Medidas HTML'
 			        VALUES ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Energia (KWh/m³)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
 			VAR _t =
@@ -630,12 +694,14 @@ table 'Medidas HTML'
 			    )
 			RETURN
 			    DIVIDE ( SUMX ( _t, [@v] * [@p] ), SUMX ( _t, [@p] ) )
+			```
 		formatString: #,0.00
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 42b4609b-40fc-5347-8743-1ccd2c084ca6
+		lineageTag: 81c3e924-d528-59d3-ba0d-44535be12b49
 
-	/// Energia: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) dos 30 dias anteriores aos de [Energia 30d], coluna 'Energia (KWh/m³)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Energia 30d Anterior' =
+	/// Energia: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período anterior ao de [Energia Período], com o mesmo tamanho, coluna 'Energia (KWh/m³)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Energia Período Anterior' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -648,8 +714,8 @@ table 'Medidas HTML'
 			        VALUES ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Energia (KWh/m³)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 60,
-			        'Dados BI'[Data] <= _fim - 30
+			        'Dados BI'[Data] > _fim - 2 * _tamanho,
+			        'Dados BI'[Data] <= _fim - _tamanho
 			    )
 			VAR _t =
 			    ADDCOLUMNS (
@@ -659,12 +725,14 @@ table 'Medidas HTML'
 			    )
 			RETURN
 			    DIVIDE ( SUMX ( _t, [@v] * [@p] ), SUMX ( _t, [@p] ) )
+			```
 		formatString: #,0.00
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: eebf6ce3-1399-5850-a54b-cfcff26b7c41
+		lineageTag: ab9b84d1-3810-5f3a-b200-6bb387c44f76
 
-	/// Energia OR: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) dos últimos 30 dias, contados até a última leitura do indicador, coluna 'Energia OR KW/m³' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Energia OR 30d' =
+	/// Energia OR: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Energia OR KW/m³' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Energia OR Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -677,7 +745,7 @@ table 'Medidas HTML'
 			        VALUES ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Energia OR KW/m³",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
 			VAR _t =
@@ -688,12 +756,14 @@ table 'Medidas HTML'
 			    )
 			RETURN
 			    DIVIDE ( SUMX ( _t, [@v] * [@p] ), SUMX ( _t, [@p] ) )
+			```
 		formatString: #,0.00
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: d4cba39c-964c-5fbf-9feb-87ad306059d3
+		lineageTag: e1b23a3d-8a96-5971-a6ec-258997187eb5
 
-	/// Energia OR: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) dos 30 dias anteriores aos de [Energia OR 30d], coluna 'Energia OR KW/m³' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Energia OR 30d Anterior' =
+	/// Energia OR: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período anterior ao de [Energia OR Período], com o mesmo tamanho, coluna 'Energia OR KW/m³' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Energia OR Período Anterior' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -706,8 +776,8 @@ table 'Medidas HTML'
 			        VALUES ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Energia OR KW/m³",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 60,
-			        'Dados BI'[Data] <= _fim - 30
+			        'Dados BI'[Data] > _fim - 2 * _tamanho,
+			        'Dados BI'[Data] <= _fim - _tamanho
 			    )
 			VAR _t =
 			    ADDCOLUMNS (
@@ -717,12 +787,14 @@ table 'Medidas HTML'
 			    )
 			RETURN
 			    DIVIDE ( SUMX ( _t, [@v] * [@p] ), SUMX ( _t, [@p] ) )
+			```
 		formatString: #,0.00
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 41fe9b07-5065-5ae2-bd08-250c3d79f8ec
+		lineageTag: 470aca11-c887-552d-8e82-c31665063c5f
 
-	/// Energia - Biológico: mediana dos valores positivos (a planilha não traz o divisor, e um dia com divisor perto de zero estouraria a média) dos últimos 30 dias, contados até a última leitura do indicador, coluna 'Energia - Biológico (KWh/kg NH3 rem)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Energia - Biológico 30d' =
+	/// Energia - Biológico: mediana dos valores positivos (a planilha não traz o divisor, e um dia com divisor perto de zero estouraria a média) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Energia - Biológico (KWh/kg NH3 rem)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Energia - Biológico Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -735,15 +807,17 @@ table 'Medidas HTML'
 			        MEDIAN ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "Energia - Biológico (KWh/kg NH3 rem)",
 			        'Dados BI'[Valor] > 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0.0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: e5eaa893-317d-51d9-9d4b-8daa7a903e85
+		lineageTag: ac353ef4-1b8a-52b9-9bcd-c20e88f5c469
 
-	/// Energia - Biológico: mediana dos valores positivos (a planilha não traz o divisor, e um dia com divisor perto de zero estouraria a média) dos 30 dias anteriores aos de [Energia - Biológico 30d], coluna 'Energia - Biológico (KWh/kg NH3 rem)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Energia - Biológico 30d Anterior' =
+	/// Energia - Biológico: mediana dos valores positivos (a planilha não traz o divisor, e um dia com divisor perto de zero estouraria a média) do período anterior ao de [Energia - Biológico Período], com o mesmo tamanho, coluna 'Energia - Biológico (KWh/kg NH3 rem)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Energia - Biológico Período Anterior' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -756,15 +830,17 @@ table 'Medidas HTML'
 			        MEDIAN ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "Energia - Biológico (KWh/kg NH3 rem)",
 			        'Dados BI'[Valor] > 0,
-			        'Dados BI'[Data] > _fim - 60,
-			        'Dados BI'[Data] <= _fim - 30
+			        'Dados BI'[Data] > _fim - 2 * _tamanho,
+			        'Dados BI'[Data] <= _fim - _tamanho
 			    )
+			```
 		formatString: #,0.0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 007577a3-dcfe-58f9-a236-a0c84fdf41b7
+		lineageTag: e70ab642-cf6e-5634-b655-8fa78e4f93cc
 
-	/// Coagulante: mediana dos valores positivos (a planilha não traz o divisor, e um dia com divisor perto de zero estouraria a média) dos últimos 30 dias, contados até a última leitura do indicador, coluna 'Coagulante (gPAC/gP rem)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Coagulante 30d' =
+	/// Coagulante: mediana dos valores positivos (a planilha não traz o divisor, e um dia com divisor perto de zero estouraria a média) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Coagulante (gPAC/gP rem)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Coagulante Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -777,15 +853,17 @@ table 'Medidas HTML'
 			        MEDIAN ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "Coagulante (gPAC/gP rem)",
 			        'Dados BI'[Valor] > 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0.0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 717a813c-7583-56b6-b198-8bc0e8a5a368
+		lineageTag: 59f52fd2-6032-587c-a201-685643430352
 
-	/// Coagulante: mediana dos valores positivos (a planilha não traz o divisor, e um dia com divisor perto de zero estouraria a média) dos 30 dias anteriores aos de [Coagulante 30d], coluna 'Coagulante (gPAC/gP rem)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Coagulante 30d Anterior' =
+	/// Coagulante: mediana dos valores positivos (a planilha não traz o divisor, e um dia com divisor perto de zero estouraria a média) do período anterior ao de [Coagulante Período], com o mesmo tamanho, coluna 'Coagulante (gPAC/gP rem)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Coagulante Período Anterior' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -798,15 +876,17 @@ table 'Medidas HTML'
 			        MEDIAN ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "Coagulante (gPAC/gP rem)",
 			        'Dados BI'[Valor] > 0,
-			        'Dados BI'[Data] > _fim - 60,
-			        'Dados BI'[Data] <= _fim - 30
+			        'Dados BI'[Data] > _fim - 2 * _tamanho,
+			        'Dados BI'[Data] <= _fim - _tamanho
 			    )
+			```
 		formatString: #,0.0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 8e64b2fc-0747-5c68-9cdc-3680500f38af
+		lineageTag: 66bc3ed1-0231-569e-95f8-2493a62c761e
 
-	/// Clientes: média simples dos últimos 30 dias, contados até a última leitura do indicador, coluna 'Clientes (L/s)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Clientes 30d' =
+	/// Clientes: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Clientes (L/s)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Clientes Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -819,15 +899,17 @@ table 'Medidas HTML'
 			        AVERAGE ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "Clientes (L/s)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
+			```
 		formatString: #,0.0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: b2c38bb2-e725-588b-aece-3d62fe2c31c2
+		lineageTag: 6e159202-49d8-56b3-91aa-9f8d55e1b215
 
-	/// Clientes: média simples dos 30 dias anteriores aos de [Clientes 30d], coluna 'Clientes (L/s)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
-	measure 'Clientes 30d Anterior' =
+	/// Clientes: média simples do período anterior ao de [Clientes Período], com o mesmo tamanho, coluna 'Clientes (L/s)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	measure 'Clientes Período Anterior' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -840,15 +922,17 @@ table 'Medidas HTML'
 			        AVERAGE ( 'Dados BI'[Valor] ),
 			        'Dados BI'[Indicador] = "Clientes (L/s)",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 60,
-			        'Dados BI'[Data] <= _fim - 30
+			        'Dados BI'[Data] > _fim - 2 * _tamanho,
+			        'Dados BI'[Data] <= _fim - _tamanho
 			    )
+			```
 		formatString: #,0.0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 0931f94f-e767-50ce-b5d9-922e21beb522
+		lineageTag: da12d84e-a14d-52dd-b7bf-d544f34b2fb3
 
-	/// Blend: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) dos últimos 30 dias, contados até a última leitura do indicador, coluna 'Blend %' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem. Sai multiplicado por 100 (fração para %).
-	measure 'Blend 30d' =
+	/// Blend: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Blend %' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem. Sai multiplicado por 100 (fração para %).
+	measure 'Blend Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -861,7 +945,7 @@ table 'Medidas HTML'
 			        VALUES ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Blend %",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
 			VAR _t =
@@ -872,12 +956,14 @@ table 'Medidas HTML'
 			    )
 			RETURN
 			    100.0 * DIVIDE ( SUMX ( _t, [@v] * [@p] ), SUMX ( _t, [@p] ) )
+			```
 		formatString: #,0.0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 6bf18011-86fb-5e0d-a78f-45c2da2d0ecf
+		lineageTag: e70dff5c-3faf-5ec1-95ed-26113503d9aa
 
-	/// Blend: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) dos 30 dias anteriores aos de [Blend 30d], coluna 'Blend %' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem. Sai multiplicado por 100 (fração para %).
-	measure 'Blend 30d Anterior' =
+	/// Blend: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período anterior ao de [Blend Período], com o mesmo tamanho, coluna 'Blend %' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem. Sai multiplicado por 100 (fração para %).
+	measure 'Blend Período Anterior' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -890,8 +976,8 @@ table 'Medidas HTML'
 			        VALUES ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Blend %",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 60,
-			        'Dados BI'[Data] <= _fim - 30
+			        'Dados BI'[Data] > _fim - 2 * _tamanho,
+			        'Dados BI'[Data] <= _fim - _tamanho
 			    )
 			VAR _t =
 			    ADDCOLUMNS (
@@ -901,12 +987,14 @@ table 'Medidas HTML'
 			    )
 			RETURN
 			    100.0 * DIVIDE ( SUMX ( _t, [@v] * [@p] ), SUMX ( _t, [@p] ) )
+			```
 		formatString: #,0.0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: d9160b3c-f9b6-5e0b-b637-be68901b8975
+		lineageTag: 45b3e705-4c40-5c36-911c-dc672803ba7b
 
-	/// Perdas: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) dos últimos 30 dias, contados até a última leitura do indicador, coluna 'Perdas %' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem. Sai multiplicado por 100 (fração para %).
-	measure 'Perdas 30d' =
+	/// Perdas: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Perdas %' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem. Sai multiplicado por 100 (fração para %).
+	measure 'Perdas Período' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -919,7 +1007,7 @@ table 'Medidas HTML'
 			        VALUES ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Perdas %",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 30,
+			        'Dados BI'[Data] > _fim - _tamanho,
 			        'Dados BI'[Data] <= _fim
 			    )
 			VAR _t =
@@ -930,12 +1018,14 @@ table 'Medidas HTML'
 			    )
 			RETURN
 			    100.0 * DIVIDE ( SUMX ( _t, [@v] * [@p] ), SUMX ( _t, [@p] ) )
+			```
 		formatString: #,0.0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: e999b8ca-9ce5-56ca-9a9b-79d3546b0164
+		lineageTag: c6dfbcc0-2aa7-5d0b-ab9a-d09b84d2f233
 
-	/// Perdas: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) dos 30 dias anteriores aos de [Perdas 30d], coluna 'Perdas %' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem. Sai multiplicado por 100 (fração para %).
-	measure 'Perdas 30d Anterior' =
+	/// Perdas: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período anterior ao de [Perdas Período], com o mesmo tamanho, coluna 'Perdas %' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem. Sai multiplicado por 100 (fração para %).
+	measure 'Perdas Período Anterior' = ```
+			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
 			VAR _fim =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
@@ -948,8 +1038,8 @@ table 'Medidas HTML'
 			        VALUES ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Perdas %",
 			        'Dados BI'[Valor] <> 0,
-			        'Dados BI'[Data] > _fim - 60,
-			        'Dados BI'[Data] <= _fim - 30
+			        'Dados BI'[Data] > _fim - 2 * _tamanho,
+			        'Dados BI'[Data] <= _fim - _tamanho
 			    )
 			VAR _t =
 			    ADDCOLUMNS (
@@ -959,9 +1049,10 @@ table 'Medidas HTML'
 			    )
 			RETURN
 			    100.0 * DIVIDE ( SUMX ( _t, [@v] * [@p] ), SUMX ( _t, [@p] ) )
+			```
 		formatString: #,0.0
 		displayFolder: Painel Operacional\Indicadores
-		lineageTag: 205a972d-4a07-5462-adf6-a0effa24890f
+		lineageTag: 6f57bef1-abd1-5cf9-864d-74afe54f9cb7
 
 	column Aux
 		dataType: string
@@ -976,4 +1067,3 @@ table 'Medidas HTML'
 	partition 'Medidas HTML' = calculated
 		mode: import
 		source = ROW("Aux", BLANK())
-

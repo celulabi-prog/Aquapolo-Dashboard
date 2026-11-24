@@ -58,6 +58,16 @@ X_SUP = [MARG,
 X_INF = [MARG, MARG + COL_INF[0] + 14]
 LARG  = LARG_PAG - 2 * MARG                   # 1888
 
+# ---- cabeçalho: seletor de período e indicador de atualização --------------
+# A caixa do seletor, com o ícone e a palavra "Período", está pintada na imagem
+# do cabeçalho. A segmentação cobre só o trecho "Mensal v" de dentro dela.
+BOTAO    = '#001429'      # fundo da caixa pintada (amostrado da imagem)
+BOTAO_B  = '#245b7c'      # borda da caixa
+X_PER, Y_PER, W_PER, H_PER = 1702, 90, 190, 42      # segmentação Período
+X_STA, Y_STA, W_STA = 1304, 57, 304                 # indicador de atualização
+H_BOTAO  = 79             # altura da caixa do indicador (a mesma do seletor pintado)
+H_STA    = 264            # altura do visual: a caixa + o detalhe que abre ao passar o mouse
+
 H_FAIXA = 62              # faixa de título dentro do painel
 RAIO    = 10              # raio da borda dos painéis
 

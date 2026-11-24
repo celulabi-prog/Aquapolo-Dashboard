@@ -169,6 +169,36 @@ def painel_cartoes(d, cartoes):
         + ";border:1px solid " + BORDA + ";border-radius:10px'>" + cartoes + "</div></div>")
 
 
+# ---------------------------------------------------- indicador de atualização
+def status(d):
+    """Caixa do cabeçalho com o status da atualização dos dados. Ao passar o
+    mouse, abre embaixo o detalhe: as três datas da cadeia e o que falta fazer.
+    O detalhe abre dentro do retângulo do próprio visual, por isso o visual é
+    mais alto que a caixa."""
+    def linha(nome, valor):
+        return ("<div style='display:flex;justify-content:space-between;gap:18px;padding:3px 0'>"
+                "<span style='color:" + SEC + "'>" + nome + "</span>"
+                "<b style='color:" + CLARO + ";white-space:nowrap'>" + valor + "</b></div>")
+    return RESET + (
+        "<style>.cx:hover+.dt,.dt:hover{display:block!important}</style>"
+        "<div style='" + FONTE + "height:100vh;width:100%'>"
+        + "<div class='cx' style='height:" + str(H_BOTAO) + "px;display:flex;align-items:center;gap:16px;"
+        "padding:0 16px 0 20px;background:" + BOTAO + ";border:1px solid " + BOTAO_B
+        + ";border-radius:10px;cursor:default'>"
+        + "<span style='color:" + d['cor'] + ";display:flex;flex:none'>" + _svg(ICONE['retro'], 38, 1.8) + "</span>"
+        + "<div style='min-width:0'>"
+        + "<div style='font-size:15px;color:" + CLARO + ";white-space:nowrap'>" + d['rotulo'] + "</div>"
+        + "<div style='font-size:23px;font-weight:700;color:" + d['cor'] + ";line-height:1.25;"
+        "white-space:nowrap'>" + d['palavra'] + "</div></div></div>"
+        + "<div class='dt' style='display:none;margin-top:6px;padding:12px 16px 13px 16px;background:#04182a;"
+        "border:1px solid " + BOTAO_B + ";border-radius:10px;font-size:15px'>"
+        + linha('Dados até', d['dados'])
+        + linha('Planilha salva em', d['plan'])
+        + linha('Power BI atualizado em', d['bi'])
+        + "<div style='margin-top:8px;padding-top:9px;border-top:1px solid " + SEP + ";color:" + CLARO
+        + ";line-height:1.35'>" + d['falta'] + "</div></div></div>")
+
+
 # -------------------------------------------------------------------- rodapé
 def _glossario(termo, texto):
     return ("<div style='display:flex;align-items:center;gap:11px'>"

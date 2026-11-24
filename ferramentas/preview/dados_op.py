@@ -3,13 +3,16 @@
 
 Espelha o que o Power BI faz com a planilha 'Dados BI.xlsx':
   ler()      = a consulta M da tabela 'Dados BI' (Data, Indicador, Valor; só números)
-  calcular() = as medidas DAX '<indicador> 30d' e '<indicador> 30d Anterior'
+  calcular() = as medidas DAX '<indicador> Período' e '<indicador> Período Anterior'
+  atualizacao() = a conta da medida 'HTML Status' (indicador de atualização)
 
 A planilha só é lida, nunca gravada.
 
-    python dados_op.py               # os números de hoje
-    python dados_op.py 2026-09-14    # como o painel estaria nesse dia
+    python dados_op.py                  # os números de hoje, período mensal
+    python dados_op.py 2026-09-14       # como o painel estaria nesse dia
+    python dados_op.py 2026-09-14 7     # idem, com o seletor em Semanal (7 dias)
 """
+import os
 import pandas as pd
 import indicadores_op as IX
 
@@ -63,7 +66,23 @@ def _periodo(s, peso, conta, ini, fim):
     return float(w.mean())
 
 
-def calcular(hoje=None, arquivo=ARQUIVO):
+def atualizacao(c, agora=None, arquivo=ARQUIVO):
+    """Em que pé está a atualização dos dados. No preview, 'Power BI atualizado
+    em' é agora: a planilha acabou de ser lida."""
+    agora = pd.Timestamp(agora) if agora is not None else pd.Timestamp.now()
+    hoje, dados = agora.normalize(), c['ult']
+    plan = pd.Timestamp.fromtimestamp(os.path.getmtime(arquivo))
+    bi = agora
+    atraso = None if pd.isna(dados) else (hoje - dados.normalize()).days
+    nivel = (0 if atraso is None else 1 if atraso <= IX.ATRASO_EM_DIA
+             else 2 if atraso <= IX.ATRASO_PENDENTE else 3)
+    falta = ('nada' if nivel == 1 else 'bi' if bi.normalize() < hoje
+             else 'planilha' if plan.normalize() < hoje else 'origem')
+    return {'nivel': nivel, 'atraso': atraso, 'dados': dados, 'plan': plan, 'bi': bi, 'falta': falta}
+
+
+def calcular(hoje=None, dias=None, arquivo=ARQUIVO):
+    """dias = o tamanho do período (o que o seletor Período escolhe no Power BI)."""
     hoje = pd.Timestamp(hoje) if hoje else pd.Timestamp.today().normalize()
     longa = ler(arquivo)
     faltam = [i['coluna'] for i in IX.TODOS if i['coluna'] not in set(longa['Indicador'])]
@@ -71,7 +90,7 @@ def calcular(hoje=None, arquivo=ARQUIVO):
         raise SystemExit('Colunas de indicadores_op.py que não existem (ou estão vazias) na planilha: %s'
                          % faltam)
     peso = longa[longa['Indicador'] == IX.PESO].groupby('Data')['Valor'].mean()
-    d = pd.Timedelta(days=IX.JANELA)
+    d = pd.Timedelta(days=int(dias or IX.JANELA))
 
     validas = longa[(longa['Valor'] != 0) & (longa['Data'] <= hoje)]
     out = {'ult': validas['Data'].max()}
@@ -98,8 +117,11 @@ def calcular(hoje=None, arquivo=ARQUIVO):
 if __name__ == '__main__':
     import sys
     sys.stdout.reconfigure(encoding='utf-8')
-    c = calcular(sys.argv[1] if len(sys.argv) > 1 else None)
-    print('última data da planilha:', c['ult'].date())
+    c = calcular(sys.argv[1] if len(sys.argv) > 1 else None, sys.argv[2] if len(sys.argv) > 2 else None)
+    a = atualizacao(c, sys.argv[1] if len(sys.argv) > 1 else None)
+    print('última data da planilha:', c['ult'].date(), '| período de', sys.argv[2] if len(sys.argv) > 2 else IX.JANELA, 'dias')
+    print('atualização: %s (atraso de %s dias) | planilha salva em %s | %s'
+          % (IX.NIVEIS[a['nivel']][0], a['atraso'], a['plan'].strftime('%d/%m/%Y %H:%M'), IX.FALTA[a['falta']]))
     print('%-18s %10s %10s %10s %10s %8s' % ('indicador', 'valor', 'anterior', 'ref', 'atingim.', 'var'))
     for ind in IX.TODOS:
         r = c[ind['k']]

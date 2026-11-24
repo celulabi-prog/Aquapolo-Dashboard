@@ -30,7 +30,21 @@ fator: multiplica o valor da planilha (fração -> %).
 TOLERANCIA = 0.10      # margem de "Atenção" em volta da referência
 ESCALA = 1.6           # barra cheia = 160% da referência (traço da meta a 62,5%)
 MARCADOR = 100.0 / ESCALA
-JANELA = 30            # dias de cada período
+JANELA = 30            # dias do período quando nada está marcado no seletor Período
+
+# ---- indicador de atualização (caixa do cabeçalho) --------------------------
+# O que decide o status é o atraso: dias entre a última leitura da planilha e hoje.
+ATRASO_EM_DIA = 1      # até aqui, "Em dia" (a leitura de ontem é o normal)
+ATRASO_PENDENTE = 3    # até aqui, "Pendente"; acima disso, "Atrasado"
+NIVEIS = {0: ('Sem dados', 'cinza'), 1: ('Em dia', 'verde'),
+          2: ('Pendente', 'amarelo'), 3: ('Atrasado', 'vermelho')}
+# O que falta fazer, na ordem em que o painel consegue descobrir.
+FALTA = {
+    'nada': 'Nada pendente.',
+    'bi': 'Falta atualizar o Power BI.',
+    'planilha': 'Falta abrir e salvar a planilha no Excel e depois atualizar o Power BI.',
+    'origem': 'Falta lançar os dados nas planilhas de origem.',
+}
 
 PESO = 'Clientes (L/s)'      # coluna que pondera as contas 'ponderada'
 
