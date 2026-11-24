@@ -2,6 +2,7 @@
 """Converte os dados reais em texto pronto para o molde (lado do preview)."""
 import molde_op as M
 import indicadores_op as IX
+import pandas as pd
 import dados_op
 from dados_op import num, pct
 from estilo_op import *
@@ -65,8 +66,30 @@ def status(a):
         rotulo = 'Dados até ' + a['dados'].strftime('%d/%m') + ' &#183; ' + ha
         dados = a['dados'].strftime('%d/%m/%Y')
     return M.status({'cor': COR[cor_nome], 'palavra': palavra, 'rotulo': rotulo, 'dados': dados,
-                     'plan': a['plan'].strftime('%d/%m/%Y %H:%M'),
-                     'bi': a['bi'].strftime('%d/%m/%Y %H:%M'), 'falta': IX.FALTA[a['falta']]})
+                     'plan': a['plan'].strftime('%d/%m %H:%M'),
+                     'bi': a['bi'].strftime('%d/%m %H:%M'), 'falta': IX.FALTA[a['falta']]})
+
+
+def faixa(fim, dias, fmt='%d/%m'):
+    """As datas de um período de `dias` dias que termina em `fim`."""
+    if fim is None:
+        return TRACO
+    if dias == 1:
+        return fim.strftime(fmt)
+    return (fim - pd.Timedelta(days=dias - 1)).strftime(fmt) + ' a ' + fim.strftime(fmt)
+
+
+def periodo(c):
+    """As datas do período exibido. Com um tamanho fixo: o geral (até a última
+    leitura da planilha) e o de cada indicador (até a última leitura dele).
+    Com datas exatas: o intervalo escolhido, igual para todos."""
+    n, exatas = c['dias'], c['exatas']
+    geral = c['ate'] if exatas else c['ult']
+    grupos = [(p['titulo'], [(i['nome'], faixa(c[i['k']]['fim'], n)) for i in p['itens']])
+              for p in IX.PAINEIS]
+    return M.periodo({'rotulo': '%s &#183; %d %s' % (IX.ROTULO_PERIODO[exatas], n, 'dia' if n == 1 else 'dias'),
+                      'valor': faixa(geral, n), 'completo': faixa(geral, n, '%d/%m/%Y'),
+                      'nota': IX.NOTA_PERIODO[exatas], 'grupos': grupos})
 
 
 def paineis(c):
@@ -80,4 +103,5 @@ def paineis(c):
             out[p['k']] = M.painel_cartoes(d, cartoes(c, p['itens']))
     out['rodape'] = M.rodape({'ult': c['ult'].strftime('%d/%m/%Y')})
     out['status'] = status(dados_op.atualizacao(c))
+    out['periodo'] = periodo(c)
     return out

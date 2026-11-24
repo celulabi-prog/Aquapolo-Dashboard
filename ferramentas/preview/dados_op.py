@@ -81,8 +81,9 @@ def atualizacao(c, agora=None, arquivo=ARQUIVO):
     return {'nivel': nivel, 'atraso': atraso, 'dados': dados, 'plan': plan, 'bi': bi, 'falta': falta}
 
 
-def calcular(hoje=None, dias=None, arquivo=ARQUIVO):
-    """dias = o tamanho do período (o que o seletor Período escolhe no Power BI)."""
+def calcular(hoje=None, dias=None, de=None, ate=None, arquivo=ARQUIVO):
+    """dias = o tamanho do período (o que o seletor Período escolhe no Power BI).
+    de/ate = a opção Datas exatas: o período é esse intervalo, igual para todos."""
     hoje = pd.Timestamp(hoje) if hoje else pd.Timestamp.today().normalize()
     longa = ler(arquivo)
     faltam = [i['coluna'] for i in IX.TODOS if i['coluna'] not in set(longa['Indicador'])]
@@ -90,15 +91,20 @@ def calcular(hoje=None, dias=None, arquivo=ARQUIVO):
         raise SystemExit('Colunas de indicadores_op.py que não existem (ou estão vazias) na planilha: %s'
                          % faltam)
     peso = longa[longa['Indicador'] == IX.PESO].groupby('Data')['Valor'].mean()
-    d = pd.Timedelta(days=int(dias or IX.JANELA))
+    exatas = de is not None and ate is not None
+    if exatas:
+        de, ate = pd.Timestamp(de), pd.Timestamp(ate)
+    d = pd.Timedelta(days=(ate - de).days + 1 if exatas else int(dias or IX.JANELA))
 
     validas = longa[(longa['Valor'] != 0) & (longa['Data'] <= hoje)]
-    out = {'ult': validas['Data'].max()}
+    out = {'ult': validas['Data'].max(), 'dias': int(d.days), 'exatas': exatas,
+           'ate': ate if exatas else None}
     for ind in IX.TODOS:
         s = _serie(longa, ind, hoje)
-        r = {'v': None, 'ant': None, 'rmin': ind['meta_min'], 'rmax': ind['meta_max']}
-        if len(s):
-            fim = s.index.max()
+        r = {'v': None, 'ant': None, 'fim': None, 'rmin': ind['meta_min'], 'rmax': ind['meta_max']}
+        # com datas exatas o período termina no 'até' para todos; senão, na última leitura do indicador
+        fim = r['fim'] = ate if exatas else (s.index.max() if len(s) else None)
+        if fim is not None:
             r['v'] = _periodo(s, peso, ind['conta'], fim - d, fim)
             r['ant'] = _periodo(s, peso, ind['conta'], fim - 2 * d, fim - d)
         for k in ('v', 'ant'):

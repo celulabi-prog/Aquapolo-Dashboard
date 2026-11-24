@@ -10,6 +10,7 @@ Saem dois grupos de medidas, todos lendo a tabela 'Dados BI' (a planilha):
   'HTML Painel ...' e 'HTML Rodapé' — o HTML de cada visual da página. Cada
       painel vira UMA medida, que só busca os números acima e desenha.
   'HTML Status' — a caixa do cabeçalho que diz se os dados estão em dia.
+  'HTML Período' — a caixa do cabeçalho com as datas do período exibido.
 """
 import io, pathlib, uuid
 import molde_op as M
@@ -26,6 +27,7 @@ TRACO = '"&#8212;"'
 PASTA = 'Painel Operacional'
 T = "'Dados BI'"
 PER = "'Período Painel'"
+DAT = "'Datas Painel'"
 
 
 def F(expr):
@@ -61,9 +63,19 @@ def leituras(ind):
     return f
 
 
+# O começo de toda medida de período: o tamanho (_tamanho) e, com Datas exatas
+# marcado (Dias = 0 na tabela Período Painel), o dia em que ele termina (_ate).
+VARS_PERIODO = [
+    'VAR _opcao = SELECTEDVALUE ( %s[Dias], %d )' % (PER, IX.JANELA),
+    'VAR _exatas = ( _opcao = 0 )',
+    'VAR _ate = MAX ( %s[Data] )' % DAT,
+    'VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( %s[Data] ) ) + 1, _opcao )' % DAT,
+]
+
+
 def dax_indicador(ind, anterior=False):
     """O período que termina na última leitura do indicador — ou o período antes desse.
-    O tamanho (_tamanho) é o que estiver marcado no seletor Período."""
+    Com Datas exatas, o período é o intervalo do controle de datas, igual para todos."""
     lei = leituras(ind)
     periodo = (['%s[Data] > _fim - 2 * _tamanho' % T, '%s[Data] <= _fim - _tamanho' % T] if anterior
                else ['%s[Data] > _fim - _tamanho' % T, '%s[Data] <= _fim' % T])
@@ -72,10 +84,11 @@ def dax_indicador(ind, anterior=False):
         e = ' ' * recuo
         return (cabeca + ' (\n' + ',\n'.join(e + '    ' + x for x in filtros) + '\n' + e + ')')
 
-    L = ['VAR _tamanho = SELECTEDVALUE ( %s[Dias], %d )' % (PER, IX.JANELA),
-         'VAR _fim =',
-         '    ' + calculate('CALCULATE', ['MAX ( %s[Data] )' % T] + lei
-                            + ['KEEPFILTERS ( %s[Data] <= TODAY () )' % T], 4)]
+    L = VARS_PERIODO + [
+        'VAR _ultima =',
+        '    ' + calculate('CALCULATE', ['MAX ( %s[Data] )' % T] + lei
+                           + ['KEEPFILTERS ( %s[Data] <= TODAY () )' % T], 4),
+        'VAR _fim = IF ( _exatas, _ate, _ultima )']
     vezes = '' if ind['fator'] == 1.0 else ('%s * ' % numero(ind['fator']))
     if ind['conta'] == 'ponderada':
         L += ['VAR _dias =',
@@ -103,7 +116,8 @@ def doc_indicador(ind, anterior=False):
                         'divisor perto de zero estouraria a média)'}[ind['conta']]
     quando = ('do período anterior ao de [%s], com o mesmo tamanho' % nome_medida(ind) if anterior
               else 'do período marcado no seletor Período (%d dias se nada estiver marcado), '
-                   'contado até a última leitura do indicador' % IX.JANELA)
+                   'contado até a última leitura do indicador; com Datas exatas, do intervalo '
+                   'do controle de datas' % IX.JANELA)
     zero = ('Zero conta como leitura.' if ind['zero_vale'] else
             'Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.')
     vezes = '' if ind['fator'] == 1.0 else ' Sai multiplicado por %g (fração para %%).' % ind['fator']
@@ -215,7 +229,7 @@ def medida_status():
     """A caixa do cabeçalho: os dados estão em dia? Espelha dados_op.atualizacao()."""
     cor = {n: COR[c] for n, (_, c) in IX.NIVEIS.items()}
     pal = {n: p for n, (p, _) in IX.NIVEIS.items()}
-    data_hora = lambda v: 'IF ( ISBLANK ( %s ), %s, FORMAT ( %s, "dd/mm/yyyy hh:nn" ) )' % (v, TRACO, v)
+    data_hora = lambda v: 'IF ( ISBLANK ( %s ), %s, FORMAT ( %s, "dd/mm hh:nn" ) )' % (v, TRACO, v)
     L = [
         '-- Agora no horário de Brasília (UTC-3), para valer igual no Desktop e no serviço.',
         'VAR _agora = UTCNOW () - 3 / 24',
@@ -251,6 +265,41 @@ MEDIDAS.append({
             'quando a planilha foi salva, quando o Power BI foi atualizado e o que falta fazer.'
             % (IX.ATRASO_EM_DIA, IX.ATRASO_PENDENTE)),
     'dax': medida_status()})
+
+def medida_periodo():
+    """A caixa do cabeçalho com as datas do período exibido. Espelha prep_op.periodo()."""
+    def faixa(v, fmt='dd/mm'):
+        return ('IF ( ISBLANK ( {v} ), {t}, IF ( _tamanho = 1, FORMAT ( {v}, "{f}" ), '
+                'FORMAT ( {v} - _tamanho + 1, "{f}" ) & " a " & FORMAT ( {v}, "{f}" ) ) )'
+                .format(v=v, t=TRACO, f=fmt))
+    L = VARS_PERIODO + [
+        '-- Com um tamanho fixo, o período geral termina na última leitura da planilha (a data do rodapé).',
+        'VAR _fim = IF ( _exatas, _ate, CALCULATE ( MAX ( %s[Data] ), %s[Valor] <> 0, %s[Data] <= TODAY () ) )' % (T, T, T),
+        'VAR _rotulo = IF ( _exatas, "%s", "%s" ) & " &#183; " & _tamanho & IF ( _tamanho = 1, " dia", " dias" )'
+        % (IX.ROTULO_PERIODO[True], IX.ROTULO_PERIODO[False]),
+        'VAR _nota = IF ( _exatas, "%s", "%s" )' % (IX.NOTA_PERIODO[True], IX.NOTA_PERIODO[False]),
+        '-- Onde termina o período de cada indicador: na última leitura dele ou, com datas exatas, no mesmo dia.']
+    grupos, n = [], 0
+    for p in IX.PAINEIS:
+        itens = []
+        for ind in p['itens']:
+            n += 1
+            L.append('VAR _f%d = IF ( _exatas, _ate, CALCULATE ( MAX ( %s[Data] ), %s, KEEPFILTERS ( %s[Data] <= TODAY () ) ) )'
+                     % (n, T, ', '.join(leituras(ind)), T))
+            itens.append((ind['nome'], F(faixa('_f%d' % n))))
+        grupos.append((p['titulo'], itens))
+    L.append('RETURN\n    ' + texto(M.periodo({
+        'rotulo': F('_rotulo'), 'valor': F(faixa('_fim')), 'completo': F(faixa('_fim', 'dd/mm/yyyy')),
+        'nota': F('_nota'), 'grupos': grupos})))
+    return '\n'.join(L)
+
+
+MEDIDAS.append({
+    'nome': 'HTML Período', 'pasta': PASTA,
+    'doc': ('Caixa do cabeçalho com as datas do período exibido: o tamanho marcado no seletor Período, '
+            'contado até a última leitura da planilha, ou o intervalo do controle de datas quando o seletor '
+            'está em Datas exatas. Ao passar o mouse, mostra o período de cada indicador.'),
+    'dax': medida_periodo()})
 
 for p in IX.PAINEIS:
     for ind in p['itens']:

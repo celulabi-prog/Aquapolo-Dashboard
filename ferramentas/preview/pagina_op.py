@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """Escreve a página 1 (Visão Geral — Painel Operacional) no formato PBIR.
 
-Oito visuais sobre o fundo com o cabeçalho: os cinco painéis e o rodapé (HTML),
-o indicador de atualização (HTML) e o seletor Período (segmentação nativa).
+Dez visuais sobre o fundo com o cabeçalho: os cinco painéis e o rodapé (HTML),
+as duas caixas do cabeçalho — período exibido e status da atualização (HTML) —
+e duas segmentações nativas: o seletor Período e o controle de datas.
 As posições saem de estilo_op.py, as mesmas que o preview usa.
 
 Só grava os visuais desta lista; não apaga nada. Se um visual sair da lista,
@@ -99,6 +100,37 @@ def seletor(nome, tabela, coluna, marcado, x, y, w, h, z, tab):
     }
 
 
+def intervalo(nome, tabela, coluna, x, y, w, h, z, tab):
+    """Duas caixas de data, de e até, sem a régua deslizante. Fica sem nada
+    marcado: nesse estado as caixas mostram o primeiro e o último dia com dado."""
+    campo = {'Column': {'Expression': {'SourceRef': {'Entity': tabela}}, 'Property': coluna}}
+    zero = L('0D')
+    return {
+        '$schema': S_VIS, 'name': nome,
+        'position': {'x': x, 'y': y, 'z': z, 'height': h, 'width': w, 'tabOrder': tab},
+        'visual': {
+            'visualType': 'slicer',
+            'query': {'queryState': {'Values': {'projections': [
+                {'field': campo, 'queryRef': tabela + '.' + coluna, 'nativeQueryRef': coluna, 'active': True}]}}},
+            'objects': {
+                'data': [{'properties': {'mode': L("'Between'")}}],
+                'header': [{'properties': {'show': L('false')}}],
+                'slider': [{'properties': {'show': L('false')}}],
+                'date': [{'properties': {'fontColor': cor(BRANCO), 'background': cor(BOTAO),
+                                         'textSize': L('11D')}}],
+            },
+            'visualContainerObjects': {
+                'title': [{'properties': {'show': L('false')}}],
+                'background': [{'properties': {'show': L('true'), 'color': cor(BOTAO), 'transparency': zero}}],
+                'border': [{'properties': {'show': L('true'), 'color': cor(BOTAO_B), 'radius': L('8D')}}],
+                'dropShadow': [{'properties': {'show': L('false')}}],
+                'visualHeader': [{'properties': {'show': L('false')}}],
+            },
+            'drillFilterOtherVisuals': True,
+        },
+    }
+
+
 POS = {
     'eebc':    (X_SUP[0], Y_SUP, COL_SUP[0], H_SUP),
     'tmbr':    (X_SUP[1], Y_SUP, COL_SUP[1], H_SUP),
@@ -111,16 +143,20 @@ PAINEIS.append(('rodape', 'HTML Rodapé', MARG, Y_ROD, LARG, H_ROD))
 
 VISUAIS = {nome: painel(nome, medida, x, y, w, h, tab, tab)
            for tab, (nome, medida, x, y, w, h) in enumerate(PAINEIS)}
-# Os dois do cabeçalho ficam por cima dos painéis: o detalhe do indicador de
-# atualização abre para baixo, sobre o topo deles.
-VISUAIS['status'] = painel('status', 'HTML Status', X_STA, Y_STA, W_STA, H_STA, 1000, 1000)
-# Sem a folga interna padrão do visual: a caixa precisa cair alinhada com a do seletor pintado.
-VISUAIS['status']['visual']['visualContainerObjects']['padding'] = [
-    {'properties': {lado: L('0D') for lado in ('top', 'bottom', 'left', 'right')}}]
-# Sem os ícones que o Power BI mostra no canto do visual ao passar o mouse.
-VISUAIS['status']['visual']['visualContainerObjects']['visualHeader'] = [{'properties': {'show': L('false')}}]
+# As duas caixas do cabeçalho ficam por cima dos painéis: o detalhe de cada uma
+# abre para baixo, sobre o topo deles.
+for nome, medida, x, y, w, h, z in (('status', 'HTML Status', X_STA, Y_STA, W_STA, H_STA, 1000),
+                                    ('periodo', 'HTML Período', X_DAT, Y_DAT, W_DAT, H_DAT, 1100)):
+    v = painel(nome, medida, x, y, w, h, z, z)
+    obj = v['visual']['visualContainerObjects']
+    # Sem a folga interna padrão do visual: a caixa precisa cair alinhada com a do seletor pintado.
+    obj['padding'] = [{'properties': {lado: L('0D') for lado in ('top', 'bottom', 'left', 'right')}}]
+    # Sem os ícones que o Power BI mostra no canto do visual ao passar o mouse.
+    obj['visualHeader'] = [{'properties': {'show': L('false')}}]
+    VISUAIS[nome] = v
 VISUAIS['seletor_periodo'] = seletor('seletor_periodo', 'Período Painel', 'Período', PERIODO_PADRAO,
                                      X_PER, Y_PER, W_PER, H_PER, 2000, 2000)
+VISUAIS['datas'] = intervalo('datas', 'Datas Painel', 'Data', X_DTS, Y_DTS, W_DTS, H_DTS, 2100, 2100)
 
 page = {
     '$schema': S_PAGE, 'name': PAGE_ID, 'displayName': 'Visão Geral',

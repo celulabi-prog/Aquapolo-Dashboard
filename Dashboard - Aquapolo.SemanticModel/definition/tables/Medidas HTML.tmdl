@@ -258,20 +258,64 @@ table 'Medidas HTML'
 			-- O que falta, na ordem em que dá para saber: o Power BI só enxerga a planilha quando é atualizado.
 			VAR _falta = SWITCH ( TRUE (), _nivel = 1, "Nada pendente.", ISBLANK ( _bi ) || INT ( _bi ) < _hoje, "Falta atualizar o Power BI.", ISBLANK ( _plan ) || INT ( _plan ) < _hoje, "Falta abrir e salvar a planilha no Excel e depois atualizar o Power BI.", "Falta lançar os dados nas planilhas de origem." )
 			RETURN
-			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style><style>.cx:hover+.dt,.dt:hover{display:block!important}</style><div style='font-family:Segoe UI,sans-serif;height:100vh;width:100%'><div class='cx' style='height:79px;display:flex;align-items:center;gap:16px;padding:0 16px 0 20px;background:#001429;border:1px solid #245b7c;border-radius:10px;cursor:default'><span style='color:" & _cor & ";display:flex;flex:none'><svg viewBox='0 0 24 24' width='38' height='38' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4.2 10.2a8 8 0 0 1 13.4-3.3l2.2 2.1'/><path d='M19.8 13.8a8 8 0 0 1-13.4 3.3l-2.2-2.1'/><path d='M20.3 4.4v4.6h-4.6M3.7 19.6V15h4.6'/></svg></span><div style='min-width:0'><div style='font-size:15px;color:#dce9f7;white-space:nowrap'>" & _rotulo & "</div><div style='font-size:23px;font-weight:700;color:" & _cor & ";line-height:1.25;white-space:nowrap'>" & _palavra & "</div></div></div><div class='dt' style='display:none;margin-top:6px;padding:12px 16px 13px 16px;background:#04182a;border:1px solid #245b7c;border-radius:10px;font-size:15px'><div style='display:flex;justify-content:space-between;gap:18px;padding:3px 0'><span style='color:#93afc9'>Dados até</span><b style='color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _dados ), "&#8212;", FORMAT ( _dados, "dd/mm/yyyy" ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:18px;padding:3px 0'><span style='color:#93afc9'>Planilha salva em</span><b style='color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _plan ), "&#8212;", FORMAT ( _plan, "dd/mm/yyyy hh:nn" ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:18px;padding:3px 0'><span style='color:#93afc9'>Power BI atualizado em</span><b style='color:#dce9f7;white-space:nowrap'>" & IF ( ISBLANK ( _bi ), "&#8212;", FORMAT ( _bi, "dd/mm/yyyy hh:nn" ) ) & "</b></div><div style='margin-top:8px;padding-top:9px;border-top:1px solid #102e4b;color:#dce9f7;line-height:1.35'>" & _falta & "</div></div></div>"
+			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style><style>.cx:hover+.dt,.dt:hover{display:block!important}</style><div style='font-family:Segoe UI,sans-serif;height:100vh;width:100%'><div class='cx' style='height:79px;display:flex;align-items:center;gap:12px;padding:0 12px 0 16px;background:#001429;border:1px solid #245b7c;border-radius:10px;cursor:default'><span style='color:" & _cor & ";display:flex;flex:none'><svg viewBox='0 0 24 24' width='34' height='34' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><path d='M4.2 10.2a8 8 0 0 1 13.4-3.3l2.2 2.1'/><path d='M19.8 13.8a8 8 0 0 1-13.4 3.3l-2.2-2.1'/><path d='M20.3 4.4v4.6h-4.6M3.7 19.6V15h4.6'/></svg></span><div style='min-width:0'><div style='font-size:15px;color:#dce9f7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>" & _rotulo & "</div><div style='font-size:23px;font-weight:700;color:" & _cor & ";line-height:1.25;white-space:nowrap'>" & _palavra & "</div></div></div><div class='dt' style='display:none;margin-top:6px;padding:12px 14px 13px 14px;background:#04182a;border:1px solid #245b7c;border-radius:10px;font-size:15px'><div style='display:flex;justify-content:space-between;gap:10px;line-height:1.6'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Dados até</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _dados ), "&#8212;", FORMAT ( _dados, "dd/mm/yyyy" ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:1.6'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Planilha salva</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _plan ), "&#8212;", FORMAT ( _plan, "dd/mm hh:nn" ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:1.6'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Power BI atualizado</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _bi ), "&#8212;", FORMAT ( _bi, "dd/mm hh:nn" ) ) & "</b></div><div style='margin-top:8px;padding-top:9px;border-top:1px solid #102e4b;color:#dce9f7;line-height:1.35'>" & _falta & "</div></div></div>"
 			```
 		displayFolder: Painel Operacional
 		lineageTag: aa71737a-8e5c-5297-80fe-fb5312da2c07
 
-	/// Retrolavagens: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Nº retrolayagens disco ( ciclos/d)' da planilha Dados BI. Zero conta como leitura.
+	/// Caixa do cabeçalho com as datas do período exibido: o tamanho marcado no seletor Período, contado até a última leitura da planilha, ou o intervalo do controle de datas quando o seletor está em Datas exatas. Ao passar o mouse, mostra o período de cada indicador.
+	measure 'HTML Período' = ```
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			-- Com um tamanho fixo, o período geral termina na última leitura da planilha (a data do rodapé).
+			VAR _fim = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Valor] <> 0, 'Dados BI'[Data] <= TODAY () ) )
+			VAR _rotulo = IF ( _exatas, "Datas escolhidas", "Período exibido" ) & " &#183; " & _tamanho & IF ( _tamanho = 1, " dia", " dias" )
+			VAR _nota = IF ( _exatas, "Com datas exatas, todos os indicadores usam o mesmo período:", "Cada indicador conta o período até a sua última leitura:" )
+			-- Onde termina o período de cada indicador: na última leitura dele ou, com datas exatas, no mesmo dia.
+			VAR _f1 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "Nº retrolayagens disco ( ciclos/d)", KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f2 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "DQO (mg/L)", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f3 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "NH3 (mg/L)", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f4 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "Condutividade", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f5 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "Dureza (mg/L)", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f6 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "Idade do lodo (dias)", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f7 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "Alimento/ Microorg (g/g.d-¹)", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f8 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "Pressão transmembrana (Bar)", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f9 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "Permeabilidade (LMH/bar)", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f10 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "Turbidez (NTU)", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f11 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "Fluxo (LMH)", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f12 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "SDI", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f13 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "dP Skid 1 (bar)", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f14 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "dP Skid-02 (bar)", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f15 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "dP Skid-03 (bar)", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f16 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "Químicos (Kg/m³)", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f17 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "Energia (KWh/m³)", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f18 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "Energia OR KW/m³", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f19 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "Energia - Biológico (KWh/kg NH3 rem)", 'Dados BI'[Valor] > 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f20 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "Coagulante (gPAC/gP rem)", 'Dados BI'[Valor] > 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f21 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "Clientes (L/s)", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f22 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "Blend %", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			VAR _f23 = IF ( _exatas, _ate, CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Indicador] = "Perdas %", 'Dados BI'[Valor] <> 0, KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () ) ) )
+			RETURN
+			    "<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}*{box-sizing:border-box}</style><style>.cx:hover+.dt,.dt:hover{display:block!important}</style><div style='font-family:Segoe UI,sans-serif;height:100vh;width:100%'><div class='cx' style='height:79px;display:flex;align-items:center;gap:12px;padding:0 12px 0 16px;background:#001429;border:1px solid #245b7c;border-radius:10px;cursor:default'><span style='color:#dce9f7;display:flex;flex:none'><svg viewBox='0 0 24 24' width='34' height='34' fill='none' stroke='currentColor' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><rect x='3.5' y='5' width='17' height='15.5' rx='2.2'/><path d='M3.5 10h17M8 3v4M16 3v4'/></svg></span><div style='min-width:0'><div style='font-size:15px;color:#dce9f7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>" & _rotulo & "</div><div style='font-size:23px;font-weight:700;color:#ffffff;line-height:1.25;white-space:nowrap'>" & IF ( ISBLANK ( _fim ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _fim, "dd/mm" ), FORMAT ( _fim - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _fim, "dd/mm" ) ) ) & "</div></div></div><div class='dt' style='display:none;margin-top:6px;padding:12px 14px 13px 14px;background:#04182a;border:1px solid #245b7c;border-radius:10px;font-size:13px'><div style='font-size:15px;font-weight:700;color:#ffffff;white-space:nowrap'>" & IF ( ISBLANK ( _fim ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _fim, "dd/mm/yyyy" ), FORMAT ( _fim - _tamanho + 1, "dd/mm/yyyy" ) & " a " & FORMAT ( _fim, "dd/mm/yyyy" ) ) ) & "</div><div style='margin-top:4px;color:#93afc9;line-height:1.3'>" & _nota & "</div><div style='margin-top:8px;font-size:11px;letter-spacing:0.6px;color:#6b89a6;white-space:nowrap'>QUALIDADE EEBC</div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Retrolavagens</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f1 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f1, "dd/mm" ), FORMAT ( _f1 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f1, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>DQO</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f2 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f2, "dd/mm" ), FORMAT ( _f2 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f2, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>NH3</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f3 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f3, "dd/mm" ), FORMAT ( _f3 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f3, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Condutividade</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f4 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f4, "dd/mm" ), FORMAT ( _f4 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f4, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Dureza</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f5 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f5, "dd/mm" ), FORMAT ( _f5 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f5, "dd/mm" ) ) ) & "</b></div><div style='margin-top:8px;font-size:11px;letter-spacing:0.6px;color:#6b89a6;white-space:nowrap'>PERFORMANCE TMBR</div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Idade do Lodo</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f6 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f6, "dd/mm" ), FORMAT ( _f6 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f6, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Alimento/Microorg.</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f7 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f7, "dd/mm" ), FORMAT ( _f7 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f7, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>TMP</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f8 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f8, "dd/mm" ), FORMAT ( _f8 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f8, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Permeabilidade</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f9 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f9, "dd/mm" ), FORMAT ( _f9 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f9, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Turbidez</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f10 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f10, "dd/mm" ), FORMAT ( _f10 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f10, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Fluxo</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f11 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f11, "dd/mm" ), FORMAT ( _f11 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f11, "dd/mm" ) ) ) & "</b></div><div style='margin-top:8px;font-size:11px;letter-spacing:0.6px;color:#6b89a6;white-space:nowrap'>PERFORMANCE OR</div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>SDI</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f12 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f12, "dd/mm" ), FORMAT ( _f12 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f12, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>dP Skid 1</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f13 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f13, "dd/mm" ), FORMAT ( _f13 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f13, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>dP Skid 2</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f14 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f14, "dd/mm" ), FORMAT ( _f14 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f14, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>dP Skid 3</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f15 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f15, "dd/mm" ), FORMAT ( _f15 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f15, "dd/mm" ) ) ) & "</b></div><div style='margin-top:8px;font-size:11px;letter-spacing:0.6px;color:#6b89a6;white-space:nowrap'>CONSUMO DE QUÍMICOS E ENERGIA</div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Químicos</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f16 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f16, "dd/mm" ), FORMAT ( _f16 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f16, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Energia</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f17 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f17, "dd/mm" ), FORMAT ( _f17 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f17, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Energia OR</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f18 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f18, "dd/mm" ), FORMAT ( _f18 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f18, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Energia - Biológico</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f19 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f19, "dd/mm" ), FORMAT ( _f19 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f19, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Coagulante</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f20 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f20, "dd/mm" ), FORMAT ( _f20 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f20, "dd/mm" ) ) ) & "</b></div><div style='margin-top:8px;font-size:11px;letter-spacing:0.6px;color:#6b89a6;white-space:nowrap'>VOLUMES</div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Clientes</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f21 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f21, "dd/mm" ), FORMAT ( _f21 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f21, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Blend</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f22 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f22, "dd/mm" ), FORMAT ( _f22 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f22, "dd/mm" ) ) ) & "</b></div><div style='display:flex;justify-content:space-between;gap:10px;line-height:19px'><span style='color:#93afc9;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>Perdas</span><b style='color:#dce9f7;white-space:nowrap;font-weight:600'>" & IF ( ISBLANK ( _f23 ), "&#8212;", IF ( _tamanho = 1, FORMAT ( _f23, "dd/mm" ), FORMAT ( _f23 - _tamanho + 1, "dd/mm" ) & " a " & FORMAT ( _f23, "dd/mm" ) ) ) & "</b></div></div></div>"
+			```
+		displayFolder: Painel Operacional
+		lineageTag: 7bb496dd-9303-50e3-a433-a1d7e4bada28
+
+	/// Retrolavagens: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'Nº retrolayagens disco ( ciclos/d)' da planilha Dados BI. Zero conta como leitura.
 	measure 'Retrolavagens Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Nº retrolayagens disco ( ciclos/d)",
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
@@ -284,16 +328,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: f6251bd4-4e90-5030-b75c-927f06d82ba2
 
-	/// DQO: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'DQO (mg/L)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// DQO: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'DQO (mg/L)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'DQO Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "DQO (mg/L)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
@@ -307,16 +355,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: eed6ff4a-7fd3-5ea3-bfca-c26bd8b824bd
 
-	/// NH3: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'NH3 (mg/L)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// NH3: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'NH3 (mg/L)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'NH3 Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "NH3 (mg/L)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
@@ -330,16 +382,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: e69dac95-63c4-5c82-97bd-02a7673f2586
 
-	/// Condutividade: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Condutividade' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// Condutividade: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'Condutividade' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Condutividade Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Condutividade",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
@@ -353,16 +409,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: 1b886021-03ef-5ae7-95e5-6f881958086a
 
-	/// Dureza: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Dureza (mg/L)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// Dureza: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'Dureza (mg/L)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Dureza Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Dureza (mg/L)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
@@ -376,16 +436,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: b6b9aac2-4b87-500e-8aaf-03f4a9482716
 
-	/// Idade do Lodo: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Idade do lodo (dias)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// Idade do Lodo: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'Idade do lodo (dias)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Idade do Lodo Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Idade do lodo (dias)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
@@ -399,16 +463,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: ab5e21f8-aa67-5053-ab4b-ad3cca6e113d
 
-	/// Alimento/Microorg.: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Alimento/ Microorg (g/g.d-¹)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// Alimento/Microorg.: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'Alimento/ Microorg (g/g.d-¹)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Alimento/Microorg. Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Alimento/ Microorg (g/g.d-¹)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
@@ -422,16 +490,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: becb901a-a1b0-5621-8ad3-3283f7110e61
 
-	/// TMP: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Pressão transmembrana (Bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// TMP: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'Pressão transmembrana (Bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'TMP Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Pressão transmembrana (Bar)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
@@ -445,16 +517,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: 35c31f72-dee8-53e8-9af4-cd00d25588ba
 
-	/// Permeabilidade: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Permeabilidade (LMH/bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// Permeabilidade: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'Permeabilidade (LMH/bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Permeabilidade Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Permeabilidade (LMH/bar)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
@@ -468,16 +544,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: df971bfd-c81c-5f91-8335-1416c55a07c3
 
-	/// Turbidez: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Turbidez (NTU)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// Turbidez: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'Turbidez (NTU)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Turbidez Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Turbidez (NTU)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
@@ -491,16 +571,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: 256c7758-e05d-58a6-a247-69ce7c4ba76e
 
-	/// Fluxo: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Fluxo (LMH)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// Fluxo: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'Fluxo (LMH)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Fluxo Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Fluxo (LMH)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
@@ -514,16 +598,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: 448f695c-d8dc-5212-8cc7-71026715937d
 
-	/// SDI: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'SDI' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// SDI: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'SDI' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'SDI Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "SDI",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
@@ -537,16 +625,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: 9f623e2e-7433-57ce-9a2e-2d1710346209
 
-	/// dP Skid 1: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'dP Skid 1 (bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// dP Skid 1: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'dP Skid 1 (bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'dP Skid 1 Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "dP Skid 1 (bar)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
@@ -560,16 +652,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: 6f99347c-fb4f-5891-8ff4-880c2726fc11
 
-	/// dP Skid 2: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'dP Skid-02 (bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// dP Skid 2: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'dP Skid-02 (bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'dP Skid 2 Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "dP Skid-02 (bar)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
@@ -583,16 +679,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: 61c65062-2207-528c-b8e5-25cb824b3ac7
 
-	/// dP Skid 3: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'dP Skid-03 (bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// dP Skid 3: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'dP Skid-03 (bar)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'dP Skid 3 Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "dP Skid-03 (bar)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
@@ -606,16 +706,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: 4ab6b50c-88ba-59c5-9561-857beff7ebbb
 
-	/// Químicos: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Químicos (Kg/m³)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// Químicos: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'Químicos (Kg/m³)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Químicos Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Químicos (Kg/m³)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			VAR _dias =
 			    CALCULATETABLE (
 			        VALUES ( 'Dados BI'[Data] ),
@@ -639,14 +743,18 @@ table 'Medidas HTML'
 
 	/// Químicos: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período anterior ao de [Químicos Período], com o mesmo tamanho, coluna 'Químicos (Kg/m³)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Químicos Período Anterior' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Químicos (Kg/m³)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			VAR _dias =
 			    CALCULATETABLE (
 			        VALUES ( 'Dados BI'[Data] ),
@@ -668,16 +776,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: f9a0d7f7-883d-5e65-9e68-78b15b494c4e
 
-	/// Energia: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Energia (KWh/m³)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// Energia: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'Energia (KWh/m³)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Energia Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Energia (KWh/m³)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			VAR _dias =
 			    CALCULATETABLE (
 			        VALUES ( 'Dados BI'[Data] ),
@@ -701,14 +813,18 @@ table 'Medidas HTML'
 
 	/// Energia: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período anterior ao de [Energia Período], com o mesmo tamanho, coluna 'Energia (KWh/m³)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Energia Período Anterior' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Energia (KWh/m³)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			VAR _dias =
 			    CALCULATETABLE (
 			        VALUES ( 'Dados BI'[Data] ),
@@ -730,16 +846,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: ab9b84d1-3810-5f3a-b200-6bb387c44f76
 
-	/// Energia OR: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Energia OR KW/m³' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// Energia OR: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'Energia OR KW/m³' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Energia OR Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Energia OR KW/m³",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			VAR _dias =
 			    CALCULATETABLE (
 			        VALUES ( 'Dados BI'[Data] ),
@@ -763,14 +883,18 @@ table 'Medidas HTML'
 
 	/// Energia OR: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período anterior ao de [Energia OR Período], com o mesmo tamanho, coluna 'Energia OR KW/m³' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Energia OR Período Anterior' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Energia OR KW/m³",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			VAR _dias =
 			    CALCULATETABLE (
 			        VALUES ( 'Dados BI'[Data] ),
@@ -792,16 +916,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: 470aca11-c887-552d-8e82-c31665063c5f
 
-	/// Energia - Biológico: mediana dos valores positivos (a planilha não traz o divisor, e um dia com divisor perto de zero estouraria a média) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Energia - Biológico (KWh/kg NH3 rem)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// Energia - Biológico: mediana dos valores positivos (a planilha não traz o divisor, e um dia com divisor perto de zero estouraria a média) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'Energia - Biológico (KWh/kg NH3 rem)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Energia - Biológico Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Energia - Biológico (KWh/kg NH3 rem)",
 			        'Dados BI'[Valor] > 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        MEDIAN ( 'Dados BI'[Valor] ),
@@ -817,14 +945,18 @@ table 'Medidas HTML'
 
 	/// Energia - Biológico: mediana dos valores positivos (a planilha não traz o divisor, e um dia com divisor perto de zero estouraria a média) do período anterior ao de [Energia - Biológico Período], com o mesmo tamanho, coluna 'Energia - Biológico (KWh/kg NH3 rem)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Energia - Biológico Período Anterior' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Energia - Biológico (KWh/kg NH3 rem)",
 			        'Dados BI'[Valor] > 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        MEDIAN ( 'Dados BI'[Valor] ),
@@ -838,16 +970,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: e70ab642-cf6e-5634-b655-8fa78e4f93cc
 
-	/// Coagulante: mediana dos valores positivos (a planilha não traz o divisor, e um dia com divisor perto de zero estouraria a média) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Coagulante (gPAC/gP rem)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// Coagulante: mediana dos valores positivos (a planilha não traz o divisor, e um dia com divisor perto de zero estouraria a média) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'Coagulante (gPAC/gP rem)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Coagulante Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Coagulante (gPAC/gP rem)",
 			        'Dados BI'[Valor] > 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        MEDIAN ( 'Dados BI'[Valor] ),
@@ -863,14 +999,18 @@ table 'Medidas HTML'
 
 	/// Coagulante: mediana dos valores positivos (a planilha não traz o divisor, e um dia com divisor perto de zero estouraria a média) do período anterior ao de [Coagulante Período], com o mesmo tamanho, coluna 'Coagulante (gPAC/gP rem)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Coagulante Período Anterior' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Coagulante (gPAC/gP rem)",
 			        'Dados BI'[Valor] > 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        MEDIAN ( 'Dados BI'[Valor] ),
@@ -884,16 +1024,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: 66bc3ed1-0231-569e-95f8-2493a62c761e
 
-	/// Clientes: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Clientes (L/s)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
+	/// Clientes: média simples do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'Clientes (L/s)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Clientes Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Clientes (L/s)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
@@ -909,14 +1053,18 @@ table 'Medidas HTML'
 
 	/// Clientes: média simples do período anterior ao de [Clientes Período], com o mesmo tamanho, coluna 'Clientes (L/s)' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem.
 	measure 'Clientes Período Anterior' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Clientes (L/s)",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			RETURN
 			    CALCULATE (
 			        AVERAGE ( 'Dados BI'[Valor] ),
@@ -930,16 +1078,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: da12d84e-a14d-52dd-b7bf-d544f34b2fb3
 
-	/// Blend: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Blend %' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem. Sai multiplicado por 100 (fração para %).
+	/// Blend: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'Blend %' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem. Sai multiplicado por 100 (fração para %).
 	measure 'Blend Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Blend %",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			VAR _dias =
 			    CALCULATETABLE (
 			        VALUES ( 'Dados BI'[Data] ),
@@ -963,14 +1115,18 @@ table 'Medidas HTML'
 
 	/// Blend: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período anterior ao de [Blend Período], com o mesmo tamanho, coluna 'Blend %' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem. Sai multiplicado por 100 (fração para %).
 	measure 'Blend Período Anterior' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Blend %",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			VAR _dias =
 			    CALCULATETABLE (
 			        VALUES ( 'Dados BI'[Data] ),
@@ -992,16 +1148,20 @@ table 'Medidas HTML'
 		displayFolder: Painel Operacional\Indicadores
 		lineageTag: 45b3e705-4c40-5c36-911c-dc672803ba7b
 
-	/// Perdas: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador, coluna 'Perdas %' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem. Sai multiplicado por 100 (fração para %).
+	/// Perdas: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período marcado no seletor Período (30 dias se nada estiver marcado), contado até a última leitura do indicador; com Datas exatas, do intervalo do controle de datas, coluna 'Perdas %' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem. Sai multiplicado por 100 (fração para %).
 	measure 'Perdas Período' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Perdas %",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			VAR _dias =
 			    CALCULATETABLE (
 			        VALUES ( 'Dados BI'[Data] ),
@@ -1025,14 +1185,18 @@ table 'Medidas HTML'
 
 	/// Perdas: média ponderada pelo volume de clientes do dia (soma do consumo dividida pelo volume somado) do período anterior ao de [Perdas Período], com o mesmo tamanho, coluna 'Perdas %' da planilha Dados BI. Zero e datas futuras ficam de fora: na planilha, zero é célula vazia na origem. Sai multiplicado por 100 (fração para %).
 	measure 'Perdas Período Anterior' = ```
-			VAR _tamanho = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
-			VAR _fim =
+			VAR _opcao = SELECTEDVALUE ( 'Período Painel'[Dias], 30 )
+			VAR _exatas = ( _opcao = 0 )
+			VAR _ate = MAX ( 'Datas Painel'[Data] )
+			VAR _tamanho = IF ( _exatas, INT ( _ate - MIN ( 'Datas Painel'[Data] ) ) + 1, _opcao )
+			VAR _ultima =
 			    CALCULATE (
 			        MAX ( 'Dados BI'[Data] ),
 			        'Dados BI'[Indicador] = "Perdas %",
 			        'Dados BI'[Valor] <> 0,
 			        KEEPFILTERS ( 'Dados BI'[Data] <= TODAY () )
 			    )
+			VAR _fim = IF ( _exatas, _ate, _ultima )
 			VAR _dias =
 			    CALCULATETABLE (
 			        VALUES ( 'Dados BI'[Data] ),

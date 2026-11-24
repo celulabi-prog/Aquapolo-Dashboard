@@ -70,6 +70,8 @@ ICONE = {
                    "<path d='M12 14.2c0 3.6-.9 6.4-3.4 6.4-2 0-2.8-2.4-1.2-4.3 1.2-1.4 2.9-2.1 4.6-2.1z'/>"),
     'tubos': ("<path d='M2.6 8.4h7.2a2.6 2.6 0 0 1 2.6 2.6v2a2.6 2.6 0 0 0 2.6 2.6h6.4'/>"
               "<path d='M18.6 12.8l2.8 2.8-2.8 2.8M2.6 5.6v5.6'/>"),
+    'calendario': ("<rect x='3.5' y='5' width='17' height='15.5' rx='2.2'/>"
+                   "<path d='M3.5 10h17M8 3v4M16 3v4'/>"),
     'relogio': "<circle cx='12' cy='12' r='9'/><path d='M12 6.6V12l3.6 2.2'/>",
 }
 
@@ -169,34 +171,61 @@ def painel_cartoes(d, cartoes):
         + ";border:1px solid " + BORDA + ";border-radius:10px'>" + cartoes + "</div></div>")
 
 
-# ---------------------------------------------------- indicador de atualização
-def status(d):
-    """Caixa do cabeçalho com o status da atualização dos dados. Ao passar o
-    mouse, abre embaixo o detalhe: as três datas da cadeia e o que falta fazer.
-    O detalhe abre dentro do retângulo do próprio visual, por isso o visual é
-    mais alto que a caixa."""
-    def linha(nome, valor):
-        return ("<div style='display:flex;justify-content:space-between;gap:18px;padding:3px 0'>"
-                "<span style='color:" + SEC + "'>" + nome + "</span>"
-                "<b style='color:" + CLARO + ";white-space:nowrap'>" + valor + "</b></div>")
+# --------------------------------------------------------- caixas do cabeçalho
+# Duas caixas no estilo do seletor pintado: o período exibido e o status da
+# atualização. Ao passar o mouse, cada uma abre embaixo um detalhe. O detalhe
+# abre dentro do retângulo do próprio visual, por isso o visual é mais alto
+# que a caixa.
+def _caixa(icone, cor_icone, rotulo, valor, cor_valor):
+    """A parte sempre visível: ícone, uma linha pequena e uma linha em destaque."""
+    return ("<div class='cx' style='height:" + str(H_BOTAO) + "px;display:flex;align-items:center;gap:12px;"
+            "padding:0 12px 0 16px;background:" + BOTAO + ";border:1px solid " + BOTAO_B
+            + ";border-radius:10px;cursor:default'>"
+            + "<span style='color:" + cor_icone + ";display:flex;flex:none'>" + _svg(ICONE[icone], 34, 1.8) + "</span>"
+            + "<div style='min-width:0'>"
+            + "<div style='font-size:15px;color:" + CLARO + ";white-space:nowrap;overflow:hidden;"
+            "text-overflow:ellipsis'>" + rotulo + "</div>"
+            + "<div style='font-size:23px;font-weight:700;color:" + cor_valor + ";line-height:1.25;"
+            "white-space:nowrap'>" + valor + "</div></div></div>")
+
+
+def _cabecalho(caixa, detalhe, fonte):
     return RESET + (
         "<style>.cx:hover+.dt,.dt:hover{display:block!important}</style>"
-        "<div style='" + FONTE + "height:100vh;width:100%'>"
-        + "<div class='cx' style='height:" + str(H_BOTAO) + "px;display:flex;align-items:center;gap:16px;"
-        "padding:0 16px 0 20px;background:" + BOTAO + ";border:1px solid " + BOTAO_B
-        + ";border-radius:10px;cursor:default'>"
-        + "<span style='color:" + d['cor'] + ";display:flex;flex:none'>" + _svg(ICONE['retro'], 38, 1.8) + "</span>"
-        + "<div style='min-width:0'>"
-        + "<div style='font-size:15px;color:" + CLARO + ";white-space:nowrap'>" + d['rotulo'] + "</div>"
-        + "<div style='font-size:23px;font-weight:700;color:" + d['cor'] + ";line-height:1.25;"
-        "white-space:nowrap'>" + d['palavra'] + "</div></div></div>"
-        + "<div class='dt' style='display:none;margin-top:6px;padding:12px 16px 13px 16px;background:#04182a;"
-        "border:1px solid " + BOTAO_B + ";border-radius:10px;font-size:15px'>"
-        + linha('Dados até', d['dados'])
-        + linha('Planilha salva em', d['plan'])
-        + linha('Power BI atualizado em', d['bi'])
-        + "<div style='margin-top:8px;padding-top:9px;border-top:1px solid " + SEP + ";color:" + CLARO
-        + ";line-height:1.35'>" + d['falta'] + "</div></div></div>")
+        "<div style='" + FONTE + "height:100vh;width:100%'>" + caixa
+        + "<div class='dt' style='display:none;margin-top:6px;padding:12px 14px 13px 14px;background:#04182a;"
+        "border:1px solid " + BOTAO_B + ";border-radius:10px;font-size:" + str(fonte) + "px'>"
+        + detalhe + "</div></div>")
+
+
+def _par(nome, valor, alt='1.6'):
+    """Uma linha do detalhe: o nome à esquerda e o valor à direita."""
+    return ("<div style='display:flex;justify-content:space-between;gap:10px;line-height:" + alt + "'>"
+            "<span style='color:" + SEC + ";white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>"
+            + nome + "</span><b style='color:" + CLARO + ";white-space:nowrap;font-weight:600'>"
+            + valor + "</b></div>")
+
+
+def status(d):
+    """Os dados estão em dia? No detalhe, as três datas da cadeia e o que falta fazer."""
+    detalhe = (_par('Dados até', d['dados']) + _par('Planilha salva', d['plan'])
+               + _par('Power BI atualizado', d['bi'])
+               + "<div style='margin-top:8px;padding-top:9px;border-top:1px solid " + SEP + ";color:" + CLARO
+               + ";line-height:1.35'>" + d['falta'] + "</div>")
+    return _cabecalho(_caixa('retro', d['cor'], d['rotulo'], d['palavra'], d['cor']), detalhe, 15)
+
+
+def periodo(d):
+    """De que dia a que dia vai o período exibido. No detalhe, o período de cada
+    indicador, porque cada um conta os dias até a sua própria última leitura."""
+    detalhe = ("<div style='font-size:15px;font-weight:700;color:" + BRANCO + ";white-space:nowrap'>"
+               + d['completo'] + "</div>"
+               + "<div style='margin-top:4px;color:" + SEC + ";line-height:1.3'>" + d['nota'] + "</div>")
+    for titulo, itens in d['grupos']:
+        detalhe += ("<div style='margin-top:8px;font-size:11px;letter-spacing:0.6px;color:" + TER
+                    + ";white-space:nowrap'>" + titulo + "</div>")
+        detalhe += ''.join(_par(nome, faixa, '19px') for nome, faixa in itens)
+    return _cabecalho(_caixa('calendario', CLARO, d['rotulo'], d['valor'], BRANCO), detalhe, 13)
 
 
 # -------------------------------------------------------------------- rodapé

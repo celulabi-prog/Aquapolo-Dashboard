@@ -32,6 +32,12 @@ ESCALA = 1.6           # barra cheia = 160% da referência (traço da meta a 62,
 MARCADOR = 100.0 / ESCALA
 JANELA = 30            # dias do período quando nada está marcado no seletor Período
 
+# ---- período exibido (caixa do cabeçalho) ----------------------------------
+# False = uma das opções de tamanho fixo; True = a opção Datas exatas.
+ROTULO_PERIODO = {False: 'Período exibido', True: 'Datas escolhidas'}
+NOTA_PERIODO = {False: 'Cada indicador conta o período até a sua última leitura:',
+                True: 'Com datas exatas, todos os indicadores usam o mesmo período:'}
+
 # ---- indicador de atualização (caixa do cabeçalho) --------------------------
 # O que decide o status é o atraso: dias entre a última leitura da planilha e hoje.
 ATRASO_EM_DIA = 1      # até aqui, "Em dia" (a leitura de ontem é o normal)

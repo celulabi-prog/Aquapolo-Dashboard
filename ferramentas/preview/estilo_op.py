@@ -64,7 +64,13 @@ LARG  = LARG_PAG - 2 * MARG                   # 1888
 BOTAO    = '#001429'      # fundo da caixa pintada (amostrado da imagem)
 BOTAO_B  = '#245b7c'      # borda da caixa
 X_PER, Y_PER, W_PER, H_PER = 1702, 90, 190, 42      # segmentação Período
-X_STA, Y_STA, W_STA = 1304, 57, 304                 # indicador de atualização
+# Da esquerda para a direita: status, período exibido e o seletor pintado. O título
+# "Painel Operacional" vai até perto de x=1060, então a primeira caixa não começa antes de 1076.
+X_STA, Y_STA, W_STA = 1076, 57, 264                 # indicador de atualização
+X_DAT, Y_DAT, W_DAT = 1356, 57, 252                 # datas do período exibido
+H_DAT    = 740            # altura do visual das datas: a caixa + a lista dos 23 indicadores
+# Controle de datas (de / até), logo acima do seletor. Só vale com o seletor em "Datas exatas".
+X_DTS, Y_DTS, W_DTS, H_DTS = 1624, 6, 274, 46
 H_BOTAO  = 79             # altura da caixa do indicador (a mesma do seletor pintado)
 H_STA    = 264            # altura do visual: a caixa + o detalhe que abre ao passar o mouse
 
