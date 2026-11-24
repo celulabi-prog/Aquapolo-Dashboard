@@ -25,20 +25,47 @@ conta: como os valores diários viram o número dos 30 dias
 zero_vale: na planilha o PROCV devolve 0 quando a célula de origem está vazia,
            então 0 conta como "sem leitura". True só onde zero é leitura de verdade.
 fator: multiplica o valor da planilha (fração -> %).
+escala: para indicador SEM meta, o valor que enche a barra (o Blend é uma
+        parcela de 0 a 100). Sem meta e sem escala, o indicador fica sem barra.
 """
 
 TOLERANCIA = 0.10      # margem de "Atenção" em volta da referência
 ESCALA = 1.6           # barra cheia = 160% da referência (traço da meta a 62,5%)
 MARCADOR = 100.0 / ESCALA
-JANELA = 30            # dias de cada período
+JANELA = 30            # dias do período quando nada está marcado no seletor Período
+
+# ---- período exibido (caixa do cabeçalho) ----------------------------------
+# False = uma das opções de tamanho fixo; True = a opção Datas exatas.
+ROTULO_PERIODO = {False: 'Período exibido', True: 'Datas escolhidas'}
+NOTA_PERIODO = {False: 'Cada indicador vai até a sua última leitura.',
+                True: 'Mesmo período para todos os indicadores.'}
+
+# ---- indicador de atualização (caixa do cabeçalho) --------------------------
+# O que decide o status é o atraso: dias entre a última leitura da planilha e hoje.
+ATRASO_EM_DIA = 1      # até aqui, "Em dia" (a leitura de ontem é o normal)
+ATRASO_PENDENTE = 3    # até aqui, "Pendente"; acima disso, "Atrasado"
+NIVEIS = {0: ('Sem dados', 'cinza'), 1: ('Em dia', 'verde'),
+          2: ('Pendente', 'amarelo'), 3: ('Atrasado', 'vermelho')}
+# O que falta fazer, na ordem em que o painel consegue descobrir.
+FALTA = {
+    'nada': 'Nada pendente.',
+    'bi': 'Falta atualizar o Power BI.',
+    'planilha': 'Falta abrir e salvar a planilha no Excel e depois atualizar o Power BI.',
+    'origem': 'Falta lançar os dados nas planilhas de origem.',
+}
 
 PESO = 'Clientes (L/s)'      # coluna que pondera as contas 'ponderada'
+
+# ---- aba do indicador (abre ao passar o mouse) ------------------------------
+# Na ordem de cor_de(): dentro, até TOLERANCIA fora, além disso, sem valor.
+SITUACAO = ('Dentro da meta', 'Atenção', 'Fora da meta', 'Sem leitura')
+SEM_META = 'Sem meta definida'
 
 
 def I(**kw):
     kw.setdefault('fator', 1.0)
     kw.setdefault('dec_ref', kw['dec'])
-    kw.setdefault('uni_ref', '')
+    kw.setdefault('escala', None)
     kw.setdefault('tipo_var', '%')
     kw.setdefault('conta', 'media')
     kw.setdefault('zero_vale', False)
@@ -78,7 +105,7 @@ TMBR = [
     I(k='turbidez', nome='Turbidez', unidade='NTU', icone='turbidez',
       coluna='Turbidez (NTU)', tipo='menor', dec=2, meta_max=0.4),
     I(k='fluxo', nome='Fluxo', unidade='LMH', icone='ondas',
-      coluna='Fluxo (LMH)', tipo='faixa', dec=1, meta_min=17, meta_max=24),
+      coluna='Fluxo (LMH)', tipo='faixa', dec=1, dec_ref=0, meta_min=17, meta_max=24),
 ]
 
 OR = [
@@ -95,32 +122,27 @@ OR = [
 # ---------------------------------------------------------------- cartões
 CONSUMO = [
     I(k='quimicos', nome='Químicos', unidade='kg/m³', icone='frasco',
-      coluna='Químicos (Kg/m³)', tipo='menor', dec=2, uni_ref=' kg/m³', meta_max=0.12,
-      conta='ponderada'),
+      coluna='Químicos (Kg/m³)', tipo='menor', dec=2, meta_max=0.12, conta='ponderada'),
     I(k='energia', nome='Energia', unidade='kWh/m³', icone='raio',
-      coluna='Energia (KWh/m³)', tipo='menor', dec=2, uni_ref=' kWh/m³', meta_max=0.98,
-      conta='ponderada'),
+      coluna='Energia (KWh/m³)', tipo='menor', dec=2, meta_max=0.98, conta='ponderada'),
     # Na planilha é a energia da OR por m³ entregue aos clientes. Na base antiga
     # era por m³ de permeado da OR, e a meta de 0,50 foi definida para aquela conta.
     I(k='energia_or', nome='Energia OR', unidade='kWh/m³', icone='engrenagem',
-      coluna='Energia OR KW/m³', tipo='menor', dec=2, uni_ref=' kWh/m³', meta_max=0.50,
-      conta='ponderada'),
+      coluna='Energia OR KW/m³', tipo='menor', dec=2, meta_max=0.50, conta='ponderada'),
     I(k='biologico', nome='Energia - Biológico', unidade='kWh/kg NH3 rem', icone='ventilador',
-      coluna='Energia - Biológico (KWh/kg NH3 rem)', tipo='menor', dec=1, uni_ref=' kWh/kg',
-      conta='mediana'),
+      coluna='Energia - Biológico (KWh/kg NH3 rem)', tipo='menor', dec=1, conta='mediana'),
     I(k='coagulante', nome='Coagulante', unidade='gPAC/gP rem', icone='molecula',
-      coluna='Coagulante (gPAC/gP rem)', tipo='menor', dec=1, uni_ref=' gPAC/gP', meta_max=17,
-      conta='mediana'),
+      coluna='Coagulante (gPAC/gP rem)', tipo='menor', dec=1, meta_max=17, conta='mediana'),
 ]
 
 VOLUMES = [
     I(k='clientes', nome='Clientes', unidade='L/s', icone='tubos',
-      coluna=PESO, tipo='maior', dec=1, uni_ref=' L/s', meta_min=26950 / 86.4),   # 26.950 m³/d
+      coluna=PESO, tipo='maior', dec=1, meta_min=26950 / 86.4),      # 26.950 m³/d
     I(k='blend', nome='Blend', unidade='%', icone='frasco',
-      coluna='Blend %', tipo='menor', dec=1, fator=100.0, uni_ref=' %', tipo_var='p.p.',
-      conta='ponderada'),
+      coluna='Blend %', tipo='menor', dec=1, fator=100.0, tipo_var='p.p.',
+      conta='ponderada', escala=100),
     I(k='perdas', nome='Perdas', unidade='%', icone='gota',
-      coluna='Perdas %', tipo='menor', dec=1, fator=100.0, uni_ref=' %', tipo_var='p.p.',
+      coluna='Perdas %', tipo='menor', dec=1, fator=100.0, tipo_var='p.p.',
       meta_max=18, conta='ponderada'),
 ]
 
@@ -166,7 +188,49 @@ def cor_de(v, rmin, rmax, tipo, verde, amarelo, vermelho, cinza):
     return verde if v >= ref else (amarelo if v >= ref * (1 - t) else vermelho)
 
 
-def largura(v, ref):
-    if v is None or ref in (None, 0):
+def br(v, casas=0):
+    """Número no formato pt-BR."""
+    return '{:,.{}f}'.format(v, casas).replace(',', '§').replace('.', ',').replace('§', '.')
+
+
+def referencia(ind):
+    """A meta que a barra e a cor usam: o teto de 'menor' e de 'faixa', o piso de 'maior'."""
+    return ind['meta_max'] if ind['tipo'] in ('menor', 'faixa') else ind['meta_min']
+
+
+def meta_txt(ind):
+    """A meta como aparece no painel: ≤ teto, ≥ piso ou a faixa. None = indicador sem meta."""
+    ref = referencia(ind)
+    if ref is None:
+        return None
+    if ind['tipo'] == 'faixa':
+        return br(ind['meta_min'], ind['dec_ref']) + ' &#8211; ' + br(ref, ind['dec_ref'])
+    return ('&#8804; ' if ind['tipo'] == 'menor' else '&#8805; ') + br(ref, ind['dec_ref'])
+
+
+def textos(ind):
+    """O que é igual no preview e no DAX: os textos que só dependem deste cadastro."""
+    return {'icone': ind['icone'], 'nome': ind['nome'], 'unidade': ind['unidade'],
+            'meta': meta_txt(ind),
+            'obs': ('barra: 0 a %s%s' % (br(ind['escala']), ind['unidade'])) if ind['escala'] else ''}
+
+
+def marcadores(ind):
+    """Onde ficam os tracejados da barra, em % do trilho: um em cada limite da meta.
+    [] = sem meta, mas com escala própria (barra sem tracejado); None = sem barra."""
+    if referencia(ind) is None:
+        return [] if ind['escala'] else None
+    if ind['tipo'] == 'faixa':
+        return [MARCADOR * ind['meta_min'] / ind['meta_max'], MARCADOR]
+    return [MARCADOR]
+
+
+def largura(v, ind):
+    """Quanto da barra enche, em %: o valor sobre a meta (cheia em ESCALA vezes a meta)
+    ou, para indicador sem meta, o valor sobre a escala dele."""
+    base, cheia = referencia(ind), ESCALA
+    if base is None:
+        base, cheia = ind['escala'], 1.0
+    if v is None or not base:
         return 0.0
-    return max(0.0, min(v / ref, ESCALA)) / ESCALA * 100
+    return max(0.0, min(v / base, cheia)) / cheia * 100

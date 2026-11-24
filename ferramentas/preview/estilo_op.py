@@ -50,7 +50,7 @@ H_ROD  = 75               # altura do rodapé
 
 GAP    = 15
 COL_SUP = [647, 643, 568]                     # EEBC, TMBR, OR
-COL_INF = [1238, 636]                         # Consumo, Volumes
+COL_INF = [1171, 703]                         # Consumo (5 cartões), Volumes (3): cartões da mesma largura
 
 X_SUP = [MARG,
          MARG + COL_SUP[0] + GAP,
@@ -58,8 +58,29 @@ X_SUP = [MARG,
 X_INF = [MARG, MARG + COL_INF[0] + 14]
 LARG  = LARG_PAG - 2 * MARG                   # 1888
 
+# ---- cabeçalho: seletor de período e indicador de atualização --------------
+# A caixa do seletor, com o ícone e a palavra "Período", está pintada na imagem
+# do cabeçalho. A segmentação cobre só o trecho "Mensal v" de dentro dela.
+BOTAO    = '#001429'      # fundo da caixa pintada (amostrado da imagem)
+BOTAO_B  = '#245b7c'      # borda da caixa
+X_PER, Y_PER, W_PER, H_PER = 1702, 90, 190, 42      # segmentação Período
+# Da esquerda para a direita: status, período exibido e o seletor pintado. O título
+# "Painel Operacional" vai até perto de x=1060, então a primeira caixa não começa antes de 1076.
+W_CX_STA = 264            # largura da caixa do indicador de atualização
+# O visual dele é mais largo que a caixa, para a esquerda (por cima do título pintado): a caixa
+# fica encostada à direita e o detalhe, que abre embaixo, usa a largura toda.
+X_STA, Y_STA, W_STA = 756, 57, 584                  # indicador de atualização
+X_DAT, Y_DAT, W_DAT = 1356, 57, 252                 # datas do período exibido
+# Controle de datas (de / até), logo acima do seletor. Só vale com o seletor em "Datas exatas".
+X_DTS, Y_DTS, W_DTS, H_DTS = 1624, 6, 274, 46
+H_BOTAO  = 79             # altura da caixa do indicador (a mesma do seletor pintado)
+
 H_FAIXA = 62              # faixa de título dentro do painel
 RAIO    = 10              # raio da borda dos painéis
+# Altura dos visuais das duas caixas: a caixa + o detalhe que abre ao passar o mouse. Vai só até
+# o fim do título dos painéis de cima. Mais que isso, o visual ficaria por cima de um indicador
+# e tiraria dele o mouse (a área de um visual recebe o mouse mesmo onde é transparente).
+H_DET   = Y_SUP + H_FAIXA + 5 - Y_STA
 
 # ---- blocos de estilo reaproveitados ---------------------------------------
 FONTE = "font-family:Segoe UI,sans-serif;"

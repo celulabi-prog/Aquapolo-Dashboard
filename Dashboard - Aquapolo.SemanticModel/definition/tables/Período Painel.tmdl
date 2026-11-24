@@ -1,0 +1,52 @@
+/// Opções do seletor Período da Visão Geral. EDITAR AQUI: cada linha é uma opção, o tamanho do período em dias e a posição na lista. As medidas '... Período' da tabela Medidas HTML leem a coluna Dias; sem nada marcado, valem 30 dias. Dias = 0 é a opção Datas exatas: nela o período vem do controle de datas (tabela Datas Painel).
+table 'Período Painel'
+	lineageTag: ca0bbaec-1012-454f-9d68-bfcec23f7370
+
+	column Período
+		dataType: string
+		lineageTag: 473fada1-0d40-4d8e-a9ed-f825f0ee86fa
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Período]
+		sortByColumn: Ordem
+
+		annotation SummarizationSetBy = Automatic
+
+	column Dias
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 57b2208d-583a-47a6-b638-be5cde874cac
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Dias]
+
+		annotation SummarizationSetBy = Automatic
+
+	column Ordem
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 3b1f6c1e-52c4-4a87-9d0b-6c2f3a7e9b41
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Ordem]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Período Painel' = calculated
+		mode: import
+		source =
+				DATATABLE (
+				    "Período", STRING,
+				    "Dias", INTEGER,
+				    "Ordem", INTEGER,
+				    {
+				        { "Diário", 1, 1 },
+				        { "Semanal", 7, 2 },
+				        { "Mensal", 30, 3 },
+				        { "Trimestral", 90, 4 },
+				        { "Datas exatas", 0, 5 }
+				    }
+				)
+

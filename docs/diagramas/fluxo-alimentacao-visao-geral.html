@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Novo fluxo de alimentação da Visão Geral</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --color-paper:   #EEF2F6;   /* Aquapolo papel */
+      --color-ink:     #0F1934;   /* Aquapolo tinta (tema do relatório) */
+      --color-muted:   #4A5A70;   /* Aquapolo texto secundário */
+      --color-accent:  #1A5A96;   /* Aquapolo azul dos cabeçalhos */
+      --font-sans:     'Geist', system-ui, sans-serif;
+      --font-serif:    'Instrument Serif', serif;
+      --font-mono:     'Geist Mono', ui-monospace, monospace;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background: var(--color-paper);
+      color: var(--color-ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 2rem;
+    }
+
+    /* The viewBox is 1308 wide (fit preset), so the frame holds the diagram at
+       one CSS pixel per unit and the type ramp renders at its real size. */
+    .frame { max-width: 1308px; width: 100%; min-width: 0; }
+    .diagram-container { width: 100%; overflow-x: auto; }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-muted);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(1.5rem, 2.4vw + 0.75rem, 2rem);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--color-ink);
+      margin-bottom: 1.5rem;
+    }
+
+    svg { width: 100%; min-width: 1308px; display: block; }
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
+      .note { font-family: var(--font-sans); font-size: 0.8rem; line-height: 1.5; color: var(--color-muted); margin-top: 1rem; max-width: 760px; }
+  </style>
+</head>
+<body>
+  <div class="frame">
+    <p class="eyebrow">Fluxo de dados · Dashboard Aquapolo</p>
+    <h1>Novo fluxo de alimentação da Visão Geral</h1>
+
+    <div class="diagram-container">
+      <svg viewBox="0 0 1308 456" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fluxo-alimentacao-visao-geral-title fluxo-alimentacao-visao-geral-desc">
+        <title id="fluxo-alimentacao-visao-geral-title">Novo fluxo de alimentação da Visão Geral</title>
+        <desc id="fluxo-alimentacao-visao-geral-desc">Fluxo de alimentação da página Visão Geral do Dashboard Aquapolo: dez planilhas da operação alimentam, por fórmulas, a planilha Dados BI.xlsx na VPS; o Power Query lê essa planilha pelo parâmetro ArquivoDadosBI e monta a tabela Dados BI; as medidas DAX de cada indicador tratam os valores, as medidas HTML desenham os painéis, as datas do período exibido e o indicador de atualização, e a página exibe oito visuais HTML, o seletor de período e o controle de datas exatas. Os scripts de preview em Python leem a mesma planilha e geram as medidas e os visuais.</desc>
+        <defs>
+          <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4A5A70"/></marker>
+          <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#1A5A96"/></marker>
+          <marker id="arrow-link" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#33465E"/></marker>
+        </defs>
+
+        <rect width="100%" height="100%" fill="#EEF2F6"/>
+        <rect x="24" y="40" width="400" height="152" rx="8" fill="rgba(15,25,52,0.02)" stroke="rgba(15,25,52,0.10)" stroke-width="0.8"/>
+        <rect x="40" y="44" width="200" height="12" rx="2" fill="#EEF2F6"/>
+        <text x="140" y="53" fill="#4A5A70" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">FORA DO REPOSITÓRIO · VPS DA AQUAPOLO</text>
+        <rect x="448" y="40" width="836" height="328" rx="8" fill="rgba(15,25,52,0.02)" stroke="rgba(15,25,52,0.10)" stroke-width="0.8"/>
+        <rect x="464" y="44" width="152" height="12" rx="2" fill="#EEF2F6"/>
+        <text x="540" y="53" fill="#4A5A70" font-size="7" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.14em">NO REPOSITÓRIO · PROJETO PBIP</text>
+        <path d="M 208,120 H 252" fill="none" stroke="#33465E" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow-link)"/>
+        <path d="M 420,120 H 464" fill="none" stroke="#1A5A96" stroke-width="1.2" marker-end="url(#arrow-accent)"/>
+        <line x1="632" y1="120" x2="676" y2="120" stroke="#4A5A70" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <line x1="844" y1="120" x2="888" y2="120" stroke="#4A5A70" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <line x1="1056" y1="120" x2="1100" y2="120" stroke="#4A5A70" stroke-width="1.2" marker-end="url(#arrow)"/>
+        <path d="M 336,168 V 296 Q 336,304 344,304 H 464" fill="none" stroke="#4A5A70" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+        <path d="M 632,284 H 752 Q 760,284 760,276 V 168" fill="none" stroke="#4A5A70" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+        <path d="M 632,304 H 964 Q 972,304 972,296 V 168" fill="none" stroke="#4A5A70" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+        <path d="M 632,324 H 1176 Q 1184,324 1184,316 V 168" fill="none" stroke="#4A5A70" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+        <rect x="344" y="212" width="80" height="12" rx="2" fill="#EEF2F6"/>
+        <text x="384" y="221" fill="#4A5A70" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">LÊ A PLANILHA</text>
+        <rect x="768" y="212" width="72" height="12" rx="2" fill="#EEF2F6"/>
+        <text x="804" y="221" fill="#4A5A70" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">GERA MEDIDAS</text>
+        <rect x="980" y="212" width="56" height="12" rx="2" fill="#EEF2F6"/>
+        <text x="1008" y="221" fill="#4A5A70" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">GERA HTML</text>
+        <rect x="1192" y="212" width="72" height="12" rx="2" fill="#EEF2F6"/>
+        <text x="1228" y="221" fill="#4A5A70" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">GERA VISUAIS</text>
+        <rect x="40" y="72" width="168" height="96" rx="6" fill="#EEF2F6"/>
+        <rect x="40" y="72" width="168" height="96" rx="6" fill="rgba(15,25,52,0.03)" stroke="rgba(15,25,52,0.30)" stroke-width="1"/>
+        <text x="124" y="104.5" fill="#0F1934" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Planilhas de origem</text>
+        <text x="124" y="120.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">10 planilhas vinculadas</text>
+        <text x="124" y="133.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">controles da operação</text>
+        <text x="124" y="146.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">G:\OME\Operacao</text>
+        <rect x="252" y="72" width="168" height="96" rx="6" fill="#EEF2F6"/>
+        <rect x="252" y="72" width="168" height="96" rx="6" fill="rgba(26,90,150,0.08)" stroke="#1A5A96" stroke-width="1"/>
+        <text x="336" y="104.5" fill="#0F1934" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Dados BI.xlsx</text>
+        <text x="336" y="120.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">G:\OME\Operacao\BI</text>
+        <text x="336" y="133.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">fórmulas com vínculos</text>
+        <text x="336" y="146.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">vale o último valor salvo</text>
+        <rect x="464" y="72" width="168" height="96" rx="6" fill="#EEF2F6"/>
+        <rect x="464" y="72" width="168" height="96" rx="6" fill="#ffffff" stroke="#0F1934" stroke-width="1"/>
+        <text x="548" y="104.5" fill="#0F1934" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Power Query</text>
+        <text x="548" y="120.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">parâmetro ArquivoDadosBI</text>
+        <text x="548" y="133.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">tabela Dados BI</text>
+        <text x="548" y="146.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">colunas → linhas · números</text>
+        <rect x="676" y="72" width="168" height="96" rx="6" fill="#EEF2F6"/>
+        <rect x="676" y="72" width="168" height="96" rx="6" fill="#ffffff" stroke="#0F1934" stroke-width="1"/>
+        <text x="760" y="104.5" fill="#0F1934" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Medidas por indicador</text>
+        <text x="760" y="120.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">31 medidas DAX · por período</text>
+        <text x="760" y="133.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">zero = sem leitura</text>
+        <text x="760" y="146.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">média · ponderada · mediana</text>
+        <rect x="888" y="72" width="168" height="96" rx="6" fill="#EEF2F6"/>
+        <rect x="888" y="72" width="168" height="96" rx="6" fill="#ffffff" stroke="#0F1934" stroke-width="1"/>
+        <text x="972" y="104.5" fill="#0F1934" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Medidas HTML</text>
+        <text x="972" y="120.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">5 painéis + rodapé</text>
+        <text x="972" y="133.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">metas, cores e barras</text>
+        <text x="972" y="146.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">datas do período · status</text>
+        <rect x="1100" y="72" width="168" height="96" rx="6" fill="#EEF2F6"/>
+        <rect x="1100" y="72" width="168" height="96" rx="6" fill="#ffffff" stroke="#0F1934" stroke-width="1"/>
+        <text x="1184" y="104.5" fill="#0F1934" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Página Visão Geral</text>
+        <text x="1184" y="120.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">8 visuais HTML + 2 seletores</text>
+        <text x="1184" y="133.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">23 indicadores</text>
+        <text x="1184" y="146.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">Atualizar no Desktop</text>
+        <rect x="464" y="264" width="168" height="80" rx="6" fill="#EEF2F6"/>
+        <rect x="464" y="264" width="168" height="80" rx="6" fill="rgba(15,25,52,0.02)" stroke="rgba(15,25,52,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="548" y="295" fill="#0F1934" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Scripts de preview</text>
+        <text x="548" y="311" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">ferramentas/preview · Python</text>
+        <text x="548" y="324" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">colunas, metas e contas</text>
+        <line x1="40" y1="392" x2="1268" y2="392" stroke="rgba(15,25,52,0.10)" stroke-width="0.8"/>
+        <text x="40" y="408" fill="#4A5A70" font-size="8" font-family="'Geist Mono', ui-monospace, monospace" letter-spacing="0.18em">LEGENDA · A FORMA INDICA O TIPO</text>
+        <rect x="40" y="424" width="24" height="12" rx="2" fill="rgba(15,25,52,0.03)" stroke="rgba(15,25,52,0.30)" stroke-width="1"/>
+        <text x="72" y="434" fill="#4A5A70" font-size="8.5" font-family="'Geist', system-ui, sans-serif">Origem externa</text>
+        <rect x="164" y="424" width="24" height="12" rx="2" fill="rgba(26,90,150,0.08)" stroke="#1A5A96" stroke-width="1"/>
+        <text x="196" y="434" fill="#4A5A70" font-size="8.5" font-family="'Geist', system-ui, sans-serif">Ponto de entrada (foco)</text>
+        <rect x="332" y="424" width="24" height="12" rx="2" fill="#ffffff" stroke="#0F1934" stroke-width="1"/>
+        <text x="364" y="434" fill="#4A5A70" font-size="8.5" font-family="'Geist', system-ui, sans-serif">Etapa no Power BI</text>
+        <rect x="472" y="424" width="24" height="12" rx="2" fill="rgba(15,25,52,0.02)" stroke="rgba(15,25,52,0.20)" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="504" y="434" fill="#4A5A70" font-size="8.5" font-family="'Geist', system-ui, sans-serif">Gerador de código</text>
+        <line x1="612" y1="430" x2="636" y2="430" stroke="#4A5A70" stroke-width="1" stroke-dasharray="4,3"/>
+        <text x="644" y="434" fill="#4A5A70" font-size="8.5" font-family="'Geist', system-ui, sans-serif">Passo manual: salvar a planilha no Excel ou rodar os scripts</text>
+      </svg>
+    </div>
+    <p class="note">Mapeado do projeto PBIP no repositório (expressions.tmdl, partição da tabela Dados BI, Medidas HTML.tmdl e ferramentas/preview) em 23/11/2026. A planilha Dados BI.xlsx é feita de fórmulas que buscam 10 planilhas da operação, e o Power BI lê o último valor salvo: os números só mudam depois que alguém abre o arquivo no Excel e salva. A atualização do relatório é manual, pelo botão Atualizar do Power BI Desktop. O período vem do seletor Período da página (tabela Período Painel) ou, com a opção Datas exatas, do controle de datas (tabela Datas Painel). As metas não vêm da planilha; ficam em indicadores_op.py. As outras páginas continuam no fluxo de fluxo-alimentacao-powerbi.html.</p>
+  </div>
+</body>
+</html>

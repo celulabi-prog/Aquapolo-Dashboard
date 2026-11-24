@@ -22,7 +22,7 @@ table 'Dados BI'
 
 		annotation SummarizationSetBy = Automatic
 
-	/// Valor do dia como está na planilha, sem tratamento. Use as medidas '... 30d' em vez desta coluna.
+	/// Valor do dia como está na planilha, sem tratamento. Use as medidas '... Período' em vez desta coluna.
 	column Valor
 		dataType: double
 		lineageTag: 5ca53e92-5749-4e9a-910b-7d2e006a0678
@@ -33,6 +33,26 @@ table 'Dados BI'
 
 		annotation PBI_FormatHint = {"isGeneralNumber":true}
 
+	/// Data e hora em que a planilha foi salva pela última vez, lidas no momento da carga. Igual em todas as linhas.
+	column 'Planilha salva em'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 757934e0-5ad2-4b1f-a20b-96d9dac9dbcd
+		summarizeBy: none
+		sourceColumn: Planilha salva em
+
+		annotation SummarizationSetBy = Automatic
+
+	/// Data e hora (horário de Brasília) em que o Power BI carregou a planilha. Igual em todas as linhas.
+	column 'Carregado em'
+		dataType: dateTime
+		formatString: General Date
+		lineageTag: 05e20f4b-c2cd-40e9-80c9-79678da1e45c
+		summarizeBy: none
+		sourceColumn: Carregado em
+
+		annotation SummarizationSetBy = Automatic
+
 	partition 'Dados BI' = m
 		mode: import
 		source =
@@ -40,7 +60,10 @@ table 'Dados BI'
 				    // A planilha fica na VPS da Aquapolo e aqui ela é só LIDA: nada grava nela.
 				    // O Power BI lê o último valor que o Excel calculou em cada fórmula. Como as fórmulas
 				    // buscam outras planilhas, os números só mudam depois que alguém abre e salva o arquivo no Excel.
-				    Fonte = Excel.Workbook(File.Contents(ArquivoDadosBI), null, true),
+				    // A pasta é listada, em vez de abrir o arquivo direto, para trazer também a data em que a planilha foi salva.
+				    Pasta = Folder.Contents(Text.BeforeDelimiter(ArquivoDadosBI, "\", {0, RelativePosition.FromEnd})),
+				    Arquivo = Pasta{[Name = Text.AfterDelimiter(ArquivoDadosBI, "\", {0, RelativePosition.FromEnd})]},
+				    Fonte = Excel.Workbook(Arquivo[Content], null, true),
 				    Aba = Fonte{[Item = "Dados BI", Kind = "Sheet"]}[Data],
 				    // Linha 1 = títulos dos grupos (células mescladas). Linha 2 = nome de cada indicador.
 				    Cabecalho = Table.PromoteHeaders(Table.Skip(Aba, 1), [PromoteAllScalars = true]),
@@ -53,9 +76,14 @@ table 'Dados BI'
 				    // Fica só o que é número: saem os textos que as fórmulas devolvem ("-" e "").
 				    Numeros = Table.SelectRows(Longa, each [Data] <> null and [Valor] is number),
 				    Limpa = Table.TransformColumns(Numeros, {{"Indicador", Text.Trim, type text}}),
-				    Tipos = Table.TransformColumnTypes(Limpa, {{"Data", type date}, {"Valor", type number}})
+				    Tipos = Table.TransformColumnTypes(Limpa, {{"Data", type date}, {"Valor", type number}}),
+				    // Duas datas, iguais em todas as linhas, para o indicador de atualização do painel.
+				    // "Carregado em" sai no horário de Brasília (UTC-3), igual no Desktop e no serviço.
+				    Agora = DateTimeZone.RemoveZone(DateTimeZone.SwitchZone(DateTimeZone.UtcNow(), -3)),
+				    ComSalva = Table.AddColumn(Tipos, "Planilha salva em", each Arquivo[Date modified], type datetime),
+				    ComCarga = Table.AddColumn(ComSalva, "Carregado em", each Agora, type datetime)
 				in
-				    Tipos
+				    ComCarga
 
 	annotation PBI_NavigationStepName = Navegação
 

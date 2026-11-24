@@ -30,6 +30,10 @@ partes = [
     visual(P['consumo'], X_INF[0], Y_INF, COL_INF[0], H_INF),
     visual(P['volumes'], X_INF[1], Y_INF, COL_INF[1], H_INF),
     visual(P['rodape'],  MARG,     Y_ROD, LARG,       H_ROD),
+    # O seletor Período é uma segmentação nativa do Power BI, que fica por cima do
+    # "Mensal v" pintado no cabeçalho. Aqui aparece a pintura; lá, a lista suspensa.
+    visual(P['status'],  X_STA,    Y_STA, W_STA,      H_DET),
+    visual(P['periodo'], X_DAT,    Y_DAT, W_DAT,      H_DET),
 ]
 
 pagina = ("<!doctype html><html><head><meta charset='utf-8'><style>"

@@ -1,0 +1,24 @@
+/// Calendário do controle de datas da Visão Geral. Não tem relação com as outras tabelas: as medidas '... Período' leem a menor e a maior data marcadas quando o seletor Período está em Datas exatas.
+table 'Datas Painel'
+	lineageTag: 8d2a5f0c-7e14-4c3b-b6a9-1f4e7d2c9a53
+
+	column Data
+		dataType: dateTime
+		formatString: Short Date
+		lineageTag: 6f9c3e7a-2b58-4d1e-a4c7-9e0b5d3f1a26
+		summarizeBy: none
+		isNameInferred
+		sourceColumn: [Data]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Datas Painel' = calculated
+		mode: import
+		source =
+				-- Um dia por linha, do primeiro ao último dia com leitura na planilha.
+				-- Sem leitura nenhuma (base ainda não carregada), fica só o dia de hoje.
+				VAR _ini = COALESCE ( CALCULATE ( MIN ( 'Dados BI'[Data] ), 'Dados BI'[Valor] <> 0 ), TODAY () )
+				VAR _fim = COALESCE ( CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Valor] <> 0, 'Dados BI'[Data] <= TODAY () ), TODAY () )
+				RETURN
+				    SELECTCOLUMNS ( CALENDAR ( _ini, _fim ), "Data", [Date] )
+
