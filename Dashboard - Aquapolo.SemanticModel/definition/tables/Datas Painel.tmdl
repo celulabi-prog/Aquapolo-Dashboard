@@ -21,3 +21,4 @@ table 'Datas Painel'
 				VAR _fim = COALESCE ( CALCULATE ( MAX ( 'Dados BI'[Data] ), 'Dados BI'[Valor] <> 0, 'Dados BI'[Data] <= TODAY () ), TODAY () )
 				RETURN
 				    SELECTCOLUMNS ( CALENDAR ( _ini, _fim ), "Data", [Date] )
+
