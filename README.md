@@ -15,12 +15,13 @@ Relatório do Power BI salvo como projeto PBIP: o relatório está em PBIR e o m
 
 ## Painel operacional
 
-A página **Visão Geral** é o painel operacional, em tema escuro, com 23 indicadores em cinco painéis: **Qualidade EEBC**, **Performance TMBR**, **Performance OR**, **Consumo de Químicos e Energia** e **Volumes**, mais a faixa de rodapé com a data da base e a legenda.
+A página **Visão Geral** é o painel operacional, em tema escuro, com 23 indicadores em cinco painéis: **Qualidade EEBC**, **Performance TMBR**, **Performance OR**, **Consumo de Químicos e Energia** e **Volumes**, mais a faixa de rodapé com a legenda (como ler as cores, a meta, a barra e o Δ Per.).
 
 - São **8 visuais HTML Content** (visual personalizado do AppSource): um por painel, um para o rodapé e dois para as caixas do cabeçalho (período exibido e indicador de atualização). Cada painel desenha todas as suas linhas ou cartões de uma vez. Os outros dois são segmentações nativas do Power BI: o seletor **Período** e o controle de datas.
 - **Seletor Período** (canto superior direito): escolhe o tamanho do período de todos os indicadores. As opções ficam na tabela **Período Painel**: Diário (1 dia), Semanal (7), Mensal (30, a opção que já vem marcada), Trimestral (90) e **Datas exatas**. A caixa, o ícone e a palavra "Período" são da imagem de fundo; a lista suspensa fica por cima do "Mensal" pintado.
 - **Datas exatas**: com essa opção marcada, vale o intervalo do controle de datas que fica logo acima do seletor (duas caixas, de e até; as duas iguais dão um dia só). O intervalo é o mesmo para todos os indicadores, e o Δ Per. compara com o intervalo imediatamente anterior, do mesmo tamanho. Sem mexer nas datas, o intervalo é todo o histórico. Com qualquer outra opção marcada, o controle de datas não tem efeito. As datas disponíveis ficam na tabela **Datas Painel**, que vai do primeiro ao último dia com leitura na planilha.
-- **Período exibido** (caixa ao lado do seletor): mostra de que dia a que dia vai o período marcado, contado até a última leitura da planilha, por exemplo "20/10 a 18/11". Com Datas exatas, mostra o intervalo escolhido. Ao passar o mouse, lista o período de cada um dos 23 indicadores, porque cada um conta os dias até a sua própria última leitura e alguns terminam um ou mais dias antes.
+- **Período exibido** (caixa ao lado do seletor): mostra de que dia a que dia vai o período marcado, contado até a última leitura da planilha, por exemplo "20/10 a 18/11". Com Datas exatas, mostra o intervalo escolhido. Ao passar o mouse, mostra as datas com o ano. O período de cada indicador fica na aba do próprio indicador, porque cada um conta os dias até a sua própria última leitura e alguns terminam um ou mais dias antes.
+- **Aba do indicador**: ao passar o mouse num indicador, abre uma aba com o que o número compara: as datas do período exibido, a meta e quanto o valor representa dela e, nos cartões, o período anterior com o valor dele (é o que o Δ Per. compara). A regra de cálculo de cada indicador está logo abaixo, em **Valor**.
 - **Indicador de atualização** (primeira caixa do cabeçalho): diz se os dados estão **Em dia** (última leitura há até 1 dia), **Pendentes** (até 3 dias) ou **Atrasados** (mais que isso). Ao passar o mouse, mostra a data dos dados, quando a planilha foi salva, quando o Power BI foi atualizado e o que falta fazer. Os limites ficam em `ATRASO_EM_DIA` e `ATRASO_PENDENTE`, em `indicadores_op.py`.
 - A imagem `fundo_painel_operacional.png` é o fundo da página e contém **só o cabeçalho** — a foto aérea e os logos GS Inima / Sabesp. Nenhum número está na imagem.
 - **Fonte:** a planilha `Dados BI.xlsx`, carregada na tabela **Dados BI** com uma linha por dia e por indicador (`Data`, `Indicador`, `Valor`), mais duas datas iguais em todas as linhas, que alimentam o indicador de atualização: `Planilha salva em` e `Carregado em`. A consulta só arruma a estrutura: descarta a linha dos grupos, usa a linha 2 como nome das colunas, vira as colunas em linhas e joga fora o que não é número (`-`, vazio e `#N/D`).
@@ -33,8 +34,9 @@ A página **Visão Geral** é o painel operacional, em tema escuro, com 23 indic
   - **Químicos, Energia, Energia OR, Blend e Perdas:** média ponderada pelo volume de clientes do dia, que equivale a somar o consumo e dividir pelo volume somado (a conta da base antiga).
   - **Energia - Biológico e Coagulante:** mediana dos valores positivos. A planilha só traz a razão do dia, e um dia com divisor perto de zero estouraria a média (o Coagulante tem dias milhares de vezes acima do normal).
 - **Δ Per.:** variação em relação ao período anterior, do mesmo tamanho (nos cartões de consumo e volumes).
-- **Ref.:** a meta de cada indicador (`meta_min` / `meta_max`) em `ferramentas/preview/indicadores_op.py`, porque a planilha não traz metas. Onde o indicador tem mínimo **e** máximo (Idade do Lodo, Alimento/Microorganismo, Fluxo), aparece **Faixa a – b**. Para mudar uma meta, altere lá e rode `python gerar_op.py`.
-- **Cores:** verde dentro da meta, amarelo até 10% fora, vermelho além disso, cinza sem meta ou sem dado. A barra enche até 160% da referência e o tracejado marca os 100%.
+- **Meta:** a de cada indicador (`meta_min` / `meta_max`) em `ferramentas/preview/indicadores_op.py`, porque a planilha não traz metas. Aparece como **≤ teto** (quanto menor, melhor), **≥ piso** (quanto maior, melhor) ou **a – b** (faixa: Idade do Lodo, Alimento/Microorganismo, Fluxo). Para mudar uma meta, altere lá e rode `python gerar_op.py`.
+- **Cores e barra:** verde dentro da meta, amarelo até 10% fora, vermelho além disso, cinza sem dado. A barra enche até 160% da meta e o tracejado marca os 100%; na faixa há um tracejado em cada limite. Nos cartões, o percentual ao lado da meta é o valor dividido por ela.
+- **Indicador sem meta:** não tem cor de status nem percentual. O Blend, que é uma parcela de 0 a 100%, ganha uma barra azul nessa escala (campo `escala`); a Energia - Biológico fica só com o contorno da barra.
 
 Esta página **não é editada à mão**. Ela é gerada pelos scripts de `ferramentas/preview/`, a partir de um molde HTML único — veja o `LEIAME.md` de lá. Mexer no `visual.json` ou na medida direto no Power BI funciona, mas o próximo `python pagina_op.py` ou `python gerar_op.py` desfaz.
 
@@ -49,9 +51,9 @@ Comparando na mesma data (14/09/2026, o fim da base antiga), 12 indicadores dão
 | **Energia OR** | cerca de 70% menor | a planilha divide pelo volume de clientes; a base dividia pelo permeado da OR. A meta de 0,50 foi definida para a conta antiga |
 | **Energia - Biológico, Coagulante** | em geral de 5% a 10%, às vezes mais | a base somava o consumo e dividia pela soma do divisor; a planilha só traz a razão do dia, e a mediana é o que mais se aproxima |
 | **Perdas** | em geral abaixo de 2% | ponderada pelo volume de clientes, porque a planilha não traz o volume de entrada |
-| **Blend** | agora tem valor | a planilha traz o indicador; segue sem meta (`Ref. —`) |
+| **Blend** | agora tem valor | a planilha traz o indicador; segue sem meta |
 
-**Energia - Biológico** e **Blend** estão sem meta. Preenchendo `meta_max` em `indicadores_op.py`, a barra e o percentual passam a aparecer.
+**Energia - Biológico** e **Blend** estão sem meta. Preenchendo `meta_max` em `indicadores_op.py`, a barra contra a meta, a cor e o percentual passam a aparecer.
 
 ## Página Indicadores Químicos
 

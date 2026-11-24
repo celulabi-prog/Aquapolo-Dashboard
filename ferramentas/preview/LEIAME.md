@@ -37,7 +37,7 @@ pela tabela **Dados BI**; aqui, por `dados_op.ler()`, que faz a mesma arrumaçã
 | --- | --- |
 | `estilo_op.py` | paleta e grade da página — medidas tiradas do print de referência |
 | `indicadores_op.py` | **os 23 indicadores**: nome, unidade, ícone, coluna da planilha, meta, tipo de conta (média, ponderada ou mediana) e casas decimais. É o arquivo que se mexe no dia a dia |
-| `molde_op.py` | o HTML de cada painel, cartão e linha, e os ícones SVG. Só texto, nenhuma conta |
+| `molde_op.py` | o HTML de cada painel, cartão e linha, a aba que abre ao passar o mouse num indicador, e os ícones SVG. Só texto, nenhuma conta |
 | `dados_op.py` | lê a planilha e refaz em Python as contas das medidas. Para se a planilha não tiver mais alguma coluna de `indicadores_op.py` |
 | `prep_op.py` | formata os dados reais para o molde (lado do preview) |
 | `fundo_op.py` | recorta a faixa do cabeçalho e monta o PNG de fundo |
@@ -56,6 +56,20 @@ pela tabela **Dados BI**; aqui, por `dados_op.ler()`, que faz a mesma arrumaçã
   `CONSUMO` ou `VOLUMES`. As linhas se redistribuem sozinhas na altura do painel.
 - **Cor, fonte, espaçamento:** `molde_op.py` (aparência) ou `estilo_op.py` (paleta e grade).
 - **Regra de cor ou escala da barra:** `TOLERANCIA` e `ESCALA` no topo de `indicadores_op.py`.
+- **O que aparece na aba do indicador:** `dica()` em `molde_op.py`. A aba tem pouco espaço: nos
+  cartões ela não pode passar da linha dos números.
+- **Indicador sem meta:** fica sem cor e sem percentual. Com `escala=` (o valor que enche a barra)
+  ele ganha uma barra azul; sem isso, só o contorno.
+
+### Abas, mouse e folga dos visuais
+
+- A aba de cada indicador abre **dentro do retângulo do próprio visual** (um visual HTML não desenha
+  fora dele): nas linhas, embaixo ou em cima da linha; nos cartões, no alto do painel.
+- **A área de um visual recebe o mouse mesmo onde é transparente.** Um visual por cima de um
+  indicador tira dele o mouse, e a aba não abre. Por isso os visuais das duas caixas do cabeçalho
+  só descem até o fim do título dos painéis (`H_DET` em `estilo_op.py`).
+- Todos os visuais HTML ficam com a folga interna (`padding`) em zero. Com a folga padrão do Power BI,
+  uns 16 px de cada lado, o conteúdo fica mais estreito que no preview e os nomes são cortados.
 
 O preview mostra o seletor **Período** como está pintado no cabeçalho ("Mensal"): no Power BI ele
 é uma lista suspensa nativa, que fica por cima da pintura. As opções do seletor ficam na tabela
