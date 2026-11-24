@@ -41,8 +41,8 @@ pela tabela **Dados BI**; aqui, por `dados_op.ler()`, que faz a mesma arrumaçã
 | `dados_op.py` | lê a planilha e refaz em Python as contas das medidas. Para se a planilha não tiver mais alguma coluna de `indicadores_op.py` |
 | `prep_op.py` | formata os dados reais para o molde (lado do preview) |
 | `fundo_op.py` | recorta a faixa do cabeçalho e monta o PNG de fundo |
-| `gerar_op.py` | monta em DAX as medidas de cada indicador (`... Período`), as medidas HTML dos painéis e a do indicador de atualização (`HTML Status`), e escreve o TMDL |
-| `pagina_op.py` | escreve os visuais e a página no formato PBIR: os painéis, o rodapé, o indicador de atualização e a segmentação **Período**. Só grava os visuais da própria lista, sem apagar a pasta |
+| `gerar_op.py` | monta em DAX as medidas de cada indicador (`... Período`), as medidas HTML dos painéis e as das duas caixas do cabeçalho (`HTML Período` e `HTML Status`), e escreve o TMDL |
+| `pagina_op.py` | escreve os visuais e a página no formato PBIR: os painéis, o rodapé, as duas caixas do cabeçalho (período exibido e indicador de atualização) e a segmentação **Período**. Só grava os visuais da própria lista, sem apagar a pasta |
 | `preview_op.py` | monta a página e tira o print |
 | `cabecalho_painel.png` | a faixa do cabeçalho (1920×156): foto aérea e logos. **Versionada** |
 | `referencia_painel.png` | o print do layout de referência (1600×900). Fora do git, por tamanho |
@@ -60,6 +60,8 @@ pela tabela **Dados BI**; aqui, por `dados_op.ler()`, que faz a mesma arrumaçã
 O preview mostra o seletor **Período** como está pintado no cabeçalho ("Mensal"): no Power BI ele
 é uma lista suspensa nativa, que fica por cima da pintura. As opções do seletor ficam na tabela
 **Período Painel** do modelo, e a opção que já vem marcada, em `PERIODO_PADRAO` de `pagina_op.py`.
+O controle de datas da opção **Datas exatas** também é nativo e não aparece no preview; para ver
+os números de um intervalo, use `dados_op.calcular(de='2026-11-01', ate='2026-11-10')`.
 
 Depois de `gerar_op.py` ou `pagina_op.py`, feche e reabra o `.pbip` no Power BI Desktop.
 Se os visuais ficarem vazios, clique com o botão direito em **Medidas HTML**, no painel

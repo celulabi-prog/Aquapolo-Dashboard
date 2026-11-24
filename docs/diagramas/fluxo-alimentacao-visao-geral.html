@@ -69,7 +69,7 @@
     <div class="diagram-container">
       <svg viewBox="0 0 1308 456" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="fluxo-alimentacao-visao-geral-title fluxo-alimentacao-visao-geral-desc">
         <title id="fluxo-alimentacao-visao-geral-title">Novo fluxo de alimentação da Visão Geral</title>
-        <desc id="fluxo-alimentacao-visao-geral-desc">Fluxo de alimentação da página Visão Geral do Dashboard Aquapolo: dez planilhas da operação alimentam, por fórmulas, a planilha Dados BI.xlsx na VPS; o Power Query lê essa planilha pelo parâmetro ArquivoDadosBI e monta a tabela Dados BI; as medidas DAX de cada indicador tratam os valores, as medidas HTML desenham os painéis e o indicador de atualização, e a página exibe sete visuais HTML e o seletor de período. Os scripts de preview em Python leem a mesma planilha e geram as medidas e os visuais.</desc>
+        <desc id="fluxo-alimentacao-visao-geral-desc">Fluxo de alimentação da página Visão Geral do Dashboard Aquapolo: dez planilhas da operação alimentam, por fórmulas, a planilha Dados BI.xlsx na VPS; o Power Query lê essa planilha pelo parâmetro ArquivoDadosBI e monta a tabela Dados BI; as medidas DAX de cada indicador tratam os valores, as medidas HTML desenham os painéis, as datas do período exibido e o indicador de atualização, e a página exibe oito visuais HTML, o seletor de período e o controle de datas exatas. Os scripts de preview em Python leem a mesma planilha e geram as medidas e os visuais.</desc>
         <defs>
           <marker id="arrow" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#4A5A70"/></marker>
           <marker id="arrow-accent" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#1A5A96"/></marker>
@@ -129,11 +129,11 @@
         <text x="972" y="104.5" fill="#0F1934" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Medidas HTML</text>
         <text x="972" y="120.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">5 painéis + rodapé</text>
         <text x="972" y="133.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">metas, cores e barras</text>
-        <text x="972" y="146.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">status da atualização</text>
+        <text x="972" y="146.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">datas do período · status</text>
         <rect x="1100" y="72" width="168" height="96" rx="6" fill="#EEF2F6"/>
         <rect x="1100" y="72" width="168" height="96" rx="6" fill="#ffffff" stroke="#0F1934" stroke-width="1"/>
         <text x="1184" y="104.5" fill="#0F1934" font-size="12" font-weight="600" font-family="'Geist', system-ui, sans-serif" text-anchor="middle">Página Visão Geral</text>
-        <text x="1184" y="120.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">7 visuais HTML + seletor</text>
+        <text x="1184" y="120.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">8 visuais HTML + 2 seletores</text>
         <text x="1184" y="133.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">23 indicadores</text>
         <text x="1184" y="146.5" fill="#4A5A70" font-size="9" font-family="'Geist Mono', ui-monospace, monospace" text-anchor="middle">Atualizar no Desktop</text>
         <rect x="464" y="264" width="168" height="80" rx="6" fill="#EEF2F6"/>
@@ -155,7 +155,7 @@
         <text x="644" y="434" fill="#4A5A70" font-size="8.5" font-family="'Geist', system-ui, sans-serif">Passo manual: salvar a planilha no Excel ou rodar os scripts</text>
       </svg>
     </div>
-    <p class="note">Mapeado do projeto PBIP no repositório (expressions.tmdl, partição da tabela Dados BI, Medidas HTML.tmdl e ferramentas/preview) em 23/11/2026. A planilha Dados BI.xlsx é feita de fórmulas que buscam 10 planilhas da operação, e o Power BI lê o último valor salvo: os números só mudam depois que alguém abre o arquivo no Excel e salva. A atualização do relatório é manual, pelo botão Atualizar do Power BI Desktop. O tamanho do período vem do seletor Período da página (tabela Período Painel). As metas não vêm da planilha; ficam em indicadores_op.py. As outras páginas continuam no fluxo de fluxo-alimentacao-powerbi.html.</p>
+    <p class="note">Mapeado do projeto PBIP no repositório (expressions.tmdl, partição da tabela Dados BI, Medidas HTML.tmdl e ferramentas/preview) em 23/11/2026. A planilha Dados BI.xlsx é feita de fórmulas que buscam 10 planilhas da operação, e o Power BI lê o último valor salvo: os números só mudam depois que alguém abre o arquivo no Excel e salva. A atualização do relatório é manual, pelo botão Atualizar do Power BI Desktop. O período vem do seletor Período da página (tabela Período Painel) ou, com a opção Datas exatas, do controle de datas (tabela Datas Painel). As metas não vêm da planilha; ficam em indicadores_op.py. As outras páginas continuam no fluxo de fluxo-alimentacao-powerbi.html.</p>
   </div>
 </body>
 </html>
