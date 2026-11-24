@@ -49,6 +49,12 @@ def painel(nome, medida, x, y, w, h, z, tab):
                 'title': [{'properties': {'show': L('false')}}],
                 'background': [{'properties': {'show': L('false')}}],
                 'border': [{'properties': {'show': L('false')}}],
+                # Sem a folga interna padrão do visual (uns 16 px de cada lado): com ela o conteúdo
+                # fica mais estreito que no preview e os nomes são cortados.
+                'padding': [{'properties': {lado: L('0D') for lado in ('top', 'bottom', 'left', 'right')}}],
+                # Sem os ícones que o Power BI mostra no canto do visual ao passar o mouse:
+                # o mouse em cima serve para abrir a aba de explicação.
+                'visualHeader': [{'properties': {'show': L('false')}}],
             },
             'drillFilterOtherVisuals': True,
         },
@@ -144,16 +150,10 @@ PAINEIS.append(('rodape', 'HTML Rodapé', MARG, Y_ROD, LARG, H_ROD))
 VISUAIS = {nome: painel(nome, medida, x, y, w, h, tab, tab)
            for tab, (nome, medida, x, y, w, h) in enumerate(PAINEIS)}
 # As duas caixas do cabeçalho ficam por cima dos painéis: o detalhe de cada uma
-# abre para baixo, sobre o topo deles.
-for nome, medida, x, y, w, h, z in (('status', 'HTML Status', X_STA, Y_STA, W_STA, H_STA, 1000),
-                                    ('periodo', 'HTML Período', X_DAT, Y_DAT, W_DAT, H_DAT, 1100)):
-    v = painel(nome, medida, x, y, w, h, z, z)
-    obj = v['visual']['visualContainerObjects']
-    # Sem a folga interna padrão do visual: a caixa precisa cair alinhada com a do seletor pintado.
-    obj['padding'] = [{'properties': {lado: L('0D') for lado in ('top', 'bottom', 'left', 'right')}}]
-    # Sem os ícones que o Power BI mostra no canto do visual ao passar o mouse.
-    obj['visualHeader'] = [{'properties': {'show': L('false')}}]
-    VISUAIS[nome] = v
+# abre para baixo, sobre o título deles (e só o título: ver H_DET em estilo_op).
+for nome, medida, x, y, w, h, z in (('status', 'HTML Status', X_STA, Y_STA, W_STA, H_DET, 1000),
+                                    ('periodo', 'HTML Período', X_DAT, Y_DAT, W_DAT, H_DET, 1100)):
+    VISUAIS[nome] = painel(nome, medida, x, y, w, h, z, z)
 VISUAIS['seletor_periodo'] = seletor('seletor_periodo', 'Período Painel', 'Período', PERIODO_PADRAO,
                                      X_PER, Y_PER, W_PER, H_PER, 2000, 2000)
 VISUAIS['datas'] = intervalo('datas', 'Datas Painel', 'Data', X_DTS, Y_DTS, W_DTS, H_DTS, 2100, 2100)

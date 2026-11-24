@@ -10,10 +10,14 @@ Como o molde é o mesmo, o que aparece no preview é o que o Power BI desenha.
 
 Regra dura: nada de aspas duplas no HTML. Ele vira literal de string DAX.
 """
+import indicadores_op as IX
 from estilo_op import *
 
 RESET = ("<style>html,body{margin:0;padding:0;height:100%;overflow:hidden}"
          "*{box-sizing:border-box}</style>")
+# Cada indicador (.ind) guarda a sua aba de explicação (.dc), que só aparece com o mouse em cima.
+DICA_CSS = ("<style>.dc{display:none}.ind{cursor:help}"
+            ".ind:hover{box-shadow:inset 0 0 0 1px #2f79ad}.ind:hover>.dc{display:block}</style>")
 
 
 # ------------------------------------------------------------------- ícones
@@ -72,7 +76,7 @@ ICONE = {
               "<path d='M18.6 12.8l2.8 2.8-2.8 2.8M2.6 5.6v5.6'/>"),
     'calendario': ("<rect x='3.5' y='5' width='17' height='15.5' rx='2.2'/>"
                    "<path d='M3.5 10h17M8 3v4M16 3v4'/>"),
-    'relogio': "<circle cx='12' cy='12' r='9'/><path d='M12 6.6V12l3.6 2.2'/>",
+    'info': "<circle cx='12' cy='12' r='9'/><path d='M12 11v6M12 7.4v.2'/>",
 }
 
 
@@ -99,23 +103,66 @@ def cab_painel(titulo, sub, icones, grad, sub_dir=True):
             + ";letter-spacing:0.8px;white-space:nowrap'>" + titulo + "</span>" + sb + "</div>")
 
 
-def _barra(larg, cor, marcador, alt=24, trilho=TRILHO):
-    """Trilho + preenchimento + traço da referência."""
-    return ("<div style='position:relative;height:" + str(alt) + "px;background:" + trilho
-            + ";border-radius:" + str(alt // 2) + "px;border:1px solid #16375a'>"
-            + "<div style='width:" + larg + "%;height:100%;background:" + cor
-            + ";border-radius:" + str(alt // 2) + "px'></div>"
-            + "<div style='position:absolute;left:" + marcador + "%;top:-4px;height:"
-            + str(alt + 8) + "px;border-left:2px dashed rgba(255,255,255,0.92)'></div></div>")
+def barra(larg, cor, marcadores, alt=24):
+    """Trilho + preenchimento + um tracejado em cada limite da meta (IX.marcadores).
+    Sem tracejado ([]) a barra não é contra a meta: sai azul, sem juízo de bom ou ruim.
+    None = não há com o que comparar: fica só o contorno do trilho."""
+    raio = str(alt // 2)
+    if marcadores is None:
+        return ("<div style='height:" + str(alt) + "px;border:1px dashed #2a5f78;border-radius:"
+                + raio + "px'></div>")
+    tracos = ''.join("<div style='position:absolute;left:%.1f%%;top:-4px;height:%dpx;"
+                     "border-left:2px dashed rgba(255,255,255,0.92)'></div>" % (m, alt + 8)
+                     for m in marcadores)
+    return ("<div style='position:relative;height:" + str(alt) + "px;background:" + TRILHO
+            + ";border-radius:" + raio + "px;border:1px solid #16375a'>"
+            + "<div style='width:" + larg + "%;height:100%;background:" + (cor if marcadores else AZUL)
+            + ";border-radius:" + raio + "px'></div>" + tracos + "</div>")
+
+
+# ------------------------------------------------------- aba do indicador
+def _celula(rotulo, valor, abaixo=''):
+    """Uma informação da aba: rótulo pequeno, o dado em destaque e, embaixo, um complemento."""
+    return ("<div><div style='font-size:16px;color:" + SEC + "'>" + rotulo + "</div>"
+            "<div style='font-size:25px;font-weight:700;color:" + BRANCO + "'>" + valor + "</div>"
+            + ("<div style='font-size:21px;font-weight:600;color:" + CLARO + "'>" + abaixo + "</div>"
+               if abaixo else '') + "</div>")
+
+
+def dica(D, onde):
+    """A aba que abre ao passar o mouse num indicador: com o que o número é comparado.
+    As datas do período exibido, a meta e, nos cartões, o período anterior com o valor
+    dele (o que o Delta Per. compara). `onde` é a posição dentro do visual: a aba não
+    pode sair do retângulo dele, e fica da largura do que tem dentro. Não recebe o
+    mouse, para que o indicador de baixo responda mesmo estando coberto."""
+    if 'ant' in D:
+        celulas = (_celula('Período exibido', D['periodo'], D['valor'])
+                   + _celula('Período anterior', D['ant_periodo'], D['ant']))
+    else:
+        celulas = _celula('Período exibido', D['periodo'])
+    celulas += (_celula('Meta', D['meta'], D['pct'] + ' da meta') if D['meta']
+                else _celula('Meta', 'sem meta'))
+    return ("<div class='dc' style='position:absolute;" + onde + ";z-index:9;pointer-events:none;"
+            "padding:11px 18px 13px 18px;background:#04182a;border:1px solid " + BOTAO_B
+            + ";border-radius:10px;box-shadow:0 8px 22px rgba(0,0,0,0.6);font-weight:400;"
+            "line-height:1.3;text-align:left;white-space:nowrap'>"
+            + "<div style='display:flex;align-items:baseline;gap:9px'>"
+            + "<b style='font-size:22px;color:" + BRANCO + "'>" + D['nome'] + "</b>"
+            + "<span style='font-size:18px;color:" + SEC + "'>" + D['unidade'] + "</span>"
+            + ("<b style='margin-left:auto;padding-left:28px;font-size:20px;color:" + D['cor'] + "'>"
+               + D['situacao'] + "</b>" if D['meta'] else '') + "</div>"
+            + "<div style='display:flex;gap:36px;margin-top:7px'>" + celulas + "</div></div>")
 
 
 # ------------------------------------------------------- linha de indicador
-def linha_ind(L):
-    """Uma linha: ícone | nome/unidade | valor | barra | referência."""
+def linha_ind(L, i, n):
+    """Uma linha: ícone | nome/unidade | valor | barra | meta. É a linha i de n: as de
+    cima abrem a aba para baixo e as de baixo, para cima."""
     uni = ("<div style='font-size:17px;color:" + SEC + ";margin-top:2px'>"
            + L['unidade'] + "</div>") if L['unidade'] else ''
-    return ("<div style='flex:1;min-height:0;display:flex;align-items:center;gap:14px;"
-            "padding:0 14px 0 18px;border-top:1px solid " + SEP + "'>"
+    onde = 'left:12px;margin:3px 0;' + ('top:100%' if i < (n + 1) // 2 else 'bottom:100%')
+    return ("<div class='ind' style='position:relative;flex:1;min-height:0;display:flex;align-items:center;"
+            "gap:14px;padding:0 14px 0 18px;border-top:1px solid " + SEP + "'>"
             + chip(L['icone'])
             + "<div style='flex:1;min-width:0'>"
             + "<div style='font-size:19px;font-weight:600;color:" + BRANCO + ";line-height:1.15;"
@@ -123,15 +170,15 @@ def linha_ind(L):
             + uni + "</div>"
             + "<div style='width:88px;flex:none;text-align:right;font-size:34px;font-weight:700;color:"
             + BRANCO + ";white-space:nowrap'>" + L['valor'] + "</div>"
-            + "<div style='width:144px;flex:none'>" + _barra(L['larg'], L['cor'], L['marcador']) + "</div>"
-            + "<div style='width:84px;flex:none;text-align:left;line-height:1.22'>"
-            + "<div style='font-size:17px;color:" + SEC + "'>" + L['rot_ref'] + "</div>"
+            + "<div style='width:132px;flex:none'>" + L['barra'] + "</div>"
+            + "<div style='width:96px;flex:none;text-align:left;line-height:1.22'>"
+            + "<div style='font-size:17px;color:" + SEC + "'>Meta</div>"
             + "<div style='font-size:19px;font-weight:700;color:" + CLARO + ";white-space:nowrap'>"
-            + L['ref'] + "</div></div></div>")
+            + (L['meta'] or '&#8212;') + "</div></div>" + dica(L, onde) + "</div>")
 
 
 def painel_linhas(d, linhas):
-    return RESET + (
+    return RESET + DICA_CSS + (
         "<div style='" + FONTE + "height:100vh;width:100%;display:flex;flex-direction:column;gap:5px'>"
         + cab_painel(d['titulo'], d['sub'], d['icones'], d['grad'], d.get('sub_dir', True))
         + "<div style='flex:1;min-height:0;display:flex;flex-direction:column;background:" + PANEL
@@ -139,13 +186,22 @@ def painel_linhas(d, linhas):
 
 
 # -------------------------------------------------------- cartão de consumo
-def cartao_ind(C):
+def cartao_ind(C, i, n):
+    """Um cartão. É o cartão i de n: a aba abre no alto do painel, por cima do título e
+    dos nomes, do lado em que o cartão está. Os números continuam à vista."""
     uni = ("<div style='font-size:16px;color:" + SEC + ";margin-top:1px;white-space:nowrap'>"
            + C['unidade'] + "</div>") if C['unidade'] else ''
-    return ("<div style='flex:1;min-width:0;display:flex;flex-direction:column;background:" + CARTAO
-            + ";border:1px solid " + BORDA_C + ";border-radius:10px;padding:13px 14px 12px 14px'>"
+    onde = 'top:0;' + ('left:0' if i < n / 2 else 'right:0')
+    if C['meta']:
+        pe = ("<span>Meta " + C['meta'] + "</span><span style='margin-left:auto;padding-left:8px'>"
+              "<b style='font-size:17px;color:" + BRANCO + "'>" + C['pct'] + "</b> da meta</span>")
+    else:
+        pe = ("<span>" + ('Sem meta' if C['obs'] else IX.SEM_META) + "</span>"
+              "<span style='margin-left:auto;padding-left:8px'>" + C['obs'] + "</span>")
+    return ("<div class='ind' style='flex:1;min-width:0;display:flex;flex-direction:column;background:" + CARTAO
+            + ";border:1px solid " + BORDA_C + ";border-radius:10px;padding:13px 12px 12px 12px'>"
             + "<div style='display:flex;align-items:center;gap:11px'>" + chip(C['icone'], 44, 23, raio=11)
-            + "<div style='min-width:0'><div style='font-size:17px;font-weight:600;color:" + BRANCO
+            + "<div style='min-width:0'><div style='font-size:16px;font-weight:600;color:" + BRANCO
             + ";line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'>"
             + C['nome'] + "</div>" + uni + "</div></div>"
             + "<div style='flex:1'></div>"
@@ -156,16 +212,16 @@ def cartao_ind(C):
             + "<div style='font-size:18px;font-weight:700;color:" + C['cor_var'] + ";white-space:nowrap'>"
             + C['seta'] + " " + C['var'] + "</div>"
             + "<div style='font-size:15px;color:" + SEC + ";margin-top:2px'>&#916; Per.</div></div></div>"
-            + "<div style='margin-top:12px'>" + _barra(C['larg'], C['cor'], C['marcador'], 20) + "</div>"
-            + "<div style='margin-top:9px;display:flex;align-items:baseline;font-size:16px;color:" + SEC + "'>"
-            + "<span style='white-space:nowrap'>" + C['ref'] + "</span>"
-            + "<b style='margin-left:auto;padding-left:8px;font-size:19px;color:" + BRANCO + "'>"
-            + C['pct'] + "</b></div></div>")
+            + "<div style='margin-top:12px'>" + C['barra'] + "</div>"
+            + "<div style='margin-top:7px;height:24px;display:flex;align-items:baseline;font-size:14px;"
+            "line-height:24px;color:" + SEC + ";white-space:nowrap'>" + pe + "</div>" + dica(C, onde) + "</div>")
 
 
 def painel_cartoes(d, cartoes):
-    return RESET + (
-        "<div style='" + FONTE + "height:100vh;width:100%;display:flex;flex-direction:column;gap:5px'>"
+    # position:relative: é a este retângulo, o do visual, que a aba dos cartões se prende.
+    return RESET + DICA_CSS + (
+        "<div style='" + FONTE + "position:relative;height:100vh;width:100%;display:flex;"
+        "flex-direction:column;gap:5px'>"
         + cab_painel(d['titulo'], d['sub'], d['icones'], d['grad'], d.get('sub_dir', True))
         + "<div style='flex:1;min-height:0;display:flex;gap:9px;padding:11px;background:" + PANEL2
         + ";border:1px solid " + BORDA + ";border-radius:10px'>" + cartoes + "</div></div>")
@@ -175,10 +231,12 @@ def painel_cartoes(d, cartoes):
 # Duas caixas no estilo do seletor pintado: o período exibido e o status da
 # atualização. Ao passar o mouse, cada uma abre embaixo um detalhe. O detalhe
 # abre dentro do retângulo do próprio visual, por isso o visual é mais alto
-# que a caixa.
-def _caixa(icone, cor_icone, rotulo, valor, cor_valor):
-    """A parte sempre visível: ícone, uma linha pequena e uma linha em destaque."""
-    return ("<div class='cx' style='height:" + str(H_BOTAO) + "px;display:flex;align-items:center;gap:12px;"
+# que a caixa (estilo_op.H_DET diz até onde ele pode ir).
+def _caixa(icone, cor_icone, rotulo, valor, cor_valor, larg=None):
+    """A parte sempre visível: ícone, uma linha pequena e uma linha em destaque.
+    Com `larg`, a caixa é mais estreita que o visual e fica encostada à direita."""
+    return ("<div class='cx' style='" + ('width:%dpx;margin-left:auto;' % larg if larg else '')
+            + "height:" + str(H_BOTAO) + "px;display:flex;align-items:center;gap:12px;"
             "padding:0 12px 0 16px;background:" + BOTAO + ";border:1px solid " + BOTAO_B
             + ";border-radius:10px;cursor:default'>"
             + "<span style='color:" + cor_icone + ";display:flex;flex:none'>" + _svg(ICONE[icone], 34, 1.8) + "</span>"
@@ -193,7 +251,7 @@ def _cabecalho(caixa, detalhe, fonte):
     return RESET + (
         "<style>.cx:hover+.dt,.dt:hover{display:block!important}</style>"
         "<div style='" + FONTE + "height:100vh;width:100%'>" + caixa
-        + "<div class='dt' style='display:none;margin-top:6px;padding:12px 14px 13px 14px;background:#04182a;"
+        + "<div class='dt' style='display:none;margin-top:5px;padding:8px 14px 9px 14px;background:#04182a;"
         "border:1px solid " + BOTAO_B + ";border-radius:10px;font-size:" + str(fonte) + "px'>"
         + detalhe + "</div></div>")
 
@@ -207,25 +265,23 @@ def _par(nome, valor, alt='1.6'):
 
 
 def status(d):
-    """Os dados estão em dia? No detalhe, as três datas da cadeia e o que falta fazer."""
-    detalhe = (_par('Dados até', d['dados']) + _par('Planilha salva', d['plan'])
-               + _par('Power BI atualizado', d['bi'])
-               + "<div style='margin-top:8px;padding-top:9px;border-top:1px solid " + SEP + ";color:" + CLARO
-               + ";line-height:1.35'>" + d['falta'] + "</div>")
-    return _cabecalho(_caixa('retro', d['cor'], d['rotulo'], d['palavra'], d['cor']), detalhe, 15)
+    """Os dados estão em dia? No detalhe, à esquerda as três datas da cadeia e à
+    direita o que falta fazer."""
+    detalhe = ("<div style='display:flex;align-items:center;gap:16px'>"
+               "<div style='flex:none;width:266px'>" + _par('Dados até', d['dados'], '1.4')
+               + _par('Planilha salva', d['plan'], '1.4') + _par('Power BI atualizado', d['bi'], '1.4')
+               + "</div><div style='flex:1;padding-left:16px;border-left:1px solid " + BOTAO_B + ";color:"
+               + CLARO + ";line-height:1.35'>" + d['falta'] + "</div></div>")
+    return _cabecalho(_caixa('retro', d['cor'], d['rotulo'], d['palavra'], d['cor'], W_CX_STA), detalhe, 17)
 
 
 def periodo(d):
-    """De que dia a que dia vai o período exibido. No detalhe, o período de cada
-    indicador, porque cada um conta os dias até a sua própria última leitura."""
-    detalhe = ("<div style='font-size:15px;font-weight:700;color:" + BRANCO + ";white-space:nowrap'>"
+    """De que dia a que dia vai o período exibido. No detalhe, as datas com o ano. O
+    período de cada indicador fica na aba dele."""
+    detalhe = ("<div style='font-size:18px;font-weight:700;color:" + BRANCO + ";white-space:nowrap'>"
                + d['completo'] + "</div>"
-               + "<div style='margin-top:4px;color:" + SEC + ";line-height:1.3'>" + d['nota'] + "</div>")
-    for titulo, itens in d['grupos']:
-        detalhe += ("<div style='margin-top:8px;font-size:11px;letter-spacing:0.6px;color:" + TER
-                    + ";white-space:nowrap'>" + titulo + "</div>")
-        detalhe += ''.join(_par(nome, faixa, '19px') for nome, faixa in itens)
-    return _cabecalho(_caixa('calendario', CLARO, d['rotulo'], d['valor'], BRANCO), detalhe, 13)
+               + "<div style='margin-top:3px;color:" + CLARO + ";line-height:1.3'>" + d['nota'] + "</div>")
+    return _cabecalho(_caixa('calendario', CLARO, d['rotulo'], d['valor'], BRANCO), detalhe, 16)
 
 
 # -------------------------------------------------------------------- rodapé
@@ -235,27 +291,29 @@ def _glossario(termo, texto):
             "<span style='font-size:15px;color:" + SEC + ";line-height:1.3'>" + texto + "</span></div>")
 
 
-def rodape(d):
+def rodape():
+    """Como ler a página: o aviso da aba de explicação e a legenda das cores, da meta,
+    da barra e da variação. A data dos dados fica na caixa do cabeçalho."""
     div = "<div style='width:1px;height:42px;background:#2a5f78;flex:none'></div>"
     pt = ("<span style='display:inline-block;width:14px;height:14px;border-radius:50%;"
           "vertical-align:-2px;margin-right:8px;background:")
     return RESET + (
-        "<div style='" + FONTE + "height:100vh;width:100%;display:flex;align-items:center;gap:24px;"
-        "padding:0 26px;background:#04182a;border:1px solid #1f5a66;border-radius:10px'>"
-        + "<span style='color:" + SEC + ";display:flex;flex:none'>" + _svg(ICONE['relogio'], 25, 1.6) + "</span>"
-        + "<span style='font-size:17px;color:" + CLARO + ";white-space:nowrap'>Última atualização: "
-        + d['ult'] + "</span>"
+        "<div style='" + FONTE + "height:100vh;width:100%;display:flex;align-items:center;gap:22px;"
+        "padding:0 24px;background:#04182a;border:1px solid #1f5a66;border-radius:10px'>"
+        + "<span style='color:" + CLARO + ";display:flex;flex:none'>" + _svg(ICONE['info'], 28, 1.6) + "</span>"
+        + "<span style='font-size:16px;color:" + CLARO + ";line-height:1.3;white-space:nowrap'>"
+        + "<b>Passe o mouse</b> num indicador para ver<br>como é calculado e com o que é comparado</span>"
         + div
         + "<div><div style='font-size:17px;color:" + CLARO + ";white-space:nowrap'>"
-        + "<b>Legenda do status</b> <span style='font-size:15px;color:" + SEC
-        + "'>(em relação à referência)</span></div>"
+        + "<b>Cores</b> <span style='font-size:15px;color:" + SEC
+        + "'>(valor em relação à meta)</span></div>"
         + "<div style='margin-top:7px;font-size:16px;color:" + CLARO + ";white-space:nowrap'>"
-        + pt + VERDE + "'></span>Dentro da meta &nbsp;&nbsp;&nbsp;"
-        + pt + AMARELO + "'></span>Atenção &nbsp;&nbsp;&nbsp;"
-        + pt + VERMELHO + "'></span>Fora da meta</div></div>"
-        + div + _glossario('&#916; Per.', 'Variação em relação ao<br>período anterior')
-        + div + _glossario('Ref.', 'Valor de referência<br>(meta)')
-        + div + _glossario('Faixa', 'Faixa operacional')
-        + "<div style='margin-left:auto;padding-left:24px;font-size:16px;color:" + SEC
-        + ";white-space:nowrap'>Aquapolo &nbsp;&#124;&nbsp; GS Inima &nbsp;&#124;&nbsp; Sabesp</div>"
+        + pt + VERDE + "'></span>Dentro da meta &nbsp;&nbsp;"
+        + pt + AMARELO + "'></span>Atenção: até " + ('%d' % (IX.TOLERANCIA * 100)) + "% fora &nbsp;&nbsp;"
+        + pt + VERMELHO + "'></span>Fora da meta &nbsp;&nbsp;"
+        + pt + AZUL + "'></span>Sem meta</div></div>"
+        + div + _glossario('Meta', '&#8804; no máximo &nbsp;&#183;&nbsp; &#8805; no mínimo<br>'
+                                   'a &#8211; b: dentro da faixa')
+        + div + _glossario('Barra', 'Valor em relação à meta;<br>o tracejado marca a meta')
+        + div + _glossario('&#916; Per.', 'Variação sobre o período<br>anterior, de mesmo tamanho')
         + "</div>")

@@ -22,10 +22,7 @@ ABA = 'Dados BI'
 
 def num(v, casas=0):
     """Número no formato pt-BR."""
-    if v is None or pd.isna(v):
-        return '—'
-    s = '{:,.{}f}'.format(v, casas).replace(',', '§').replace('.', ',').replace('§', '.')
-    return s
+    return '—' if v is None or pd.isna(v) else IX.br(v, casas)
 
 
 def pct(v, casas=1, sufixo='%'):
@@ -110,7 +107,7 @@ def calcular(hoje=None, dias=None, de=None, ate=None, arquivo=ARQUIVO):
         for k in ('v', 'ant'):
             if r[k] is not None:
                 r[k] = r[k] * ind['fator']
-        r['ref'] = r['rmax'] if ind['tipo'] in ('menor', 'faixa') else r['rmin']
+        r['ref'] = IX.referencia(ind)
         r['at'] = (r['v'] / r['ref']) if (r['v'] is not None and r['ref']) else None
         if r['v'] is not None and r['ant'] not in (None, 0):
             r['var'] = (r['v'] / r['ant'] - 1) * 100 if ind['tipo_var'] == '%' else (r['v'] - r['ant'])
