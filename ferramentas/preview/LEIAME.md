@@ -27,6 +27,7 @@ python gerar_op.py       # reescreve Medidas HTML.tmdl
 python pagina_op.py      # reescreve os visuais da página Visão Geral
 python dados_op.py       # só imprime os números, sem desenhar nada
 python dados_op.py 2026-09-14    # idem, como o painel estaria nesse dia
+python dados_op.py 2026-09-14 7  # idem, com o seletor Período em Semanal (7 dias)
 ```
 
 A página lê a planilha `G:\OME\Operacao\BI\Dados BI.xlsx` (só leitura). No Power BI ela entra
@@ -40,8 +41,8 @@ pela tabela **Dados BI**; aqui, por `dados_op.ler()`, que faz a mesma arrumaçã
 | `dados_op.py` | lê a planilha e refaz em Python as contas das medidas. Para se a planilha não tiver mais alguma coluna de `indicadores_op.py` |
 | `prep_op.py` | formata os dados reais para o molde (lado do preview) |
 | `fundo_op.py` | recorta a faixa do cabeçalho e monta o PNG de fundo |
-| `gerar_op.py` | monta em DAX as medidas de cada indicador (`... 30d`) e as medidas HTML, e escreve o TMDL |
-| `pagina_op.py` | escreve os visuais e a página no formato PBIR |
+| `gerar_op.py` | monta em DAX as medidas de cada indicador (`... Período`), as medidas HTML dos painéis e a do indicador de atualização (`HTML Status`), e escreve o TMDL |
+| `pagina_op.py` | escreve os visuais e a página no formato PBIR: os painéis, o rodapé, o indicador de atualização e a segmentação **Período**. Só grava os visuais da própria lista, sem apagar a pasta |
 | `preview_op.py` | monta a página e tira o print |
 | `cabecalho_painel.png` | a faixa do cabeçalho (1920×156): foto aérea e logos. **Versionada** |
 | `referencia_painel.png` | o print do layout de referência (1600×900). Fora do git, por tamanho |
@@ -55,6 +56,10 @@ pela tabela **Dados BI**; aqui, por `dados_op.ler()`, que faz a mesma arrumaçã
   `CONSUMO` ou `VOLUMES`. As linhas se redistribuem sozinhas na altura do painel.
 - **Cor, fonte, espaçamento:** `molde_op.py` (aparência) ou `estilo_op.py` (paleta e grade).
 - **Regra de cor ou escala da barra:** `TOLERANCIA` e `ESCALA` no topo de `indicadores_op.py`.
+
+O preview mostra o seletor **Período** como está pintado no cabeçalho ("Mensal"): no Power BI ele
+é uma lista suspensa nativa, que fica por cima da pintura. As opções do seletor ficam na tabela
+**Período Painel** do modelo, e a opção que já vem marcada, em `PERIODO_PADRAO` de `pagina_op.py`.
 
 Depois de `gerar_op.py` ou `pagina_op.py`, feche e reabra o `.pbip` no Power BI Desktop.
 Se os visuais ficarem vazios, clique com o botão direito em **Medidas HTML**, no painel
