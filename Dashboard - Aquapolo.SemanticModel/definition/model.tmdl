@@ -36,6 +36,7 @@ ref table 'Energia Área'
 ref table 'Energia Comparar'
 ref table 'Período Painel'
 ref table 'Datas Painel'
+ref table 'Medidas HTML v2'
 
 ref cultureInfo pt-BR
 

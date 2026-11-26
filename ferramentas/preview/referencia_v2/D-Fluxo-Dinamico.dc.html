@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Fluxo com destaque no lugar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 1920px; height: 1080px; box-sizing: border-box; overflow: hidden; background: #000f21; color: #f3f8fd; font-family: 'Segoe UI', system-ui, sans-serif; font-variant-numeric: tabular-nums; display: flex; flex-direction: column;">
+
+<div style="height:104px;flex:none;box-sizing:border-box;display:flex;align-items:center;background:#00142a;border-bottom:1px solid #1f4263">
+<div style="width:1066px;height:103px;flex:none;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,#000 0,#000 82%,transparent 100%);mask-image:linear-gradient(90deg,#000 0,#000 82%,transparent 100%)"><img src="/_blob/4b05ce1d6240f9a6c5e02460ba257c13" alt="Aquapolo, GS Inima e Sabesp. Painel Operacional, indicadores de processo" style="display:block;height:104px;width:1280px;max-width:none"></div>
+<div style="flex:1"></div>
+<div style="display:flex;align-items:center;gap:14px"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#3aa7f2" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+<div>
+<div style="font-size:17px;line-height:22px;color:#a8bfd6">Datas escolhidas · 16 dias</div>
+<div style="font-size:30px;font-weight:700;line-height:36px">03/11 a 18/11</div></div></div>
+<div style="width:1px;height:64px;flex:none;background:#1f4263;margin:0 28px"></div>
+<div style="width:274px;flex:none;margin-right:16px;display:flex;flex-direction:column;gap:6px">
+<div style="display:flex;gap:8px"><button type="button" style="flex:1;height:46px;padding:0 10px;box-sizing:border-box;margin:0;background:#001429;border:1px solid #2f6690;border-radius:3px;color:#f3f8fd;font-family:inherit;font-size:17px;font-variant-numeric:tabular-nums">03/11/2026</button><button type="button" style="flex:1;height:46px;padding:0 10px;box-sizing:border-box;margin:0;background:#001429;border:1px solid #2f6690;border-radius:3px;color:#f3f8fd;font-family:inherit;font-size:17px;font-variant-numeric:tabular-nums">18/11/2026</button></div>
+<div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:17px;color:#a8bfd6">Período</span><button type="button" style="width:190px;height:42px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box;margin:0;background:#001429;border:1px solid #2f6690;border-radius:3px;color:#f3f8fd;font-family:inherit;font-size:17px;font-weight:600"><span>Datas exatas</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#f3f8fd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6l5 5 5-5"/></svg></button></div></div></div>
+
+<div style="height:64px;flex:none;margin:8px 16px 0;display:flex;gap:12px">
+<div style="width:356px;flex:none;box-sizing:border-box;display:flex;align-items:center;gap:12px;padding:0 16px 0 14px;background:#ffd257;border-radius:3px;color:#1c1500"><svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#1c1500" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.5l3.5 2"/></svg>
+<div style="white-space:nowrap">
+<div style="font-size:16px;font-weight:700;letter-spacing:1px;line-height:20px">DADOS ATRASADOS</div>
+<div style="font-size:26px;font-weight:700;line-height:30px">há 7 dias</div></div>
+<div style="flex:1"></div>
+<div style="text-align:right;white-space:nowrap">
+<div style="font-size:16px;font-weight:600;line-height:20px">dados até</div>
+<div style="font-size:26px;font-weight:700;line-height:30px">18/11</div></div></div>
+<div style="flex:1;min-width:0;box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;padding:0 28px 0 20px;background:#041729;border:1px solid #1f4263;border-radius:3px">
+<div style="white-space:nowrap">
+<div style="font-size:16px;font-weight:700;letter-spacing:1.5px;line-height:20px;color:#a8bfd6">PLANTA</div>
+<div style="font-size:20px;font-weight:600;line-height:26px">23 indicadores</div></div>
+<div style="width:1px;flex:none;height:40px;background:#1f4263"></div>
+<div style="display:flex;align-items:center;gap:10px;white-space:nowrap"><span style="width:14px;height:14px;flex:none;background:#ff5c63;transform:rotate(45deg);margin:0 3px"></span><span style="font-size:40px;font-weight:700;line-height:44px;color:#ff5c63">3</span><span style="font-size:20px;font-weight:600">fora da meta</span></div>
+<div style="display:flex;align-items:center;gap:10px;white-space:nowrap"><span style="width:0;height:0;flex:none;border-left:10px solid transparent;border-right:10px solid transparent;border-bottom:17px solid #ffd257"></span><span style="font-size:40px;font-weight:700;line-height:44px;color:#ffd257">2</span><span style="font-size:20px;font-weight:600">em atenção</span></div>
+<div style="display:flex;align-items:center;gap:10px;white-space:nowrap"><span style="width:16px;height:16px;flex:none;border-radius:50%;background:#57d68d"></span><span style="font-size:40px;font-weight:700;line-height:44px">16</span><span style="font-size:20px;font-weight:600">dentro da meta</span></div>
+<div style="display:flex;align-items:center;gap:10px;white-space:nowrap"><span style="width:16px;height:16px;flex:none;box-sizing:border-box;border-radius:50%;border:2px solid #a8bfd6"></span><span style="font-size:40px;font-weight:700;line-height:44px;color:#a8bfd6">2</span><span style="font-size:20px;color:#a8bfd6">sem meta</span></div></div></div>
+
+<div style="height:840px;flex:none;margin:8px 16px 0;display:grid;grid-template-columns:460px 28px 570px 28px 430px 28px 344px;grid-template-rows:88px 524px 16px 212px">
+<div style="display:flex;flex-direction:column">
+<div style="height:22px;flex:none"></div>
+<div style="height:52px;flex:none;display:flex;align-items:center">
+<div style="flex:1;height:6px;background:#3aa7f2"></div><svg width="14" height="20" viewBox="0 0 14 20" aria-hidden="true" style="flex:none"><path d="M0 0l14 10-14 10z" fill="#3aa7f2"/></svg>
+<div style="height:52px;box-sizing:border-box;flex:none;display:flex;align-items:center;gap:12px;padding:0 18px 0 12px;border:2px solid #3aa7f2;border-radius:3px;background:#041729;white-space:nowrap"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3aa7f2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M12 3c3.4 4 5.5 6.6 5.5 9.3A5.5 5.5 0 0 1 6.5 12.3C6.5 9.6 8.6 7 12 3z"/></svg><span style="font-size:26px;font-weight:700;letter-spacing:1px">EEBC</span><span style="font-size:17px;color:#a8bfd6">Alimentação</span></div>
+<div style="flex:1;height:6px;background:#3aa7f2"></div></div>
+<div style="height:14px;flex:none;display:flex;justify-content:center">
+<div style="width:2px;background:#2a77b0"></div></div></div>
+<div style="display:flex;flex-direction:column">
+<div style="height:22px;flex:none"></div>
+<div style="height:52px;flex:none;display:flex;align-items:center">
+<div style="flex:1;height:6px;background:#3aa7f2"></div></div></div>
+<div style="display:flex;flex-direction:column">
+<div style="height:22px;flex:none"></div>
+<div style="height:52px;flex:none;display:flex;align-items:center">
+<div style="flex:1;height:6px;background:#3aa7f2"></div><svg width="14" height="20" viewBox="0 0 14 20" aria-hidden="true" style="flex:none"><path d="M0 0l14 10-14 10z" fill="#3aa7f2"/></svg>
+<div style="height:52px;box-sizing:border-box;flex:none;display:flex;align-items:center;gap:12px;padding:0 18px 0 12px;border:2px solid #ff5c63;border-radius:3px;background:#1d1626;white-space:nowrap"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ff5c63" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M4 4.6v14.8M8.7 4.6v14.8M12 4.6v14.8M15.3 4.6v14.8M20 4.6v14.8"/><path d="M2.6 4.6h18.8M2.6 19.4h18.8"/></svg><span style="font-size:26px;font-weight:700;letter-spacing:1px">TMBR</span><span style="font-size:17px;color:#a8bfd6">Biológico e membranas</span></div>
+<div style="flex:1;height:6px;background:#3aa7f2"></div></div>
+<div style="height:14px;flex:none;display:flex;justify-content:center">
+<div style="width:2px;background:#ff5c63"></div></div></div>
+<div style="display:flex;flex-direction:column">
+<div style="height:22px;flex:none"></div>
+<div style="height:52px;flex:none;display:flex;align-items:center">
+<div style="flex:1;height:6px;background:#3aa7f2"></div></div></div>
+<div style="position:relative;display:flex;flex-direction:column">
+<div aria-hidden="true" style="position:absolute;left:22px;right:22px;top:7px;height:44px;box-sizing:border-box;border:4px solid #3aa7f2;border-bottom:0;border-radius:8px 8px 0 0"></div>
+<div style="position:absolute;left:50%;top:0;transform:translateX(-50%);height:20px;display:flex;align-items:center;gap:7px;padding:0 12px;background:#000f21;white-space:nowrap;line-height:20px"><span style="font-size:17px;color:#a8bfd6">Blend</span><span style="font-size:20px;font-weight:700">25,5%</span></div>
+<div style="height:22px;flex:none"></div>
+<div style="position:relative;height:52px;flex:none;display:flex;align-items:center">
+<div style="width:28px;flex:none;height:6px;background:#3aa7f2"></div>
+<div style="flex:1;height:4px;background:#3aa7f2"></div><svg width="10" height="14" viewBox="0 0 10 14" aria-hidden="true" style="flex:none"><path d="M0 0l10 7-10 7z" fill="#3aa7f2"/></svg>
+<div style="height:52px;box-sizing:border-box;flex:none;display:flex;align-items:center;gap:12px;padding:0 18px 0 12px;border:2px solid #3aa7f2;border-radius:3px;background:#041729;white-space:nowrap"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3aa7f2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M3.5 4.5h17l-6.6 7.8v6.4l-3.8 2v-8.4z"/></svg><span style="font-size:26px;font-weight:700;letter-spacing:1px">OR</span><span style="font-size:17px;color:#a8bfd6">Osmose reversa</span></div>
+<div style="flex:1;height:4px;background:#3aa7f2"></div>
+<div style="width:28px;flex:none;height:6px;background:#3aa7f2"></div></div>
+<div style="height:14px;flex:none;display:flex;justify-content:center">
+<div style="width:2px;background:#2a77b0"></div></div></div>
+<div style="display:flex;flex-direction:column">
+<div style="height:22px;flex:none"></div>
+<div style="height:52px;flex:none;display:flex;align-items:center">
+<div style="flex:1;height:6px;background:#3aa7f2"></div></div></div>
+<div style="display:flex;flex-direction:column">
+<div style="height:22px;flex:none"></div>
+<div style="height:52px;flex:none;display:flex;align-items:center">
+<div style="width:10px;flex:none;height:6px;background:#3aa7f2"></div><svg width="14" height="20" viewBox="0 0 14 20" aria-hidden="true" style="flex:none"><path d="M0 0l14 10-14 10z" fill="#3aa7f2"/></svg>
+<div style="height:52px;box-sizing:border-box;flex:1;display:flex;align-items:center;gap:12px;padding:0 18px 0 12px;border:2px solid #3aa7f2;border-radius:3px;background:#0a2a47;white-space:nowrap"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3aa7f2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M2.6 8.4h7.2a2.6 2.6 0 0 1 2.6 2.6v2a2.6 2.6 0 0 0 2.6 2.6h6.4"/><path d="M18.6 12.8l2.8 2.8-2.8 2.8M2.6 5.6v5.6"/></svg><span style="font-size:26px;font-weight:700;letter-spacing:1px">CLIENTES</span><span style="font-size:17px;color:#a8bfd6">Entrega</span></div></div>
+<div style="height:14px;flex:none;display:flex;justify-content:center">
+<div style="width:2px;background:#3aa7f2"></div></div></div>
+
+<div style="box-sizing:border-box;display:flex;flex-direction:column;background:#041729;border:2px solid #1f4263;border-radius:3px">
+<div style="height:78px;flex:none;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;padding:8px 14px 12px;background:#0a2137">
+<div style="display:flex;align-items:baseline;gap:10px;white-space:nowrap;line-height:36px"><span style="font-size:28px;font-weight:700">5 de 5</span><span style="font-size:24px;color:#d3e1ef">dentro da meta</span></div>
+<div role="img" aria-label="5 indicadores na ordem das linhas: dentro, dentro, dentro, dentro, dentro" style="height:14px;display:flex;align-items:flex-end;gap:4px"><span style="flex:1;height:6px;background:#2b7d62"></span><span style="flex:1;height:6px;background:#2b7d62"></span><span style="flex:1;height:6px;background:#2b7d62"></span><span style="flex:1;height:6px;background:#2b7d62"></span><span style="flex:1;height:6px;background:#2b7d62"></span></div></div>
+<div style="flex:1;min-height:0;display:flex;flex-direction:column">
+<div style="flex:1 1 0;min-height:50px;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto 160px;column-gap:14px;align-items:center;padding:0 14px 0 12px;border-top:1px solid #11304c;border-left:6px solid transparent">
+<div style="white-space:nowrap">
+<div style="font-size:19px;font-weight:600;line-height:24px">Retrolavagens</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">ciclos · ≤ 12</div></div>
+<div style="font-size:34px;font-weight:700;line-height:38px;text-align:right">10</div><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="83% da meta, dentro" style="display:block;flex:none;overflow:visible"><rect x="4" y="16" width="152" height="6" fill="#143454"/><rect x="4" y="16" width="95" height="6" fill="#2b7d62"/><path d="M99 12v14" stroke="#f3f8fd" stroke-width="1.5"/><path d="M77.8 3h10l-5 8z" fill="#f3f8fd"/><path d="M82.8 10v16" stroke="#f3f8fd" stroke-width="2.5"/></svg></div>
+<div style="flex:1 1 0;min-height:50px;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto 160px;column-gap:14px;align-items:center;padding:0 14px 0 12px;border-top:1px solid #11304c;border-left:6px solid transparent">
+<div style="white-space:nowrap">
+<div style="font-size:19px;font-weight:600;line-height:24px">DQO</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">mg/L · ≤ 100</div></div>
+<div style="font-size:34px;font-weight:700;line-height:38px;text-align:right">40</div><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="40% da meta, dentro" style="display:block;flex:none;overflow:visible"><rect x="4" y="16" width="152" height="6" fill="#143454"/><rect x="4" y="16" width="95" height="6" fill="#2b7d62"/><path d="M99 12v14" stroke="#f3f8fd" stroke-width="1.5"/><path d="M37 3h10l-5 8z" fill="#f3f8fd"/><path d="M42 10v16" stroke="#f3f8fd" stroke-width="2.5"/></svg></div>
+<div style="flex:1 1 0;min-height:50px;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto 160px;column-gap:14px;align-items:center;padding:0 14px 0 12px;border-top:1px solid #11304c;border-left:6px solid transparent">
+<div style="white-space:nowrap">
+<div style="font-size:19px;font-weight:600;line-height:24px">NH3</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">mg/L · ≤ 20,0</div></div>
+<div style="font-size:34px;font-weight:700;line-height:38px;text-align:right">4,1</div><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="21% da meta, dentro" style="display:block;flex:none;overflow:visible"><rect x="4" y="16" width="152" height="6" fill="#143454"/><rect x="4" y="16" width="95" height="6" fill="#2b7d62"/><path d="M99 12v14" stroke="#f3f8fd" stroke-width="1.5"/><path d="M18.9 3h10l-5 8z" fill="#f3f8fd"/><path d="M23.9 10v16" stroke="#f3f8fd" stroke-width="2.5"/></svg></div>
+<div style="flex:1 1 0;min-height:50px;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto 160px;column-gap:14px;align-items:center;padding:0 14px 0 12px;border-top:1px solid #11304c;border-left:6px solid transparent">
+<div style="white-space:nowrap">
+<div style="font-size:19px;font-weight:600;line-height:24px">Condutividade</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">µS/cm · ≤ 650</div></div>
+<div style="font-size:34px;font-weight:700;line-height:38px;text-align:right">356</div><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="55% da meta, dentro" style="display:block;flex:none;overflow:visible"><rect x="4" y="16" width="152" height="6" fill="#143454"/><rect x="4" y="16" width="95" height="6" fill="#2b7d62"/><path d="M99 12v14" stroke="#f3f8fd" stroke-width="1.5"/><path d="M51.2 3h10l-5 8z" fill="#f3f8fd"/><path d="M56.2 10v16" stroke="#f3f8fd" stroke-width="2.5"/></svg></div>
+<div style="flex:1 1 0;min-height:50px;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto 160px;column-gap:14px;align-items:center;padding:0 14px 0 12px;border-top:1px solid #11304c;border-left:6px solid transparent">
+<div style="white-space:nowrap">
+<div style="font-size:19px;font-weight:600;line-height:24px">Dureza</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">mg/L · ≤ 100</div></div>
+<div style="font-size:34px;font-weight:700;line-height:38px;text-align:right">94</div><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="94% da meta, dentro" style="display:block;flex:none;overflow:visible"><rect x="4" y="16" width="152" height="6" fill="#143454"/><rect x="4" y="16" width="95" height="6" fill="#2b7d62"/><path d="M99 12v14" stroke="#f3f8fd" stroke-width="1.5"/><path d="M88.3 3h10l-5 8z" fill="#f3f8fd"/><path d="M93.3 10v16" stroke="#f3f8fd" stroke-width="2.5"/></svg></div></div></div>
+
+<div></div>
+
+<div style="box-sizing:border-box;display:flex;flex-direction:column;background:#041729;border:2px solid #ff5c63;border-radius:3px">
+<div style="height:78px;flex:none;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;padding:8px 14px 12px;background:#2a1524">
+<div style="display:flex;align-items:baseline;gap:14px;white-space:nowrap;line-height:36px"><span style="font-size:28px;font-weight:700;color:#ff5c63">2 fora da meta</span><span style="font-size:24px;font-weight:700;color:#ffd257">1 em atenção</span></div>
+<div role="img" aria-label="6 indicadores na ordem das linhas: atenção, fora, dentro, dentro, fora, dentro" style="height:14px;display:flex;align-items:flex-end;gap:4px"><span style="flex:1;height:10px;background:#ffd257"></span><span style="flex:1;height:14px;background:#ff5c63"></span><span style="flex:1;height:6px;background:#2b7d62"></span><span style="flex:1;height:6px;background:#2b7d62"></span><span style="flex:1;height:14px;background:#ff5c63"></span><span style="flex:1;height:6px;background:#2b7d62"></span></div></div>
+<div style="flex:1;min-height:0;display:flex;flex-direction:column">
+<div style="flex:1.5 1 0;min-height:70px;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto 160px;column-gap:14px;align-items:center;padding:0 14px 0 12px;border-top:1px solid #11304c;border-left:6px solid #ffd257;background:rgba(255,210,87,0.08)">
+<div style="display:flex;flex-direction:column;align-items:flex-start;white-space:nowrap">
+<div style="font-size:20px;font-weight:700;line-height:24px">Idade do Lodo</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">dias · 18 a 22</div>
+<div style="font-size:17px;font-weight:700;line-height:20px;color:#ffd257">1 dia acima da faixa</div></div>
+<div style="font-size:44px;font-weight:700;line-height:48px;text-align:right;color:#ffd257">23</div>
+<div style="align-self:stretch;min-height:0;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;gap:3px;padding:5px 0"><svg viewBox="0 0 160 60" preserveAspectRatio="none" role="img" aria-label="Tendência no período, pouco acima da faixa da meta" style="display:block;flex:1 1 0;min-height:0;max-height:56px;width:160px"><rect x="0" y="28" width="160" height="26" fill="rgba(87,214,141,0.20)"/><path d="M4 28L4 18L14.1 18L24.3 17L34.4 23L44.5 22L54.7 18L64.8 19L74.9 15L85.1 19L95.2 24L105.3 19L115.5 18L125.6 17L135.7 17L145.9 23L156 20L156 28Z" fill="rgba(255,210,87,0.28)"/><path d="M0 28H160M0 54H160" stroke="#57d68d" stroke-width="1.5" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"/><polyline points="4,18 14.1,18 24.3,17 34.4,23 44.5,22 54.7,18 64.8,19 74.9,15 85.1,19 95.2,24 105.3,19 115.5,18 125.6,17 135.7,17 145.9,23 156,20" fill="none" stroke="#ffd257" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><svg width="160" height="26" viewBox="0 0 160 26" role="img" aria-label="1 dia acima da faixa, atenção" style="display:block;flex:none;overflow:visible"><rect x="4" y="11" width="152" height="8" fill="#143454"/><rect x="57.2" y="11" width="45.6" height="8" fill="#2b7d62"/><rect x="102.8" y="11" width="11.4" height="8" fill="#ffd257"/><path d="M57.2 7v16M102.8 7v16" stroke="#f3f8fd" stroke-width="1.5"/><path d="M108.2 0h12l-6 9z" fill="#ffd257"/><path d="M114.2 7v16" stroke="#ffd257" stroke-width="3"/></svg></div></div>
+<div style="flex:2 1 0;min-height:72px;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto 160px;column-gap:14px;align-items:center;padding:0 14px 0 12px;border-top:1px solid #11304c;border-left:6px solid #ff5c63;background:rgba(255,92,99,0.13)">
+<div style="display:flex;flex-direction:column;align-items:flex-start;white-space:nowrap">
+<div style="font-size:22px;font-weight:700;line-height:26px">Alimento/Microorg.</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">g/g.d⁻¹ · 0,08 a 0,16</div>
+<div style="font-size:20px;font-weight:700;line-height:24px;color:#ff5c63">38% abaixo do piso</div></div>
+<div style="font-size:56px;font-weight:700;line-height:60px;letter-spacing:-1px;text-align:right;color:#ff5c63">0,05</div>
+<div style="align-self:stretch;min-height:0;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:5px 0"><svg viewBox="0 0 160 60" preserveAspectRatio="none" role="img" aria-label="Tendência no período, abaixo da faixa da meta" style="display:block;flex:1 1 0;min-height:0;max-height:56px;width:160px"><rect x="0" y="8" width="160" height="24" fill="rgba(87,214,141,0.20)"/><path d="M4 32L4 47L14.1 48L24.3 49L34.4 50L44.5 45L54.7 45L64.8 48L74.9 48L85.1 51L95.2 47L105.3 44L115.5 47L125.6 48L135.7 49L145.9 50L156 45L156 32Z" fill="rgba(255,92,99,0.28)"/><path d="M0 8H160M0 32H160" stroke="#57d68d" stroke-width="1.5" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"/><polyline points="4,47 14.1,48 24.3,49 34.4,50 44.5,45 54.7,45 64.8,48 74.9,48 85.1,51 95.2,47 105.3,44 115.5,47 125.6,48 135.7,49 145.9,50 156,45" fill="none" stroke="#ff5c63" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="38% abaixo do piso, fora" style="display:block;flex:none;overflow:visible"><rect x="4" y="13" width="152" height="10" fill="#143454"/><rect x="57.2" y="13" width="45.6" height="10" fill="#2b7d62"/><rect x="40.1" y="13" width="17.1" height="10" fill="#ff5c63"/><path d="M57.2 8v20M102.8 8v20" stroke="#f3f8fd" stroke-width="1.5"/><path d="M33.1 0h14l-7 11z" fill="#ff5c63"/><path d="M40.1 9v19" stroke="#ff5c63" stroke-width="3.5"/></svg></div></div>
+<div style="flex:1 1 0;min-height:50px;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto 160px;column-gap:14px;align-items:center;padding:0 14px 0 12px;border-top:1px solid #11304c;border-left:6px solid transparent">
+<div style="white-space:nowrap">
+<div style="font-size:19px;font-weight:600;line-height:24px">TMP</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">bar · ≤ 0,60</div></div>
+<div style="font-size:34px;font-weight:700;line-height:38px;text-align:right">0,14</div><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="23% da meta, dentro" style="display:block;flex:none;overflow:visible"><rect x="4" y="16" width="152" height="6" fill="#143454"/><rect x="4" y="16" width="95" height="6" fill="#2b7d62"/><path d="M99 12v14" stroke="#f3f8fd" stroke-width="1.5"/><path d="M20.8 3h10l-5 8z" fill="#f3f8fd"/><path d="M25.8 10v16" stroke="#f3f8fd" stroke-width="2.5"/></svg></div>
+<div style="flex:1 1 0;min-height:50px;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto 160px;column-gap:14px;align-items:center;padding:0 14px 0 12px;border-top:1px solid #11304c;border-left:6px solid transparent">
+<div style="white-space:nowrap">
+<div style="font-size:19px;font-weight:600;line-height:24px">Permeabilidade</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">LMH/bar · ≥ 100</div></div>
+<div style="font-size:34px;font-weight:700;line-height:38px;text-align:right">114</div><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="114% da meta, dentro" style="display:block;flex:none;overflow:visible"><rect x="4" y="16" width="152" height="6" fill="#143454"/><rect x="99" y="16" width="57" height="6" fill="#2b7d62"/><path d="M99 12v14" stroke="#f3f8fd" stroke-width="1.5"/><path d="M107.3 3h10l-5 8z" fill="#f3f8fd"/><path d="M112.3 10v16" stroke="#f3f8fd" stroke-width="2.5"/></svg></div>
+<div style="flex:2 1 0;min-height:72px;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto 160px;column-gap:14px;align-items:center;padding:0 14px 0 12px;border-top:1px solid #11304c;border-left:6px solid #ff5c63;background:rgba(255,92,99,0.13)">
+<div style="display:flex;flex-direction:column;align-items:flex-start;white-space:nowrap">
+<div style="font-size:22px;font-weight:700;line-height:26px">Turbidez</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">NTU · ≤ 0,40</div>
+<div style="font-size:20px;font-weight:700;line-height:24px;margin:0 -6px;padding:0 6px;background:#ff5c63;border-radius:2px;color:#1c0508">8,5 vezes o teto</div></div>
+<div style="font-size:56px;font-weight:700;line-height:60px;letter-spacing:-1px;text-align:right;color:#ff5c63">3,42</div>
+<div style="align-self:stretch;min-height:0;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:5px 0"><svg viewBox="0 0 160 60" preserveAspectRatio="none" role="img" aria-label="Tendência no período, acima do teto da meta" style="display:block;flex:1 1 0;min-height:0;max-height:56px;width:160px"><rect x="0" y="51" width="160" height="9" fill="rgba(87,214,141,0.20)"/><path d="M4 51L4 22L14.1 24L24.3 19L34.4 12L44.5 18L54.7 23L64.8 25L74.9 20L85.1 10L95.2 17L105.3 22L115.5 24L125.6 12L135.7 19L145.9 15L156 17L156 51Z" fill="rgba(255,92,99,0.28)"/><path d="M0 51H160" stroke="#57d68d" stroke-width="1.5" stroke-dasharray="5 4" vector-effect="non-scaling-stroke"/><polyline points="4,22 14.1,24 24.3,19 34.4,12 44.5,18 54.7,23 64.8,25 74.9,20 85.1,10 95.2,17 105.3,22 115.5,24 125.6,12 135.7,19 145.9,15 156,17" fill="none" stroke="#ff5c63" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="8,5 vezes o teto, fora" style="display:block;flex:none;overflow:visible"><rect x="4" y="13" width="140" height="10" fill="#143454"/><rect x="4" y="13" width="95" height="10" fill="#2b7d62"/><rect x="99" y="10" width="46" height="16" fill="#ff5c63"/><path d="M113 29l5-22M122 29l5-22" stroke="#261a2c" stroke-width="3.5"/><path d="M99 8v20" stroke="#f3f8fd" stroke-width="1.5"/><path d="M144 4l14 14-14 14z" fill="#ff5c63"/></svg></div></div>
+<div style="flex:1 1 0;min-height:50px;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto 160px;column-gap:14px;align-items:center;padding:0 14px 0 12px;border-top:1px solid #11304c;border-left:6px solid transparent">
+<div style="white-space:nowrap">
+<div style="font-size:19px;font-weight:600;line-height:24px">Fluxo</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">LMH · 17 a 24</div></div>
+<div style="font-size:34px;font-weight:700;line-height:38px;text-align:right">21,3</div><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="Dentro da faixa" style="display:block;flex:none;overflow:visible"><rect x="4" y="16" width="152" height="6" fill="#143454"/><rect x="57.2" y="16" width="45.6" height="6" fill="#2b7d62"/><path d="M57.2 12v14M102.8 12v14" stroke="#f3f8fd" stroke-width="1.5"/><path d="M80.2 3h10l-5 8z" fill="#f3f8fd"/><path d="M85.2 10v16" stroke="#f3f8fd" stroke-width="2.5"/></svg></div></div></div>
+
+<div></div>
+
+<div style="box-sizing:border-box;display:flex;flex-direction:column;background:#041729;border:2px solid #1f4263;border-radius:3px">
+<div style="height:78px;flex:none;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;padding:8px 14px 12px;background:#0a2137">
+<div style="display:flex;align-items:baseline;gap:10px;white-space:nowrap;line-height:36px"><span style="font-size:28px;font-weight:700">4 de 4</span><span style="font-size:24px;color:#d3e1ef">dentro da meta</span></div>
+<div role="img" aria-label="4 indicadores na ordem das linhas: dentro, dentro, dentro, dentro" style="height:14px;display:flex;align-items:flex-end;gap:4px"><span style="flex:1;height:6px;background:#2b7d62"></span><span style="flex:1;height:6px;background:#2b7d62"></span><span style="flex:1;height:6px;background:#2b7d62"></span><span style="flex:1;height:6px;background:#2b7d62"></span></div></div>
+<div style="flex:1;min-height:0;display:flex;flex-direction:column">
+<div style="flex:1 1 0;min-height:50px;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto 160px;column-gap:14px;align-items:center;padding:0 14px 0 12px;border-top:1px solid #11304c;border-left:6px solid transparent">
+<div style="white-space:nowrap">
+<div style="font-size:19px;font-weight:600;line-height:24px">SDI</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">≤ 3,0</div></div>
+<div style="font-size:34px;font-weight:700;line-height:38px;text-align:right">1,8</div><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="60% da meta, dentro" style="display:block;flex:none;overflow:visible"><rect x="4" y="16" width="152" height="6" fill="#143454"/><rect x="4" y="16" width="95" height="6" fill="#2b7d62"/><path d="M99 12v14" stroke="#f3f8fd" stroke-width="1.5"/><path d="M56 3h10l-5 8z" fill="#f3f8fd"/><path d="M61 10v16" stroke="#f3f8fd" stroke-width="2.5"/></svg></div>
+<div style="flex:1 1 0;min-height:50px;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto 160px;column-gap:14px;align-items:center;padding:0 14px 0 12px;border-top:1px solid #11304c;border-left:6px solid transparent">
+<div style="white-space:nowrap">
+<div style="font-size:19px;font-weight:600;line-height:24px">dP Skid 1</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">bar · ≤ 3,5</div></div>
+<div style="font-size:34px;font-weight:700;line-height:38px;text-align:right">1,9</div><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="54% da meta, dentro" style="display:block;flex:none;overflow:visible"><rect x="4" y="16" width="152" height="6" fill="#143454"/><rect x="4" y="16" width="95" height="6" fill="#2b7d62"/><path d="M99 12v14" stroke="#f3f8fd" stroke-width="1.5"/><path d="M50.3 3h10l-5 8z" fill="#f3f8fd"/><path d="M55.3 10v16" stroke="#f3f8fd" stroke-width="2.5"/></svg></div>
+<div style="flex:1 1 0;min-height:50px;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto 160px;column-gap:14px;align-items:center;padding:0 14px 0 12px;border-top:1px solid #11304c;border-left:6px solid transparent">
+<div style="white-space:nowrap">
+<div style="font-size:19px;font-weight:600;line-height:24px">dP Skid 2</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">bar · ≤ 3,5</div></div>
+<div style="font-size:34px;font-weight:700;line-height:38px;text-align:right">1,6</div><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="46% da meta, dentro" style="display:block;flex:none;overflow:visible"><rect x="4" y="16" width="152" height="6" fill="#143454"/><rect x="4" y="16" width="95" height="6" fill="#2b7d62"/><path d="M99 12v14" stroke="#f3f8fd" stroke-width="1.5"/><path d="M42.7 3h10l-5 8z" fill="#f3f8fd"/><path d="M47.7 10v16" stroke="#f3f8fd" stroke-width="2.5"/></svg></div>
+<div style="flex:1 1 0;min-height:50px;box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto 160px;column-gap:14px;align-items:center;padding:0 14px 0 12px;border-top:1px solid #11304c;border-left:6px solid transparent">
+<div style="white-space:nowrap">
+<div style="font-size:19px;font-weight:600;line-height:24px">dP Skid 3</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">bar · ≤ 3,5</div></div>
+<div style="font-size:34px;font-weight:700;line-height:38px;text-align:right">2,5</div><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="71% da meta, dentro" style="display:block;flex:none;overflow:visible"><rect x="4" y="16" width="152" height="6" fill="#143454"/><rect x="4" y="16" width="95" height="6" fill="#2b7d62"/><path d="M99 12v14" stroke="#f3f8fd" stroke-width="1.5"/><path d="M66.5 3h10l-5 8z" fill="#f3f8fd"/><path d="M71.5 10v16" stroke="#f3f8fd" stroke-width="2.5"/></svg></div></div></div>
+
+<div></div>
+
+<div style="box-sizing:border-box;display:flex;flex-direction:column;padding:6px 16px 10px;background:linear-gradient(180deg,#0b3157 0%,#061d33 58%);border:2px solid #3aa7f2;border-radius:3px">
+<div style="display:flex;align-items:baseline;gap:6px;margin-left:-5px;white-space:nowrap"><span style="font-size:108px;font-weight:700;line-height:108px;letter-spacing:-3px">343,3</span><span style="font-size:24px;font-weight:600;color:#7cc4f8">L/s</span></div>
+<div style="display:flex;align-items:center;gap:10px;margin-top:2px;white-space:nowrap"><span style="width:16px;height:16px;flex:none;border-radius:50%;background:#57d68d"></span><span style="font-size:30px;font-weight:700;line-height:36px;color:#57d68d">110% da meta</span><span style="flex:1"></span><span style="font-size:17px;color:#a8bfd6">≥ 311,9</span></div><svg width="308" height="32" viewBox="0 0 308 32" role="img" aria-label="110% da meta, dentro" style="display:block;flex:none;margin-top:6px"><rect x="4" y="15" width="300" height="8" fill="#143454"/><rect x="191.5" y="15" width="112.5" height="8" fill="#2b7d62"/><path d="M191.5 10v18" stroke="#f3f8fd" stroke-width="1.5"/><path d="M203.2 1h14l-7 10z" fill="#f3f8fd"/><path d="M210.2 9v19" stroke="#f3f8fd" stroke-width="3"/></svg><svg viewBox="0 0 308 160" preserveAspectRatio="none" role="img" aria-label="Tendência da entrega no período, acima da linha da meta" style="display:block;flex:1 1 0;min-height:0;width:308px;margin-top:10px"><defs><linearGradient id="d-hero-area" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3aa7f2" stop-opacity="0.50"/><stop offset="1" stop-color="#3aa7f2" stop-opacity="0.08"/></linearGradient></defs><path d="M6 160L6 46L25.7 34L45.5 56L65.2 40L84.9 52L104.7 30L124.4 44L144.1 60L163.9 38L183.6 32L203.3 54L223.1 42L242.8 28L262.5 50L282.3 36L302 44L302 160Z" fill="url(#d-hero-area)"/><path d="M0 84H308" stroke="#57d68d" stroke-width="1.5" stroke-dasharray="7 6" vector-effect="non-scaling-stroke"/><polyline points="6,46 25.7,34 45.5,56 65.2,40 84.9,52 104.7,30 124.4,44 144.1,60 163.9,38 183.6,32 203.3,54 223.1,42 242.8,28 262.5,50 282.3,36 302,44" fill="none" stroke="#5cc0ff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/><path d="M302 44h0.01" stroke="#f3f8fd" stroke-width="11" stroke-linecap="round" vector-effect="non-scaling-stroke"/></svg>
+<div style="display:flex;justify-content:space-between;font-size:16px;line-height:22px;color:#a8bfd6"><span>03/11</span><span>tracejado = meta</span><span>18/11</span></div>
+<div style="margin-top:8px;border-top:1px solid #1f4263;padding-top:8px;display:flex;align-items:center;gap:8px;white-space:nowrap"><svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="#f3f8fd" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M8 13.5V2.5M3 7.5l5-5 5 5"/></svg><span style="font-size:26px;font-weight:700;line-height:32px">+13,8%</span><span style="font-size:17px;line-height:32px;color:#a8bfd6;margin-left:2px">melhorou</span></div></div>
+
+<div></div>
+<div></div>
+<div style="display:flex;flex-direction:column;align-items:center"><svg width="12" height="9" viewBox="0 0 12 9" aria-hidden="true" style="flex:none;display:block"><path d="M6 0l6 9H0z" fill="#5f88b0"/></svg>
+<div style="flex:1;width:0;border-left:2px dashed #5f88b0"></div></div>
+<div></div>
+<div style="display:flex;flex-direction:column;align-items:center"><svg width="12" height="9" viewBox="0 0 12 9" aria-hidden="true" style="flex:none;display:block"><path d="M6 0l6 9H0z" fill="#5f88b0"/></svg>
+<div style="flex:1;width:0;border-left:2px dashed #5f88b0"></div></div>
+<div></div>
+<div></div>
+
+<div style="box-sizing:border-box;display:flex;flex-direction:column;border-top:1px solid #1f4263;padding-top:5px">
+<div style="height:26px;flex:none;display:flex;align-items:center;font-size:16px;font-weight:700;letter-spacing:1px;color:#a8bfd6">PLANTA · TOTAL</div>
+<div style="flex:1;min-height:0;display:flex;gap:12px">
+<div style="flex:1;min-width:0;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;padding:8px 12px;background:rgba(255,210,87,0.08);border:1px solid #ffd257;border-left:6px solid #ffd257;border-radius:3px">
+<div>
+<div style="height:26px;display:flex;align-items:center;justify-content:space-between;gap:8px;white-space:nowrap"><span style="font-size:19px;font-weight:700;line-height:24px">Químicos</span><svg width="64" height="26" viewBox="0 0 64 26" role="img" aria-label="Tendência no período, pouco acima da linha da meta" style="display:block;flex:none"><rect x="0" y="15" width="64" height="11" fill="rgba(87,214,141,0.20)"/><path d="M0 15h64" stroke="#57d68d" stroke-width="1.5" stroke-dasharray="4 3"/><polyline points="3,12.5 6.8,11.7 10.6,12.1 14.4,10.6 18.2,8.4 22,11.4 25.8,12.1 29.6,11.8 33.4,12 37.2,8.9 41,9.6 44.8,12.2 48.6,11.6 52.4,12.5 56.2,10.5 60,8.5" fill="none" stroke="#ffd257" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6;white-space:nowrap">kg/m³ · ≤ 0,12</div></div>
+<div style="height:48px;display:flex;align-items:center;justify-content:space-between;white-space:nowrap">
+<div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:40px;font-weight:700;line-height:48px;color:#ffd257">0,13</span></div>
+<div style="text-align:right"><div style="font-size:18px;font-weight:700;line-height:22px;color:#ffd257"><div>6% acima</div><div>do teto</div></div></div></div><svg width="160" height="26" viewBox="0 0 160 26" role="img" aria-label="106% da meta, atenção" style="display:block;flex:none;overflow:visible"><rect x="4" y="11" width="152" height="8" fill="#143454"/><rect x="4" y="11" width="95" height="8" fill="#2b7d62"/><rect x="99" y="11" width="5.7" height="8" fill="#ffd257"/><path d="M99 7v16" stroke="#f3f8fd" stroke-width="1.5"/><path d="M98.7 0h12l-6 9z" fill="#ffd257"/><path d="M104.7 7v16" stroke="#ffd257" stroke-width="3"/></svg>
+<div style="display:flex;align-items:center;gap:6px;white-space:nowrap"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#f3f8fd" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M8 2.5v11M3 8.5l5 5 5-5"/></svg><span style="font-size:18px;font-weight:700;line-height:24px">-4,7%</span><span style="font-size:16px;line-height:24px;color:#a8bfd6;margin-left:2px">melhorou</span></div></div>
+
+<div style="flex:1;min-width:0;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;padding:8px 12px;background:#041729;border:1px solid #1f4263;border-left:6px solid #1f4263;border-radius:3px">
+<div>
+<div style="height:26px;display:flex;align-items:center;white-space:nowrap"><span style="font-size:19px;font-weight:600;line-height:24px">Energia</span></div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6;white-space:nowrap">kWh/m³ · ≤ 0,98</div></div>
+<div style="height:48px;display:flex;align-items:center;justify-content:space-between;white-space:nowrap">
+<div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:38px;font-weight:700;line-height:48px">0,91</span></div>
+<div style="text-align:right">
+<div style="font-size:22px;font-weight:700;line-height:24px">93%</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">da meta</div></div></div><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="93% da meta, dentro" style="display:block;flex:none;overflow:visible"><rect x="4" y="16" width="152" height="6" fill="#143454"/><rect x="4" y="16" width="95" height="6" fill="#2b7d62"/><path d="M99 12v14" stroke="#f3f8fd" stroke-width="1.5"/><path d="M87.3 3h10l-5 8z" fill="#f3f8fd"/><path d="M92.3 10v16" stroke="#f3f8fd" stroke-width="2.5"/></svg>
+<div style="display:flex;align-items:center;gap:6px;white-space:nowrap"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#f3f8fd" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M8 2.5v11M3 8.5l5 5 5-5"/></svg><span style="font-size:18px;font-weight:700;line-height:24px">-3,4%</span><span style="font-size:16px;line-height:24px;color:#a8bfd6;margin-left:2px">melhorou</span></div></div></div></div>
+
+<div></div>
+
+<div style="box-sizing:border-box;display:flex;flex-direction:column;border-top:2px dashed #5f88b0;padding-top:4px">
+<div style="height:26px;flex:none;display:flex;align-items:center;font-size:16px;font-weight:700;letter-spacing:1px;color:#a8bfd6">TMBR · UTILIDADES</div>
+<div style="flex:1;min-height:0;display:flex;gap:12px">
+<div style="flex:1;min-width:0;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;padding:8px 12px;background:rgba(255,92,99,0.13);border:1px solid #ff5c63;border-left:6px solid #ff5c63;border-radius:3px">
+<div>
+<div style="height:26px;display:flex;align-items:center;justify-content:space-between;gap:8px;white-space:nowrap"><span style="font-size:19px;font-weight:700;line-height:24px">Coagulante</span><svg width="64" height="26" viewBox="0 0 64 26" role="img" aria-label="Tendência no período, acima da linha da meta" style="display:block;flex:none"><rect x="0" y="18" width="64" height="8" fill="rgba(87,214,141,0.20)"/><path d="M0 18h64" stroke="#57d68d" stroke-width="1.5" stroke-dasharray="4 3"/><polyline points="3,7.8 6.8,7.4 10.6,10 14.4,9.8 18.2,11.6 22,10 25.8,6.7 29.6,9 33.4,9.7 37.2,10.7 41,11.7 44.8,7.8 48.6,7.7 52.4,9.6 56.2,9.6 60,6" fill="none" stroke="#ff5c63" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/></svg></div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6;white-space:nowrap">gPAC/gP rem · ≤ 17,0</div></div>
+<div style="height:48px;display:flex;align-items:center;justify-content:space-between;white-space:nowrap">
+<div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:40px;font-weight:700;line-height:48px;color:#ff5c63">20,8</span></div>
+<div style="text-align:right"><div style="font-size:18px;font-weight:700;line-height:22px;color:#ff5c63"><div>22% acima</div><div>do teto</div></div></div></div><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="122% da meta, fora" style="display:block;flex:none;overflow:visible"><rect x="4" y="13" width="152" height="10" fill="#143454"/><rect x="4" y="13" width="95" height="10" fill="#2b7d62"/><rect x="99" y="13" width="20.9" height="10" fill="#ff5c63"/><path d="M99 8v20" stroke="#f3f8fd" stroke-width="1.5"/><path d="M112.9 0h14l-7 11z" fill="#ff5c63"/><path d="M119.9 9v19" stroke="#ff5c63" stroke-width="3.5"/></svg>
+<div style="display:flex;align-items:center;gap:6px;white-space:nowrap"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#f3f8fd" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M8 13.5V2.5M3 7.5l5-5 5 5"/></svg><span style="font-size:18px;font-weight:700;line-height:24px">+29,3%</span><span style="font-size:16px;line-height:24px;color:#a8bfd6;margin-left:2px">piorou</span></div></div>
+
+<div style="flex:1;min-width:0;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;padding:8px 12px;background:#041729;border:1px solid #1f4263;border-left:6px solid #1f4263;border-radius:3px">
+<div>
+<div style="height:26px;display:flex;align-items:center;white-space:nowrap"><span style="font-size:19px;font-weight:600;line-height:24px">Energia - Biológico</span></div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6;white-space:nowrap">kWh/kg NH3 rem</div></div>
+<div style="height:48px;display:flex;align-items:center;white-space:nowrap"><span style="font-size:38px;font-weight:700;line-height:48px">4,5</span></div>
+<div style="height:32px;display:flex;align-items:center;gap:8px"><span style="width:14px;height:14px;flex:none;box-sizing:border-box;border-radius:50%;border:2px solid #a8bfd6"></span><span style="font-size:16px;color:#a8bfd6">sem meta</span></div>
+<div style="display:flex;align-items:center;gap:6px;white-space:nowrap"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#f3f8fd" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M8 13.5V2.5M3 7.5l5-5 5 5"/></svg><span style="font-size:18px;font-weight:700;line-height:24px">+12,5%</span><span style="font-size:16px;line-height:24px;color:#a8bfd6;margin-left:2px">piorou</span></div></div></div></div>
+<div></div>
+
+<div style="box-sizing:border-box;display:flex;flex-direction:column;border-top:2px dashed #5f88b0;padding-top:4px">
+<div style="height:26px;flex:none;display:flex;align-items:center;font-size:16px;font-weight:700;letter-spacing:1px;color:#a8bfd6">OR · UTILIDADE E BLEND</div>
+<div style="flex:1;min-height:0;display:flex;gap:12px">
+<div style="flex:1;min-width:0;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;padding:8px 12px;background:#041729;border:1px solid #1f4263;border-left:6px solid #1f4263;border-radius:3px">
+<div>
+<div style="height:26px;display:flex;align-items:center;white-space:nowrap"><span style="font-size:19px;font-weight:600;line-height:24px">Energia OR</span></div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6;white-space:nowrap">kWh/m³ · ≤ 0,50</div></div>
+<div style="height:48px;display:flex;align-items:center;justify-content:space-between;white-space:nowrap">
+<div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:38px;font-weight:700;line-height:48px">0,13</span></div>
+<div style="text-align:right">
+<div style="font-size:22px;font-weight:700;line-height:24px">25%</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">da meta</div></div></div><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="25% da meta, dentro" style="display:block;flex:none;overflow:visible"><rect x="4" y="16" width="152" height="6" fill="#143454"/><rect x="4" y="16" width="95" height="6" fill="#2b7d62"/><path d="M99 12v14" stroke="#f3f8fd" stroke-width="1.5"/><path d="M22.8 3h10l-5 8z" fill="#f3f8fd"/><path d="M27.8 10v16" stroke="#f3f8fd" stroke-width="2.5"/></svg>
+<div style="display:flex;align-items:center;gap:6px;white-space:nowrap"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#f3f8fd" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M8 13.5V2.5M3 7.5l5-5 5 5"/></svg><span style="font-size:18px;font-weight:700;line-height:24px">+4,1%</span><span style="font-size:16px;line-height:24px;color:#a8bfd6;margin-left:2px">piorou</span></div></div>
+
+<div style="flex:1;min-width:0;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;padding:8px 12px;background:#041729;border:1px solid #1f4263;border-left:6px solid #1f4263;border-radius:3px">
+<div>
+<div style="height:26px;display:flex;align-items:center;white-space:nowrap"><span style="font-size:19px;font-weight:600;line-height:24px">Blend</span></div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6;white-space:nowrap">sem meta · 0 a 100%</div></div>
+<div style="height:48px;display:flex;align-items:center;white-space:nowrap">
+<div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:38px;font-weight:700;line-height:48px">25,5</span><span style="font-size:22px;color:#a8bfd6">%</span></div></div><svg width="160" height="32" viewBox="0 0 160 32" role="img" aria-label="25,5% numa escala de 0 a 100%" style="display:block;flex:none"><rect x="4" y="16" width="152" height="6" fill="#143454"/><rect x="4" y="16" width="38.8" height="6" fill="#3aa7f2"/><path d="M4 12v14M80 13v12M156 12v14" stroke="#6f93b5" stroke-width="1.5"/><path d="M37.8 3h10l-5 8z" fill="#f3f8fd"/><path d="M42.8 10v16" stroke="#f3f8fd" stroke-width="2.5"/></svg>
+<div style="display:flex;align-items:center;gap:6px;white-space:nowrap"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#f3f8fd" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M8 2.5v11M3 8.5l5 5 5-5"/></svg><span style="font-size:18px;font-weight:700;line-height:24px">-1,2 p.p.</span></div></div></div></div>
+<div></div>
+
+<div style="box-sizing:border-box;display:flex;flex-direction:column;border-top:1px solid #1f4263;padding-top:5px">
+<div style="height:26px;flex:none;display:flex;align-items:center;font-size:16px;font-weight:700;letter-spacing:1px;color:#a8bfd6">PLANTA · BALANÇO</div>
+<div style="flex:1;min-height:0;display:flex;gap:12px">
+<div style="flex:1;min-width:0;box-sizing:border-box;display:flex;flex-direction:column;justify-content:space-between;padding:8px 12px;background:#041729;border:1px solid #1f4263;border-left:6px solid #1f4263;border-radius:3px">
+<div>
+<div style="height:26px;display:flex;align-items:center;white-space:nowrap"><span style="font-size:19px;font-weight:600;line-height:24px">Perdas</span></div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6;white-space:nowrap">% · ≤ 18,0</div></div>
+<div style="height:48px;display:flex;align-items:center;justify-content:space-between;white-space:nowrap">
+<div style="display:flex;align-items:baseline;gap:6px"><span style="font-size:38px;font-weight:700;line-height:48px">14,0</span><span style="font-size:22px;color:#a8bfd6">%</span></div>
+<div style="text-align:right">
+<div style="font-size:22px;font-weight:700;line-height:24px">78%</div>
+<div style="font-size:16px;line-height:20px;color:#a8bfd6">da meta</div></div></div><svg width="308" height="32" viewBox="0 0 308 32" role="img" aria-label="78% da meta, dentro" style="display:block;flex:none;overflow:visible"><rect x="4" y="16" width="300" height="6" fill="#143454"/><rect x="4" y="16" width="187.5" height="6" fill="#2b7d62"/><path d="M191.5 12v14" stroke="#f3f8fd" stroke-width="1.5"/><path d="M145.2 3h10l-5 8z" fill="#f3f8fd"/><path d="M150.2 10v16" stroke="#f3f8fd" stroke-width="2.5"/></svg>
+<div style="display:flex;align-items:center;gap:6px;white-space:nowrap"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#f3f8fd" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M8 2.5v11M3 8.5l5 5 5-5"/></svg><span style="font-size:18px;font-weight:700;line-height:24px">-0,1 p.p.</span><span style="font-size:16px;line-height:24px;color:#a8bfd6;margin-left:2px">melhorou</span></div></div></div></div></div>
+
+<div style="height:40px;flex:none;box-sizing:border-box;margin:8px 16px 8px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;border:1px solid #1f4263;border-radius:3px;font-size:16px;color:#d3e1ef">
+<div style="display:flex;align-items:center;gap:8px;white-space:nowrap"><span style="width:14px;height:14px;flex:none;border-radius:50%;background:#57d68d"></span><span>Dentro da meta</span></div>
+<div style="display:flex;align-items:center;gap:8px;white-space:nowrap"><span style="width:0;height:0;flex:none;border-left:8px solid transparent;border-right:8px solid transparent;border-bottom:14px solid #ffd257"></span><span>Atenção: até 10% fora</span></div>
+<div style="display:flex;align-items:center;gap:10px;white-space:nowrap"><span style="width:12px;height:12px;flex:none;background:#ff5c63;transform:rotate(45deg)"></span><span>Fora da meta</span></div>
+<div style="display:flex;align-items:center;gap:8px;white-space:nowrap"><span style="width:14px;height:14px;flex:none;box-sizing:border-box;border-radius:50%;border:2px solid #a8bfd6"></span><span>Sem meta</span></div>
+<div style="width:1px;height:22px;background:#1f4263"></div>
+<div style="display:flex;align-items:center;gap:10px;white-space:nowrap"><svg width="34" height="24" viewBox="0 0 34 24" aria-hidden="true"><rect x="0" y="1" width="34" height="3" fill="#5f88b0"/><rect x="0" y="7" width="34" height="11" fill="#ff5c63"/><rect x="0" y="21" width="34" height="3" fill="#5f88b0"/></svg><span>Fora ou em atenção: a linha cresce · a ordem não muda</span></div>
+<div style="width:1px;height:22px;background:#1f4263"></div>
+<div style="display:flex;align-items:center;gap:10px;white-space:nowrap"><svg width="80" height="24" viewBox="0 0 107 32" aria-hidden="true"><rect x="3" y="16" width="101" height="6" fill="#143454"/><rect x="3" y="16" width="63" height="6" fill="#2b7d62"/><path d="M66 11v16" stroke="#f3f8fd" stroke-width="2"/><path d="M34 2h12l-6 9z" fill="#f3f8fd"/><path d="M40 10v17" stroke="#f3f8fd" stroke-width="3"/></svg><span>Faixa verde e tracejado = meta · ponteiro = valor</span></div>
+<div style="display:flex;align-items:center;gap:4px;white-space:nowrap"><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#f3f8fd" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M8 13.5V2.5M3 7.5l5-5 5 5"/></svg><svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="#f3f8fd" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:none"><path d="M8 2.5v11M3 8.5l5 5 5-5"/></svg><span style="margin-left:4px">Variação sobre o período anterior</span></div></div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1920,"height":1080}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

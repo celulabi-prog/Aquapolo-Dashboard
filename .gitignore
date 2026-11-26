@@ -23,3 +23,7 @@ ferramentas/preview/preview_op.html
 # Print de referência do layout: 1,9 MB e só serve para recortar a faixa do
 # cabeçalho (cabecalho_painel.png, essa sim versionada) e comparar o preview
 ferramentas/preview/referencia_painel.png
+
+# Saída do preview da Visão Geral v2
+ferramentas/preview/preview_v2.png
+ferramentas/preview/preview_v2.html

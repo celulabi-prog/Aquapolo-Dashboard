@@ -81,6 +81,58 @@ Depois de `gerar_op.py` ou `pagina_op.py`, feche e reabra o `.pbip` no Power BI 
 Se os visuais ficarem vazios, clique com o botão direito em **Medidas HTML**, no painel
 Dados, e escolha **Atualizar dados**.
 
+## Visão Geral v2 (fluxo com destaque no lugar)
+
+Página nova, ao lado da Visão Geral, que continua como está. Os arquivos têm o sufixo `_v2` e
+nenhum deles grava em `Medidas HTML.tmdl` nem na pasta da página atual.
+
+```
+python prep_v2.py           # confere as regras (frase do desvio, situação, ponteiro), sem ler a planilha
+python preview_v2.py        # gera preview_v2.png com os dados reais (precisa da unidade G:)
+python preview_v2.py hoje   # idem, com os números do print de 03/11 a 18/11, sem ler a planilha
+python preview_v2.py t3     # casos fictícios t1 a t7: os extremos do destaque (tudo fora, nada fora...)
+python fundo_v2.py          # refaz o PNG de fundo (cabeçalho de 104 px e os tubos entre as colunas)
+python gerar_v2.py          # reescreve Medidas HTML v2.tmdl
+python pagina_v2.py         # reescreve os visuais da página visao_geral_v2
+```
+
+| Arquivo | Papel |
+| --- | --- |
+| `estilo_v2.py` | paleta, grade e posição de cada visual; `ABSOLUTOS` (frase do desvio em unidade) e os limites do minigráfico |
+| `molde_v2.py` | o HTML de cada peça: medidor, minigráfico, linha, bloco, nó do trem, cartão, entrega, abas. A forma (calma, atenção, fora) entra como argumento |
+| `prep_v2.py` | as regras em Python e o HTML do preview; guarda os casos de teste |
+| `gerar_v2.py` | as mesmas regras em DAX e as 9 medidas `HTML v2 ...` (uma por visual), na tabela **Medidas HTML v2** |
+| `pagina_v2.py` | os 11 visuais e o `page.json` da página **Visão Geral v2** |
+| `fundo_v2.py` | o PNG de fundo `fundo_visao_geral_v2.png` |
+| `preview_v2.py` | monta a página e tira o print |
+| `confere_v2.py` | compara o texto de cada medida, pedido ao motor do Power BI, com o HTML do `prep_v2` |
+| `referencia_v2/` | o protótipo aprovado, para comparar com o preview |
+
+Como funciona o destaque: cada indicador fica sempre no mesmo lugar, na ordem do processo. A linha
+tem peso de altura 1 (dentro da meta), 1,5 (atenção) ou 2 (fora); a que está em destaque mostra o
+valor maior, o desvio em palavras e o minigráfico do período. Como a forma depende do dado, o
+`gerar_v2.py` chama o molde uma vez por forma e o DAX escolhe com `SWITCH` sobre a situação.
+
+### Mudanças mais comuns na v2
+
+- **Meta, unidade, casas decimais, coluna da planilha:** continuam em `indicadores_op.py`, e valem
+  para as duas páginas. Depois, `python gerar_op.py` e `python gerar_v2.py`.
+- **Que indicador fica em qual coluna ou grupo de utilidades:** `COLUNAS` e `GRUPOS`, no topo de `prep_v2.py`.
+- **Frase do desvio em unidade (hoje só a Idade do Lodo, em dias):** `ABSOLUTOS` em `estilo_v2.py`.
+- **Peso e altura mínima das linhas, tamanho das letras:** `linha()` em `molde_v2.py`.
+- **Cor, grade, posição dos visuais:** `estilo_v2.py`.
+
+Toda regra existe duas vezes, em `prep_v2.py` e em `gerar_v2.py` (os comentários dizem qual espelha
+qual). Mexeu numa, mexa na outra e rode a conferência:
+
+```
+python confere_v2.py consultas q.dax    # grava 47 consultas DAX
+(rodar cada uma no motor do Desktop e gravar a resposta da consulta N em q.dax.N.out)
+python confere_v2.py comparar q.dax     # tem de terminar em TUDO IGUAL
+```
+
+As segmentações Período e datas da v2 são cópias próprias: a escolha feita numa página não muda a outra.
+
 ## Página Volumes
 
 ```
