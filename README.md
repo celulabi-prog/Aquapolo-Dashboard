@@ -40,6 +40,21 @@ A página **Visão Geral** é o painel operacional, em tema escuro, com 23 indic
 
 Esta página **não é editada à mão**. Ela é gerada pelos scripts de `ferramentas/preview/`, a partir de um molde HTML único — veja o `LEIAME.md` de lá. Mexer no `visual.json` ou na medida direto no Power BI funciona, mas o próximo `python pagina_op.py` ou `python gerar_op.py` desfaz.
 
+### Visão Geral v2
+
+A página **Visão Geral v2** é uma segunda versão do painel operacional, com os mesmos 23 indicadores e as mesmas contas. A Visão Geral continua como está; as duas ficam lado a lado até a escolha de qual fica.
+
+- **Fluxo do processo:** o trem EEBC → TMBR → OR → Clientes, com o Blend sobre o desvio da OR. Os consumos ficam sob a etapa a que pertencem (Coagulante e Energia - Biológico sob o TMBR, Energia OR e Blend sob a OR) e Químicos, Energia e Perdas como totais da planta.
+- **Destaque no lugar:** cada indicador fica sempre na mesma posição. O que está em atenção ou fora da meta cresce onde está, com o valor maior, o desvio em palavras ("22% acima do teto", "8,6 vezes o teto", "1 dia acima da faixa") e a tendência do período; os demais da mesma etapa encolhem. A moldura do bloco e o nó da etapa ficam vermelhos quando há indicador fora.
+- **Medidor:** a faixa verde é a meta e o ponteiro é o valor. Quando o valor passa do fim da escala, aparece a seta com dois cortes.
+- **Tendência:** a série diária do período marcado, com a zona da meta ao fundo. Períodos com mais de 90 dias viram médias, com no máximo 90 pontos. Aparece só nos indicadores em destaque e na entrega aos clientes.
+- **Faixa de situação:** quantos indicadores estão fora, em atenção, dentro e sem meta, e o estado dos dados (em dia, pendentes ou atrasados, pelos mesmos limites da Visão Geral).
+- **Abas:** ao passar o mouse num indicador, abre a aba com o período, a meta e, nos consumos e volumes, o período anterior. No estado dos dados e no período do cabeçalho, abre o detalhe.
+- **Seletor Período e datas:** são cópias próprias desta página. O que se escolhe aqui não muda a Visão Geral, e vice-versa.
+- **Medidas:** tabela **Medidas HTML v2**, com 9 medidas `HTML v2 ...`, uma por visual. Elas não refazem número nenhum: buscam as medidas `... Período` e `... Período Anterior` de **Medidas HTML**.
+
+Também é gerada por script (`*_v2.py` em `ferramentas/preview/`; veja o `LEIAME.md` de lá) e não deve ser editada à mão.
+
 ### O que mudou em relação à base antiga (parquet)
 
 Comparando na mesma data (14/09/2026, o fim da base antiga), 12 indicadores dão exatamente o número da base antiga, e Condutividade e Dureza ficam a menos de 0,2% (um dia de dado diferente entre as duas fontes). Os outros mudam porque a planilha traz outra informação:
